@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BullshitBench Reasoning Lab</title>
   <link rel="icon" href="../assets/bsbench.png">
+  <script>
+    (() => {
+      try {
+        const stored = window.localStorage.getItem("reasoningLab.theme");
+        const preference = ["light", "dark"].includes(stored) ? stored : "system";
+        const resolved = preference === "system"
+          ? (window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+          : preference;
+        document.documentElement.dataset.themePreference = preference;
+        document.documentElement.dataset.theme = resolved;
+        document.documentElement.style.colorScheme = resolved;
+      } catch (_error) {
+        document.documentElement.dataset.themePreference = "system";
+        const fallback = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = fallback;
+        document.documentElement.style.colorScheme = fallback;
+      }
+    })();
+  </script>
   <style>
     :root {
       --bg: #f7f4ee;
@@ -37,6 +56,96 @@
       --radius-md: 8px;
       --radius-sm: 6px;
       --transition: 160ms ease;
+      --surface-elevated: #ffffff;
+      --surface-elevated-strong: #ffffff;
+      --surface-subtle: #f6f7f6;
+      --surface-subtle-strong: #fbfcfb;
+      --surface-muted: #f7f8f7;
+      --surface-soft: #fafbfa;
+      --surface-accent: #eef3f1;
+      --surface-accent-strong: #f3f8f6;
+      --surface-tag: #f4f6f5;
+      --surface-code: #f3f5f4;
+      --surface-input: rgba(255, 255, 255, 0.88);
+      --surface-input-focus: #ffffff;
+      --surface-overlay: rgba(255, 255, 255, 0.76);
+      --border-strong: #c7d0cc;
+      --border-soft: #edf1ef;
+      --border-emphasis: #c3cbc6;
+      --border-selected: #1d564c;
+      --text-strong: #1c2a25;
+      --text-subtle: #24312c;
+      --text-muted: #5d6965;
+      --text-faint: #667770;
+      --focus-ring: 0 0 0 2px rgba(31, 101, 89, 0.1);
+      --scrollbar-thumb: rgba(36, 70, 62, 0.16);
+      --overlay-backdrop: rgba(20, 25, 23, 0.18);
+      --selection-fill: rgba(29, 86, 76, 0.06);
+      --mix-base: #ffffff;
+      --theme-toggle-bg: rgba(255, 255, 255, 0.82);
+      --theme-toggle-hover: #f6f7f6;
+      --theme-toggle-active-bg: #eef3f1;
+      --theme-toggle-active-line: #cdd7d2;
+      --theme-toggle-active-ink: #123f3a;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0b0c0f;
+      --panel: #15181c;
+      --panel-strong: #191c21;
+      --ink: #eef1f4;
+      --muted: #98a0ab;
+      --line: #2a2e35;
+      --teal: #bbc2cc;
+      --teal-soft: #20242b;
+      --teal-deep: #f3f5f7;
+      --amber: #deb062;
+      --rose: #44272d;
+      --green: #56bf8f;
+      --red: #e16f7e;
+      --blue: #78aee9;
+      --violet: #a78cde;
+      --model-gpt: #78aee9;
+      --model-gpt-soft: #152637;
+      --model-gpt-line: #304861;
+      --model-gpt-ink: #b8d9ff;
+      --model-sonnet: #d8a35a;
+      --model-sonnet-soft: #352516;
+      --model-sonnet-line: #654a2b;
+      --model-sonnet-ink: #f1c88a;
+      --shadow-lg: 0 18px 40px rgba(2, 7, 5, 0.42);
+      --shadow-md: 0 10px 22px rgba(2, 7, 5, 0.28);
+      --surface-elevated: #171a1f;
+      --surface-elevated-strong: #1c2026;
+      --surface-subtle: #20252c;
+      --surface-subtle-strong: #232831;
+      --surface-muted: #1d2229;
+      --surface-soft: #121519;
+      --surface-accent: #232830;
+      --surface-accent-strong: #272d36;
+      --surface-tag: #1d2228;
+      --surface-code: #101318;
+      --surface-input: rgba(16, 18, 23, 0.94);
+      --surface-input-focus: #14181d;
+      --surface-overlay: rgba(18, 21, 26, 0.9);
+      --border-strong: #353b45;
+      --border-soft: #252a31;
+      --border-emphasis: #484f5b;
+      --border-selected: #737b88;
+      --text-strong: #f3f5f7;
+      --text-subtle: #dce1e7;
+      --text-muted: #b0b7c1;
+      --text-faint: #8a929e;
+      --focus-ring: 0 0 0 2px rgba(167, 174, 185, 0.16);
+      --scrollbar-thumb: rgba(126, 133, 145, 0.28);
+      --overlay-backdrop: rgba(4, 5, 7, 0.68);
+      --selection-fill: rgba(189, 196, 208, 0.08);
+      --mix-base: #0d0f13;
+      --theme-toggle-bg: rgba(16, 18, 23, 0.92);
+      --theme-toggle-hover: #252a31;
+      --theme-toggle-active-bg: #2a3038;
+      --theme-toggle-active-line: #414852;
+      --theme-toggle-active-ink: #f3f5f7;
     }
 
     * {
@@ -84,7 +193,7 @@
       gap: 20px;
       min-height: 44px;
       padding: 0 0 2px;
-      border-bottom: 1px solid #e4e8e5;
+      border-bottom: 1px solid var(--border-soft);
     }
 
     .appbar-left {
@@ -114,7 +223,7 @@
       font-size: 0.82rem;
       line-height: 1.2;
       font-weight: 600;
-      color: #24312c;
+      color: var(--text-subtle);
       white-space: nowrap;
     }
 
@@ -155,7 +264,7 @@
 
     .switch-cluster.benchmark-cluster {
       padding-left: 14px;
-      border-left: 1px solid #e2e6e3;
+      border-left: 1px solid var(--border-soft);
     }
 
     .toolbar {
@@ -171,8 +280,8 @@
     .toolbar button,
     .toolbar a {
       border: 1px solid var(--line);
-      background: #ffffff;
-      color: #22312c;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       border-radius: 8px;
       padding: 7px 10px;
       font-size: 0.78rem;
@@ -186,8 +295,44 @@
     .toolbar button:focus-visible,
     .toolbar a:focus-visible {
       outline: none;
-      background: #f6f7f6;
-      border-color: #c3cbc6;
+      background: var(--surface-subtle);
+      border-color: var(--border-emphasis);
+    }
+
+    .theme-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--theme-toggle-bg);
+      backdrop-filter: blur(10px);
+    }
+
+    .theme-option {
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      padding: 5px 8px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      line-height: 1;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+
+    .theme-option:hover,
+    .theme-option:focus-visible {
+      outline: none;
+      background: var(--theme-toggle-hover);
+      color: var(--text-subtle);
+    }
+
+    .theme-option.active {
+      background: var(--theme-toggle-active-bg);
+      color: var(--theme-toggle-active-ink);
+      box-shadow: inset 0 0 0 1px var(--theme-toggle-active-line);
     }
 
     .dataset-switch {
@@ -207,7 +352,7 @@
       align-items: center;
       gap: 2px;
       min-height: 30px;
-      border-bottom: 1px solid #d8ddd9;
+      border-bottom: 1px solid var(--line);
       justify-content: flex-start;
     }
 
@@ -222,7 +367,7 @@
     .view-chip {
       border: none;
       background: transparent;
-      color: #5d6965;
+      color: var(--text-muted);
       padding: 7px 2px 8px;
       margin-right: 12px;
       font-size: 0.79rem;
@@ -238,9 +383,9 @@
     }
 
     .dataset-segment {
-      border: 1px solid #d4dbd7;
-      background: #ffffff;
-      color: #5d6965;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-elevated);
+      color: var(--text-muted);
       padding: 5px 10px;
       margin-right: 0;
       font-size: 0.78rem;
@@ -251,15 +396,15 @@
 
     .dataset-segment.active {
       color: var(--teal-deep);
-      background: #eef3f1;
-      border-color: #cdd7d2;
+      background: var(--surface-accent);
+      border-color: color-mix(in srgb, var(--teal) 24%, var(--mix-base));
       font-weight: 600;
     }
 
     .source-segment {
       border: none;
       background: transparent;
-      color: #5d6965;
+      color: var(--text-muted);
       padding: 7px 1px 8px;
       margin-right: 16px;
       font-size: 0.78rem;
@@ -335,11 +480,13 @@
       display: grid;
       grid-template-rows: auto 1fr;
       min-height: clamp(460px, calc(100vh - 176px), 760px);
+      overflow: visible;
     }
 
     .left-rail .control-grid {
       min-height: 0;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto auto auto 1fr;
+      overflow: visible;
     }
 
     .panel {
@@ -395,6 +542,9 @@
 
     .filter-panel {
       padding: 10px 12px;
+      position: relative;
+      z-index: 24;
+      overflow: visible;
     }
 
     .filter-grid {
@@ -418,7 +568,7 @@
 
     .filter-meta {
       margin: 8px 0 0;
-      color: #61706a;
+      color: var(--text-faint);
       font-size: 0.76rem;
       line-height: 1.35;
     }
@@ -433,6 +583,71 @@
       gap: 8px;
     }
 
+    .rail-filter-bar {
+      display: grid;
+      gap: 7px;
+      position: relative;
+      z-index: 12;
+      overflow: visible;
+    }
+
+    .rail-filter-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 7px;
+      align-items: start;
+    }
+
+    .rail-filter-row.with-domain {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .rail-filter-row.with-domain.domain-hidden {
+      grid-template-columns: auto;
+      justify-content: end;
+    }
+
+    .field.compact {
+      gap: 0;
+    }
+
+    .field.compact > span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .rail-filter-bar input[type="text"],
+    .rail-filter-bar select,
+    .rail-filter-bar details.multi-select summary {
+      min-height: 34px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      background: var(--surface-input);
+    }
+
+    .rail-filter-bar details.multi-select summary {
+      padding-right: 34px;
+    }
+
+    .rail-filter-bar .multi-select-summary {
+      font-size: 0.8rem;
+    }
+
+    .rail-filter-bar .btn {
+      min-height: 34px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
     .field-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -442,7 +657,7 @@
     label.field {
       display: grid;
       gap: 5px;
-      color: #3a4743;
+      color: var(--text-subtle);
       font-size: 0.82rem;
       font-weight: 800;
     }
@@ -451,10 +666,10 @@
     select,
     textarea {
       width: 100%;
-      border: 1px solid #c7d0cc;
+      border: 1px solid var(--border-strong);
       border-radius: 10px;
       padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--surface-input);
       color: var(--ink);
       outline: none;
       transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
@@ -463,22 +678,27 @@
     input[type="text"]:focus,
     select:focus,
     textarea:focus {
-      border-color: #4f8d80;
-      background: #ffffff;
-      box-shadow: 0 0 0 2px rgba(31, 101, 89, 0.1);
+      border-color: var(--border-selected);
+      background: var(--surface-input-focus);
+      box-shadow: var(--focus-ring);
     }
 
     details.multi-select {
       position: relative;
+      z-index: 0;
+    }
+
+    details.multi-select[open] {
+      z-index: 48;
     }
 
     details.multi-select summary {
       list-style: none;
       width: 100%;
-      border: 1px solid #c7d0cc;
+      border: 1px solid var(--border-strong);
       border-radius: 10px;
       padding: 8px 38px 8px 10px;
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--surface-input);
       color: var(--ink);
       cursor: pointer;
       transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
@@ -495,16 +715,16 @@
       top: 50%;
       width: 8px;
       height: 8px;
-      border-right: 1.5px solid #55645f;
-      border-bottom: 1.5px solid #55645f;
+      border-right: 1.5px solid var(--text-faint);
+      border-bottom: 1.5px solid var(--text-faint);
       transform: translateY(-65%) rotate(45deg);
       pointer-events: none;
     }
 
     details.multi-select[open] summary {
-      border-color: #4f8d80;
-      background: #ffffff;
-      box-shadow: 0 0 0 2px rgba(31, 101, 89, 0.1);
+      border-color: var(--border-selected);
+      background: var(--surface-input-focus);
+      box-shadow: var(--focus-ring);
     }
 
     details.multi-select[open] summary::after {
@@ -513,7 +733,7 @@
 
     .multi-select-summary {
       display: block;
-      color: #24312c;
+      color: var(--text-subtle);
       font-size: 0.82rem;
       font-weight: 500;
       line-height: 1.3;
@@ -524,13 +744,13 @@
 
     .multi-select-panel {
       position: absolute;
-      z-index: 20;
+      z-index: 60;
       left: 0;
       right: 0;
       top: calc(100% + 6px);
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       box-shadow: var(--shadow-lg);
       padding: 8px;
       display: grid;
@@ -543,13 +763,13 @@
       align-items: center;
       gap: 8px;
       padding-bottom: 6px;
-      border-bottom: 1px solid #edf0ee;
+      border-bottom: 1px solid var(--border-soft);
     }
 
     .multi-select-actions button {
       border: none;
       background: transparent;
-      color: #2d5a51;
+      color: var(--teal);
       padding: 0;
       font-size: 0.76rem;
       font-weight: 500;
@@ -557,7 +777,7 @@
 
     .multi-select-actions button:hover,
     .multi-select-actions button:focus-visible {
-      color: #173f38;
+      color: var(--teal-deep);
       outline: none;
       text-decoration: underline;
     }
@@ -575,7 +795,7 @@
       align-items: center;
       gap: 8px;
       padding: 4px 2px;
-      color: #23312c;
+      color: var(--text-subtle);
       font-size: 0.8rem;
       font-weight: 500;
     }
@@ -603,11 +823,11 @@
       gap: 8px;
       border-radius: 8px;
       border: 1px solid var(--line);
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 7px 10px;
       font-size: 0.8rem;
       font-weight: 500;
-      color: #365049;
+      color: var(--text-subtle);
     }
 
     .toggle-chip input {
@@ -627,7 +847,7 @@
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
-      color: #60706a;
+      color: var(--text-faint);
       font-size: 0.76rem;
       line-height: 1.4;
     }
@@ -642,20 +862,20 @@
     .explorer-stat strong {
       font-size: 0.9rem;
       line-height: 1;
-      color: #1f2c28;
+      color: var(--text-strong);
       font-weight: 600;
     }
 
     .explorer-stat span {
-      color: #60706a;
+      color: var(--text-faint);
       font-size: 0.76rem;
       line-height: 1.25;
     }
 
     .btn {
       border: 1px solid var(--line);
-      background: #ffffff;
-      color: #23453e;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       border-radius: 8px;
       padding: 7px 10px;
       font-size: 0.78rem;
@@ -665,8 +885,8 @@
 
     .btn:hover,
     .btn:focus-visible {
-      border-color: #c3cbc6;
-      background: #f6f7f6;
+      border-color: var(--border-emphasis);
+      background: var(--surface-subtle);
       outline: none;
     }
 
@@ -677,7 +897,7 @@
     }
 
     .btn.ghost {
-      background: #ffffff;
+      background: var(--surface-elevated);
     }
 
     .btn.warn {
@@ -706,6 +926,8 @@
     .explorer-panel {
       display: grid;
       gap: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     .explorer-panel-meta {
@@ -738,7 +960,7 @@
 
     .case-list::-webkit-scrollbar-thumb,
     .annotation-list::-webkit-scrollbar-thumb {
-      background: rgba(36, 70, 62, 0.16);
+      background: var(--scrollbar-thumb);
       border-radius: 8px;
     }
 
@@ -746,7 +968,7 @@
       position: relative;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 10px;
       display: grid;
       gap: 8px;
@@ -762,13 +984,13 @@
     .case-card:focus-visible,
     .case-card.selected {
       outline: none;
-      border-color: #9ca8a3;
-      background: #fbfcfb;
+      border-color: var(--border-emphasis);
+      background: var(--surface-subtle-strong);
     }
 
     .case-card.selected {
-      border-color: #1d564c;
-      background: #fbfcfb;
+      border-color: var(--border-selected);
+      background: var(--surface-accent);
     }
 
     .case-top {
@@ -789,7 +1011,7 @@
       font-weight: 600;
       letter-spacing: 0;
       text-transform: none;
-      color: #43524d;
+      color: var(--text-faint);
     }
 
     .pill-row,
@@ -817,15 +1039,15 @@
     }
 
     .tag {
-      background: #f4f6f5;
+      background: var(--surface-tag);
       border: 1px solid var(--line);
-      color: #41504b;
+      color: var(--text-subtle);
     }
 
     .mini-stat {
-      background: #f7f8f7;
+      background: var(--surface-muted);
       border: 1px solid var(--line);
-      color: #55645f;
+      color: var(--text-muted);
     }
 
     .mini-stat.model-chip {
@@ -846,8 +1068,8 @@
 
     .pill {
       border: 1px solid var(--line);
-      color: #35504a;
-      background: #f7f8f7;
+      color: var(--text-subtle);
+      background: var(--surface-muted);
     }
 
     .pill.green { background: #edf5f1; border-color: #cfe0d8; color: #295f4a; }
@@ -863,19 +1085,19 @@
       font-size: 0.9rem;
       line-height: 1.35;
       letter-spacing: normal;
-      color: #1c2a25;
+      color: var(--text-strong);
     }
 
     .case-meta {
       margin: 0;
-      color: #667770;
+      color: var(--text-faint);
       font-size: 0.85rem;
       line-height: 1.5;
     }
 
     .case-helper {
       margin: 0;
-      color: #566761;
+      color: var(--text-muted);
       font-size: 0.77rem;
       line-height: 1.45;
     }
@@ -885,7 +1107,7 @@
       border-radius: 8px;
       overflow: auto;
       max-height: calc(100vh - 238px);
-      background: #ffffff;
+      background: var(--surface-elevated);
     }
 
     .explorer-table-wrap::-webkit-scrollbar {
@@ -894,7 +1116,7 @@
     }
 
     .explorer-table-wrap::-webkit-scrollbar-thumb {
-      background: rgba(36, 70, 62, 0.16);
+      background: var(--scrollbar-thumb);
       border-radius: 8px;
     }
 
@@ -952,7 +1174,7 @@
     .explorer-table th,
     .explorer-table td {
       padding: 11px 12px;
-      border-bottom: 1px solid #edf1ef;
+      border-bottom: 1px solid var(--border-soft);
       text-align: left;
       vertical-align: top;
     }
@@ -961,8 +1183,8 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background: #fbfcfb;
-      color: #596862;
+      background: var(--surface-subtle-strong);
+      color: var(--text-muted);
       font-size: 0.73rem;
       font-weight: 700;
       letter-spacing: 0.01em;
@@ -970,7 +1192,7 @@
 
     .explorer-table thead th[aria-sort="ascending"],
     .explorer-table thead th[aria-sort="descending"] {
-      color: #314740;
+      color: var(--text-subtle);
     }
 
     .explorer-sort-button {
@@ -992,12 +1214,12 @@
 
     .explorer-sort-button:hover,
     .explorer-sort-button:focus-visible {
-      color: #314740;
+      color: var(--text-subtle);
       outline: none;
     }
 
     .explorer-sort-button.active {
-      color: #22332d;
+      color: var(--text-subtle);
     }
 
     .sort-indicator {
@@ -1006,13 +1228,13 @@
       justify-content: center;
       width: 10px;
       min-width: 10px;
-      color: #7a8782;
+      color: var(--text-faint);
       font-size: 0.7rem;
       line-height: 1;
     }
 
     .explorer-sort-button.active .sort-indicator {
-      color: #22332d;
+      color: var(--text-subtle);
     }
 
     .explorer-table tbody tr {
@@ -1020,11 +1242,11 @@
     }
 
     .explorer-table tbody tr:hover {
-      background: #fafbfa;
+      background: var(--surface-soft);
     }
 
     .explorer-table tbody tr.is-current {
-      background: #fcfdfc;
+      background: var(--surface-subtle-strong);
     }
 
     .explorer-table tbody tr:last-child td {
@@ -1048,13 +1270,13 @@
     }
 
     .explorer-question-button:focus-visible {
-      outline: 2px solid rgba(29, 86, 76, 0.18);
+      outline: 2px solid color-mix(in srgb, var(--border-selected) 28%, transparent);
       outline-offset: 2px;
     }
 
     .explorer-question-line {
       margin: 0;
-      color: #1c2a25;
+      color: var(--text-strong);
       font-size: 0.9rem;
       line-height: 1.4;
       font-weight: 500;
@@ -1066,7 +1288,7 @@
 
     .explorer-question-subline {
       margin: 0;
-      color: #61706a;
+      color: var(--text-faint);
       font-size: 0.78rem;
       line-height: 1.45;
       display: -webkit-box;
@@ -1076,7 +1298,7 @@
     }
 
     .explorer-id-cell {
-      color: #44524d;
+      color: var(--text-muted);
       font-size: 0.78rem;
       font-weight: 600;
       white-space: nowrap;
@@ -1085,14 +1307,14 @@
     .explorer-updated-cell,
     .explorer-count-cell,
     .explorer-domain-cell {
-      color: #5a6863;
+      color: var(--text-muted);
       font-size: 0.78rem;
       line-height: 1.4;
       white-space: nowrap;
     }
 
     .explorer-overall-cell {
-      color: #465650;
+      color: var(--text-muted);
       font-size: 0.78rem;
       line-height: 1.35;
       white-space: normal;
@@ -1103,10 +1325,10 @@
       align-items: center;
       gap: 6px;
       max-width: 100%;
-      border: 1px solid color-mix(in srgb, var(--label-color, #8aa19b) 24%, white);
+      border: 1px solid color-mix(in srgb, var(--label-color, #8aa19b) 24%, var(--mix-base));
       border-radius: 6px;
-      background: color-mix(in srgb, var(--label-color, #8aa19b) 13%, white);
-      color: #22332d;
+      background: color-mix(in srgb, var(--label-color, #8aa19b) 13%, var(--mix-base));
+      color: var(--text-subtle);
       padding: 4px 7px;
       font-size: 0.75rem;
       font-weight: 600;
@@ -1119,7 +1341,7 @@
     }
 
     .explorer-overall-empty {
-      color: #7c8883;
+      color: var(--text-faint);
     }
 
     .explorer-action-cell {
@@ -1128,7 +1350,7 @@
 
     .question-panel {
       padding: 9px 11px;
-      background: #ffffff;
+      background: var(--surface-elevated);
     }
 
     .stage-body {
@@ -1200,9 +1422,9 @@
     }
 
     .context-card {
-      border: 1px solid rgba(23, 44, 39, 0.06);
+      border: 1px solid var(--border-soft);
       border-radius: 9px;
-      background: rgba(255, 255, 255, 0.76);
+      background: var(--surface-overlay);
       padding: 7px 9px;
       display: grid;
       gap: 6px;
@@ -1218,14 +1440,14 @@
     }
 
     .context-label {
-      color: #204f45;
+      color: var(--teal);
       font-size: 0.78rem;
       font-weight: 500;
     }
 
     .context-text {
       margin: 0;
-      color: #445650;
+      color: var(--text-muted);
       font-size: 0.88rem;
       line-height: 1.48;
     }
@@ -1240,7 +1462,7 @@
     }
 
     .card {
-      border: 1px solid rgba(27, 47, 41, 0.08);
+      border: 1px solid var(--border-soft);
       border-radius: 16px;
       background: var(--panel-strong);
       padding: 14px;
@@ -1249,7 +1471,7 @@
     }
 
     .card.xhigh {
-      background: #ffffff;
+      background: var(--surface-elevated-strong);
     }
 
     .card-head {
@@ -1266,7 +1488,7 @@
       gap: 10px;
       font-size: 1rem;
       font-weight: 800;
-      color: #16332c;
+      color: var(--text-strong);
     }
 
     .card-title small {
@@ -1276,14 +1498,14 @@
 
     .plain-text {
       white-space: pre-wrap;
-      color: #263531;
+      color: var(--text-subtle);
       font-size: 0.94rem;
       line-height: 1.62;
     }
 
     .response-panel {
       padding: 11px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       border-color: var(--line);
     }
 
@@ -1298,7 +1520,7 @@
     }
 
     .markdown-body {
-      color: #223530;
+      color: var(--text-subtle);
       font-size: 0.94rem;
       line-height: 1.65;
     }
@@ -1334,7 +1556,7 @@
 
     .markdown-body code {
       border-radius: 6px;
-      background: #f3f5f4;
+      background: var(--surface-code);
       padding: 0.14em 0.4em;
       font-family: "SFMono-Regular", "Menlo", monospace;
       font-size: 0.92em;
@@ -1344,7 +1566,7 @@
       overflow: auto;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fafbfa;
+      background: var(--surface-soft);
       padding: 12px;
     }
 
@@ -1354,9 +1576,9 @@
     }
 
     .markdown-body blockquote {
-      border-left: 3px solid #c6d0cb;
+      border-left: 3px solid var(--border-strong);
       padding-left: 12px;
-      color: #45615a;
+      color: var(--text-muted);
     }
 
     .markdown-body a {
@@ -1371,9 +1593,9 @@
     }
 
     .judge-item {
-      border: 1px solid rgba(28, 46, 41, 0.08);
+      border: 1px solid var(--border-soft);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 11px;
       display: grid;
       gap: 8px;
@@ -1388,21 +1610,21 @@
     }
 
     .judge-name {
-      color: #334842;
+      color: var(--text-subtle);
       font-size: 0.82rem;
       font-weight: 800;
     }
 
     .judge-justification {
       margin: 0;
-      color: #556862;
+      color: var(--text-muted);
       font-size: 0.87rem;
       line-height: 1.52;
     }
 
     .reasoning-panel {
       padding: 12px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       border-color: var(--line);
     }
 
@@ -1451,8 +1673,8 @@
       padding: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      color: #32514a;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       font-size: 0.95rem;
       font-weight: 700;
       line-height: 1;
@@ -1462,8 +1684,8 @@
     .answer-toggle:hover,
     .answer-toggle:focus-visible {
       outline: none;
-      background: #f6f7f6;
-      border-color: #c3cbc6;
+      background: var(--surface-subtle);
+      border-color: var(--border-emphasis);
     }
 
     .compare-toggle {
@@ -1476,8 +1698,8 @@
       padding: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      color: #5a6863;
+      background: var(--surface-elevated);
+      color: var(--text-muted);
       transition: border-color var(--transition), background var(--transition), color var(--transition);
     }
 
@@ -1501,7 +1723,7 @@
     }
 
     .compare-toggle .compare-badge {
-      fill: #ffffff;
+      fill: var(--surface-elevated);
       stroke: var(--compare-accent-line, #d0dbe5);
       stroke-width: 1.35;
     }
@@ -1528,8 +1750,8 @@
     .compare-toggle:hover,
     .compare-toggle:focus-visible {
       outline: none;
-      background: #f6f7f6;
-      border-color: #c3cbc6;
+      background: var(--surface-subtle);
+      border-color: var(--border-emphasis);
     }
 
     .compare-toggle.active {
@@ -1539,7 +1761,7 @@
     }
 
     .compare-toggle.active .compare-right {
-      fill: color-mix(in srgb, var(--compare-accent-ink, #32514a) 12%, white);
+      fill: color-mix(in srgb, var(--compare-accent-ink, #32514a) 12%, var(--mix-base));
       stroke: currentColor;
     }
 
@@ -1554,15 +1776,15 @@
 
     .answer-preview {
       margin: 0;
-      color: #4d605a;
+      color: var(--text-muted);
       font-size: 0.9rem;
       line-height: 1.5;
     }
 
     .reasoning-section {
-      border: 1px solid rgba(27, 47, 41, 0.06);
+      border: 1px solid var(--border-soft);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 12px 12px;
       display: grid;
       gap: 6px;
@@ -1572,13 +1794,13 @@
       margin: 0;
       padding: 0;
       font-size: 0.84rem;
-      color: #415750;
+      color: var(--text-subtle);
     }
 
     .trace-editor-body {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       box-shadow: none;
       padding: 14px 16px;
       min-height: 220px;
@@ -1586,8 +1808,8 @@
     }
 
     .trace-editor-body.selected {
-      border-color: #bcc6c1;
-      background: #ffffff;
+      border-color: var(--border-emphasis);
+      background: var(--surface-elevated);
     }
 
     .trace-document {
@@ -1617,23 +1839,23 @@
     }
 
     .trace-sentence.selected {
-      background: rgba(29, 86, 76, 0.06);
+      background: var(--selection-fill);
     }
 
     .annotation-text {
       position: relative;
       white-space: normal;
-      color: #25342f;
+      color: var(--text-subtle);
       font-size: 0.93rem;
       line-height: 1.64;
       user-select: text;
     }
 
     .annotation-mark {
-      background: color-mix(in srgb, var(--mark-bg) 26%, white);
-      color: #20322d;
-      border: 1px solid color-mix(in srgb, var(--mark-bg) 18%, white);
-      border-bottom: 1px solid color-mix(in srgb, var(--mark-bg) 60%, white);
+      background: color-mix(in srgb, var(--mark-bg) 26%, var(--mix-base));
+      color: var(--text-strong);
+      border: 1px solid color-mix(in srgb, var(--mark-bg) 18%, var(--mix-base));
+      border-bottom: 1px solid color-mix(in srgb, var(--mark-bg) 60%, var(--mix-base));
       border-radius: 2px;
       padding: 0.01em 0.08em;
       box-decoration-break: clone;
@@ -1646,7 +1868,7 @@
     .annotation-mark.active,
     .annotation-mark.fresh {
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mark-bg) 18%, transparent);
-      background: color-mix(in srgb, var(--mark-bg) 28%, white);
+      background: color-mix(in srgb, var(--mark-bg) 28%, var(--mix-base));
     }
 
     .annotation-mark.fresh {
@@ -1656,17 +1878,17 @@
     @keyframes mark-flash {
       0% {
         box-shadow: 0 0 0 0 color-mix(in srgb, var(--mark-bg) 40%, transparent);
-        background: color-mix(in srgb, var(--mark-bg) 54%, white);
+        background: color-mix(in srgb, var(--mark-bg) 54%, var(--mix-base));
       }
       100% {
         box-shadow: 0 0 0 1px color-mix(in srgb, var(--mark-bg) 28%, transparent);
-        background: color-mix(in srgb, var(--mark-bg) 38%, white);
+        background: color-mix(in srgb, var(--mark-bg) 38%, var(--mix-base));
       }
     }
 
     .selection-preview {
       border: 1px solid var(--line);
-      background: #ffffff;
+      background: var(--surface-elevated);
       border-radius: 8px;
       padding: 14px;
       display: grid;
@@ -1674,7 +1896,7 @@
     }
 
     .selection-label {
-      color: #4c5e59;
+      color: var(--text-muted);
       font-size: 0.75rem;
       font-weight: 500;
     }
@@ -1682,7 +1904,7 @@
     .selection-quote {
       margin: 0;
       font-size: 0.92rem;
-      color: #30453f;
+      color: var(--text-subtle);
       line-height: 1.56;
       white-space: pre-wrap;
     }
@@ -1723,20 +1945,75 @@
       gap: 8px;
     }
 
+    .composer-head {
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .composer-heading-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
     .overall-trace-card {
       display: grid;
       gap: 12px;
     }
 
-    .overall-trace-status {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .composer-target-switch {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
       align-items: center;
+      width: 100%;
+      max-width: 228px;
+    }
+
+    .composer-target-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-elevated);
+      padding: 4px 9px;
+      color: var(--text-subtle);
+      font-size: 0.74rem;
+      font-weight: 600;
+      line-height: 1.15;
+      white-space: nowrap;
+      min-width: 0;
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .composer-target-button:hover,
+    .composer-target-button:focus-visible {
+      outline: none;
+      border-color: var(--border-emphasis);
+      background: var(--surface-subtle);
+    }
+
+    .composer-target-button.selected {
+      background: var(--surface-muted);
+    }
+
+    .composer-target-button.gpt.selected {
+      border-color: var(--model-gpt-line);
+      background: var(--model-gpt-soft);
+      color: var(--model-gpt-ink);
+    }
+
+    .composer-target-button.sonnet.selected {
+      border-color: var(--model-sonnet-line);
+      background: var(--model-sonnet-soft);
+      color: var(--model-sonnet-ink);
     }
 
     .save-state-pill {
-      min-width: 12ch;
+      min-width: 9ch;
       justify-content: center;
       text-align: center;
       font-variant-numeric: tabular-nums;
@@ -1754,18 +2031,18 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 8px 10px;
       text-align: left;
-      color: #213b35;
+      color: var(--text-strong);
       font-weight: 600;
       font-size: 0.88rem;
       line-height: 1.25;
     }
 
     .overall-label-item.selected {
-      border-color: #1d564c;
-      background: #f3f8f6;
+      border-color: var(--border-selected);
+      background: var(--surface-accent-strong);
     }
 
     .overall-note-field {
@@ -1776,7 +2053,7 @@
     .overall-note-field label {
       font-size: 0.82rem;
       font-weight: 600;
-      color: #556761;
+      color: var(--text-muted);
     }
 
     .confidence-list {
@@ -1788,8 +2065,8 @@
     .confidence-chip {
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: #ffffff;
-      color: #355048;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       padding: 5px 10px;
       font-size: 0.76rem;
       font-weight: 600;
@@ -1797,9 +2074,9 @@
     }
 
     .confidence-chip.selected {
-      border-color: #1d564c;
-      background: #f3f8f6;
-      color: #193a33;
+      border-color: var(--border-selected);
+      background: var(--surface-accent-strong);
+      color: var(--teal-deep);
     }
 
     .category-item {
@@ -1808,7 +2085,7 @@
       gap: 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 5px 8px;
       max-width: 100%;
       font-size: 0.82rem;
@@ -1816,7 +2093,7 @@
     }
 
     .category-item.selected {
-      border-color: #1d564c;
+      border-color: var(--border-selected);
       box-shadow: none;
     }
 
@@ -1833,7 +2110,7 @@
       gap: 6px;
       font-size: 0.82rem;
       font-weight: 600;
-      color: #213b35;
+      color: var(--text-strong);
     }
 
     .swatch {
@@ -1847,7 +2124,7 @@
     .category-description {
       display: none;
       margin: 0;
-      color: #556761;
+      color: var(--text-muted);
       font-size: 0.86rem;
       line-height: 1.48;
     }
@@ -1861,9 +2138,9 @@
     }
 
     .annotation-detail-card {
-      border: 1px solid rgba(24, 47, 42, 0.1);
+      border: 1px solid var(--border-soft);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 10px;
       display: grid;
       gap: 10px;
@@ -1874,7 +2151,7 @@
       margin: 0;
       font-size: 0.88rem;
       font-weight: 700;
-      color: #223a34;
+      color: var(--text-strong);
     }
 
     .annotation-detail-actions {
@@ -1894,8 +2171,8 @@
       width: min(420px, calc(100vw - 24px));
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      color: #243531;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       box-shadow: var(--shadow-lg);
       padding: 7px 9px 9px;
     }
@@ -1917,14 +2194,14 @@
     .selection-flash-title {
       font-size: 0.76rem;
       font-weight: 500;
-      color: #61706a;
+      color: var(--text-faint);
     }
 
     .selection-flash-body {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: #223530;
+      color: var(--text-subtle);
       font-size: 0.88rem;
       font-weight: 500;
       line-height: 1.3;
@@ -1944,8 +2221,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 6px 8px;
-      background: #ffffff;
-      color: #26403a;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       font-size: 0.77rem;
       font-weight: 500;
       border-radius: 8px;
@@ -1953,15 +2230,15 @@
     }
 
     .toolbar-category-chip.selected {
-      border-color: #1d564c;
-      background: #f6f8f7;
+      border-color: var(--border-selected);
+      background: var(--surface-accent);
     }
 
     .toolbar-btn {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      color: #27413b;
+      background: var(--surface-elevated);
+      color: var(--text-subtle);
       padding: 6px 10px;
       font-size: 0.77rem;
       font-weight: 500;
@@ -1974,18 +2251,18 @@
     }
 
     .toolbar-meta {
-      color: #667771;
+      color: var(--text-faint);
       font-size: 0.78rem;
     }
 
     details.inline-details {
-      border-top: 1px solid rgba(27, 47, 41, 0.08);
+      border-top: 1px solid var(--border-soft);
       padding-top: 12px;
     }
 
     details.inline-details summary {
       cursor: pointer;
-      color: #31534b;
+      color: var(--text-subtle);
       font-size: 0.84rem;
       font-weight: 800;
       list-style: none;
@@ -2003,9 +2280,9 @@
     }
 
     .annotation-card {
-      border: 1px solid rgba(24, 47, 42, 0.1);
+      border: 1px solid var(--border-soft);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       padding: 9px 10px;
       display: grid;
       gap: 5px;
@@ -2015,13 +2292,13 @@
 
     .annotation-card:hover,
     .annotation-card.active {
-      border-color: #9ca8a3;
-      background: #fbfcfb;
+      border-color: var(--border-emphasis);
+      background: var(--surface-subtle-strong);
     }
 
     .annotation-quote {
       margin: 0;
-      color: #25342f;
+      color: var(--text-subtle);
       font-size: 0.84rem;
       line-height: 1.48;
       text-align: left;
@@ -2033,7 +2310,7 @@
 
     .annotation-comment {
       margin: 0;
-      color: #556862;
+      color: var(--text-muted);
       font-size: 0.8rem;
       line-height: 1.42;
       text-align: left;
@@ -2057,7 +2334,7 @@
     .inline-note-field label {
       font-size: 0.78rem;
       font-weight: 600;
-      color: #556761;
+      color: var(--text-muted);
     }
 
     .inline-note-field textarea {
@@ -2068,16 +2345,16 @@
     .empty-state {
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fafbfa;
+      background: var(--surface-soft);
       padding: 16px;
       text-align: center;
-      color: #536660;
+      color: var(--text-muted);
       font-size: 0.88rem;
       line-height: 1.52;
     }
 
     .empty-state strong {
-      color: #21433b;
+      color: var(--text-strong);
     }
 
     dialog {
@@ -2090,7 +2367,7 @@
     }
 
     dialog::backdrop {
-      background: rgba(20, 25, 23, 0.18);
+      background: var(--overlay-backdrop);
     }
 
     .dialog-card {
@@ -2108,11 +2385,11 @@
       z-index: 120;
       display: none;
       max-width: min(360px, calc(100vw - 24px));
-      border: 1px solid rgba(21, 69, 61, 0.08);
+      border: 1px solid var(--border-soft);
       border-radius: 8px;
-      background: #ffffff;
+      background: var(--surface-elevated);
       box-shadow: var(--shadow-lg);
-      color: #233833;
+      color: var(--text-subtle);
       padding: 9px 11px;
       font-size: 0.82rem;
       line-height: 1.42;
@@ -2130,8 +2407,8 @@
     .inspector-tools .btn {
       padding: 6px 8px;
       border-color: var(--line);
-      background: #f7f8f7;
-      color: #5a6c67;
+      background: var(--surface-muted);
+      color: var(--text-muted);
       box-shadow: none;
       text-decoration: none;
     }
@@ -2139,10 +2416,10 @@
     .inspector-tools .btn:hover,
     .inspector-tools .btn:focus-visible {
       transform: none;
-      border-color: #c3cbc6;
-      background: #f1f3f2;
+      border-color: var(--border-emphasis);
+      background: var(--surface-subtle);
       box-shadow: none;
-      color: #24483f;
+      color: var(--text-subtle);
     }
 
     .dialog-grid {
@@ -2160,6 +2437,75 @@
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+
+    :root[data-theme="dark"] .btn.primary {
+      background: linear-gradient(180deg, #74b3a6 0%, #5e9f91 100%);
+      border-color: #74b3a6;
+      color: #08110e;
+    }
+
+    :root[data-theme="dark"] .btn.primary:hover,
+    :root[data-theme="dark"] .btn.primary:focus-visible {
+      background: #81c0b3;
+      border-color: #81c0b3;
+    }
+
+    :root[data-theme="dark"] .btn.warn {
+      background: #43252c;
+      border-color: #6d3a44;
+      color: #f1b1bb;
+    }
+
+    :root[data-theme="dark"] .toolbar-btn.primary {
+      background: rgba(121, 184, 170, 0.18);
+      border-color: rgba(121, 184, 170, 0.22);
+      color: #c7ebe2;
+    }
+
+    :root[data-theme="dark"] .pill.green {
+      background: #183126;
+      border-color: #2c5943;
+      color: #9dd8bb;
+    }
+
+    :root[data-theme="dark"] .pill.amber {
+      background: #362815;
+      border-color: #6c5330;
+      color: #efca8d;
+    }
+
+    :root[data-theme="dark"] .pill.red {
+      background: #3a2026;
+      border-color: #74414a;
+      color: #efb0ba;
+    }
+
+    :root[data-theme="dark"] .pill.blue {
+      background: #172837;
+      border-color: #35536f;
+      color: #b8d7f8;
+    }
+
+    :root[data-theme="dark"] .pill.violet {
+      background: #2a2138;
+      border-color: #564273;
+      color: #d8c7f4;
+    }
+
+    :root[data-theme="dark"] .pill.slate {
+      background: #1f2925;
+      border-color: #3a4742;
+      color: #c2d0cb;
+    }
+
+    :root[data-theme="dark"] .swatch {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+    }
+
+    :root[data-theme="dark"] .app-toast.error {
+      border-color: rgba(225, 111, 126, 0.24);
+      color: #f2b2bc;
     }
 
     @media (max-width: 1440px) {
@@ -2303,6 +2649,7 @@
           </div>
         </div>
         <div class="toolbar">
+          <div id="themeSwitch" class="theme-switch" aria-label="Colour theme"></div>
           <button id="exportBtn" type="button">Export</button>
           <button id="importBtn" type="button">Import</button>
           <button id="toggleSidebarBtn" type="button">Show tools</button>
@@ -2392,6 +2739,50 @@
               <span>Author</span>
               <input id="authorInput" type="text" placeholder="Your name for saved labels">
             </label>
+            <div class="rail-filter-bar" id="railFilterBar">
+              <label class="field compact">
+                <span>Search</span>
+                <input id="railSearchInput" type="text" placeholder="Filter cases">
+              </label>
+              <div class="rail-filter-row">
+                <label class="field compact">
+                  <span>Grade</span>
+                  <select id="railGradeFilterSelect">
+                    <option value="all">All grades</option>
+                    <option value="accepted">Accepted nonsense</option>
+                    <option value="partial">Partial challenge</option>
+                    <option value="clear">Clear pushback</option>
+                    <option value="missing">Missing</option>
+                  </select>
+                </label>
+                <label class="field compact">
+                  <span>Labels</span>
+                  <select id="railAnnotationFilterSelect">
+                    <option value="all">All labels</option>
+                    <option value="labelled">Labelled</option>
+                    <option value="unlabelled">Unlabelled</option>
+                  </select>
+                </label>
+              </div>
+              <div class="rail-filter-row with-domain" id="railDomainRow">
+                <label id="railDomainFilterField" class="field compact">
+                  <span>Domains</span>
+                  <details id="railDomainFilterDetails" class="multi-select">
+                    <summary>
+                      <span id="railDomainFilterSummary" class="multi-select-summary">All domains</span>
+                    </summary>
+                    <div class="multi-select-panel">
+                      <div class="multi-select-actions">
+                        <button id="railSelectAllDomainsBtn" type="button">All domains</button>
+                        <button id="railCloseDomainFilterBtn" type="button">Done</button>
+                      </div>
+                      <div id="railDomainFilterList" class="multi-select-list"></div>
+                    </div>
+                  </details>
+                </label>
+                <button id="railResetFiltersBtn" class="btn ghost small" type="button">Reset</button>
+              </div>
+            </div>
             <p class="panel-subtitle" id="caseMeta"></p>
             <div class="case-list" id="caseList"></div>
           </div>
@@ -2473,6 +2864,33 @@
       borderline: { label: "Borderline" },
     };
 
+    const THEME_OPTIONS = [
+      { key: "system", label: "System" },
+      { key: "light", label: "Light" },
+      { key: "dark", label: "Dark" },
+    ];
+
+    const systemThemeMedia = window.matchMedia?.("(prefers-color-scheme: dark)") || null;
+
+    function initialThemePreference() {
+      const stored = window.localStorage.getItem("reasoningLab.theme");
+      return ["light", "dark"].includes(stored) ? stored : "system";
+    }
+
+    function resolvedThemePreference(preference = initialThemePreference()) {
+      if (preference === "light" || preference === "dark") return preference;
+      return systemThemeMedia?.matches ? "dark" : "light";
+    }
+
+    function applyThemePreference(preference = initialThemePreference()) {
+      const nextPreference = ["light", "dark"].includes(preference) ? preference : "system";
+      const resolved = resolvedThemePreference(nextPreference);
+      document.documentElement.dataset.themePreference = nextPreference;
+      document.documentElement.dataset.theme = resolved;
+      document.documentElement.style.colorScheme = resolved;
+      return resolved;
+    }
+
     function initialAnnotationFilter() {
       const direct = window.localStorage.getItem("reasoningLab.annotationFilter");
       if (direct) return direct;
@@ -2515,6 +2933,7 @@
 
     const STATE = {
       bootstrap: null,
+      themePreference: initialThemePreference(),
       sourceKey: window.localStorage.getItem("reasoningLab.sourceKey") || "gpt54_high",
       datasetKey: window.localStorage.getItem("reasoningLab.datasetKey") || "v2",
       viewMode: window.localStorage.getItem("reasoningLab.viewMode") || "explorer",
@@ -2542,6 +2961,7 @@
       draftConfidence: "clear",
       draftDocumentNote: null,
       documentNoteStatus: null,
+      composerTargetSourceKey: window.localStorage.getItem("reasoningLab.composerTargetSourceKey") || "",
       lastSelectionAt: 0,
       selectionAnchor: null,
       flashNotice: null,
@@ -2549,6 +2969,20 @@
       toast: null,
       compareOpen: false,
     };
+
+    applyThemePreference(STATE.themePreference);
+
+    const syncThemeOnSystemChange = () => {
+      if (STATE.themePreference !== "system") return;
+      applyThemePreference("system");
+      if (el.themeSwitch) renderThemeSwitch();
+    };
+
+    if (systemThemeMedia?.addEventListener) {
+      systemThemeMedia.addEventListener("change", syncThemeOnSystemChange);
+    } else if (systemThemeMedia?.addListener) {
+      systemThemeMedia.addListener(syncThemeOnSystemChange);
+    }
 
     const el = {};
     let flashNoticeTimer = 0;
@@ -2821,6 +3255,13 @@
       return `<span class="${className}">${escapeHtml(source?.label || "Model")}</span>`;
     }
 
+    function compactSourceLabel(source) {
+      const label = String(source?.label || "").trim();
+      if (!label) return "Model";
+      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4";
+      return label;
+    }
+
     function renderCompareToggle(compareSource) {
       const tone = modelTone(compareSource?.key);
       const className = `compare-toggle${tone ? ` ${tone}` : ""}${STATE.compareOpen ? " active" : ""}`;
@@ -2861,6 +3302,12 @@
       window.localStorage.setItem("reasoningLab.sidebarOpen", STATE.sidebarOpen ? "1" : "0");
     }
 
+    function setThemePreference(preference) {
+      STATE.themePreference = ["light", "dark"].includes(preference) ? preference : "system";
+      window.localStorage.setItem("reasoningLab.theme", STATE.themePreference);
+      applyThemePreference(STATE.themePreference);
+    }
+
     function setSourceKey(key) {
       STATE.sourceKey = key;
       window.localStorage.setItem("reasoningLab.sourceKey", STATE.sourceKey);
@@ -2894,6 +3341,22 @@
     function setSelectedCaseId(questionId) {
       STATE.selectedCaseId = questionId || "";
       window.localStorage.setItem("reasoningLab.selectedCaseId", STATE.selectedCaseId);
+    }
+
+    function setComposerTargetSourceKey(sourceKey) {
+      STATE.composerTargetSourceKey = sourceKey || "";
+      window.localStorage.setItem(
+        "reasoningLab.composerTargetSourceKey",
+        STATE.composerTargetSourceKey,
+      );
+    }
+
+    function syncComposerTarget(sourceKey, options = {}) {
+      if (!sourceKey || sourceKey === STATE.composerTargetSourceKey) return;
+      setComposerTargetSourceKey(sourceKey);
+      if (options.renderComposer) {
+        renderComposerPanel(currentCaseForUi());
+      }
     }
 
     function availableDomains() {
@@ -2954,6 +3417,14 @@
         "reasoningLab.selectedDomainsByDataset",
         JSON.stringify(STATE.selectedDomainsByDataset),
       );
+    }
+
+    function resetSharedFilters() {
+      STATE.search = "";
+      setGradeFilter("all");
+      setAnnotationFilter("all");
+      setCaseSort("recommended");
+      setSelectedDomainsForCurrentDataset(null);
     }
 
     function domainSummaryText() {
@@ -3423,8 +3894,60 @@
       return items[0];
     }
 
-    function reasonDocument(caseRow) {
-      return primaryVariant(caseRow)?.reasoning_document || null;
+    function reasonDocument(caseRow, source = currentSource()) {
+      return primaryVariant(caseRow, source)?.reasoning_document || null;
+    }
+
+    function comparisonContext(caseRow) {
+      if (!caseRow) return null;
+      const dataset = currentDataset();
+      const compareKey = alternateSourceKey(caseRow.question_id, dataset?.key || STATE.datasetKey);
+      if (!compareKey) return null;
+      const source = sourceForKey(compareKey);
+      const compareCase = caseForKeys(compareKey, dataset?.key || STATE.datasetKey, caseRow.question_id);
+      if (!source || !compareCase) return null;
+      return {
+        sourceKey: compareKey,
+        source,
+        caseRow: compareCase,
+        document: reasonDocument(compareCase, source),
+      };
+    }
+
+    function composerTargetContext(caseRow) {
+      if (!caseRow) return { options: [], selected: null };
+      const primarySource = currentSource();
+      const primaryDocument = reasonDocument(caseRow, primarySource);
+      const options = [];
+      if (primarySource && primaryDocument) {
+        options.push({
+          key: primarySource.key,
+          source: primarySource,
+          caseRow,
+          document: primaryDocument,
+          side: "primary",
+        });
+      }
+      if (STATE.compareOpen) {
+        const compare = comparisonContext(caseRow);
+        if (compare?.source && compare?.document) {
+          options.push({
+            key: compare.source.key,
+            source: compare.source,
+            caseRow: compare.caseRow,
+            document: compare.document,
+            side: "comparison",
+          });
+        }
+      }
+      if (!options.length) return { options: [], selected: null };
+      const selected =
+        options.find((option) => option.key === STATE.composerTargetSourceKey)
+        || options[0];
+      if (selected.key !== STATE.composerTargetSourceKey) {
+        setComposerTargetSourceKey(selected.key);
+      }
+      return { options, selected };
     }
 
     function atlasDocument(documentId) {
@@ -3531,6 +4054,31 @@
     function rangeWithinBounds(item, start, end) {
       if (!item) return false;
       return Number(item.start) >= Number(start) && Number(item.end) <= Number(end);
+    }
+
+    function selectedRangeForDocument(documentId) {
+      if (!documentId) return null;
+      const selected =
+        annotations().find((item) => item.id === STATE.activeAnnotationId)
+        || STATE.selection;
+      if (!selected) return null;
+      const selectedDocumentId = selected.document_id || selected.documentId || "";
+      return selectedDocumentId === documentId ? selected : null;
+    }
+
+    function renderTraceDocumentMarkup(document, spanAnnotations, selectedRange) {
+      const documentId = document?.document_id || "";
+      const categoryLookup = categoryMap();
+      const paragraphs = traceParagraphs(document);
+      return {
+        paragraphs,
+        isSelected: paragraphs.some((paragraph) => rangeWithinBounds(selectedRange, paragraph.start, paragraph.end)),
+        markup: `
+          <div class="trace-document" data-document-id="${escapeHtml(documentId)}">
+            ${paragraphs.map((paragraph) => `<p class="annotation-text trace-paragraph" data-document-id="${escapeHtml(documentId)}" data-body-start="${escapeHtml(paragraph.start)}" data-body-end="${escapeHtml(paragraph.end)}">${splitTextIntoSentences(paragraph.text || "", paragraph.start).map((sentence) => `<span class="trace-sentence${rangeWithinBounds(selectedRange, sentence.start, sentence.end) ? " selected" : ""}" data-sentence-select="1" data-document-id="${escapeHtml(documentId)}" data-sentence-start="${escapeHtml(sentence.start)}" data-sentence-end="${escapeHtml(sentence.end)}">${renderHighlightedText(sentence.text || "", Number(sentence.start), spanAnnotations, categoryLookup)}</span>`).join("")}</p>`).join("")}
+          </div>
+        `,
+      };
     }
 
     function renderHighlightedText(source, absoluteStart, spanAnnotations, categoryLookup) {
@@ -3799,6 +4347,20 @@
       `;
     }
 
+    function renderThemeSwitch() {
+      if (!el.themeSwitch) return;
+      const resolved = resolvedThemePreference(STATE.themePreference);
+      el.themeSwitch.innerHTML = THEME_OPTIONS.map((option) => `
+        <button
+          class="theme-option${option.key === STATE.themePreference ? " active" : ""}"
+          type="button"
+          data-theme-option="${escapeAttribute(option.key)}"
+          title="${escapeAttribute(option.key === "system" ? `Follow system appearance (${resolved})` : `Use ${option.label.toLowerCase()} appearance`)}"
+          aria-pressed="${option.key === STATE.themePreference ? "true" : "false"}"
+        >${escapeHtml(option.label)}</button>
+      `).join("");
+    }
+
     function nextCaseToLabel(rows) {
       return rows.find((caseRow) => !caseIsLabelledForBrowse(caseRow)) || rows[0] || null;
     }
@@ -3814,8 +4376,11 @@
       const unlabeledCount = Math.max(0, allCases.length - labeledCount);
       const reviewedCount = allCases.filter((caseRow) => caseProgressMeta(caseRow).key === "reviewed").length;
       el.searchInput.value = STATE.search;
+      el.railSearchInput.value = STATE.search;
       el.gradeFilterSelect.value = STATE.gradeFilter;
+      el.railGradeFilterSelect.value = STATE.gradeFilter;
       el.annotationFilterSelect.value = STATE.annotationFilter;
+      el.railAnnotationFilterSelect.value = STATE.annotationFilter;
       el.filterMeta.textContent = `Showing ${rows.length} of ${dataset.case_count} cases. ${labeledCount} labelled, ${unlabeledCount} unlabelled, ${reviewedCount} reviewed.`;
       el.explorerSummary.innerHTML = `
         <div class="explorer-stat">
@@ -3836,7 +4401,10 @@
         </div>
       `;
       el.domainFilterField.hidden = dataset.key !== "v2";
+      el.railDomainFilterField.hidden = dataset.key !== "v2";
+      el.railDomainRow.classList.toggle("domain-hidden", dataset.key !== "v2");
       el.domainFilterSummary.textContent = domainSummaryText();
+      el.railDomainFilterSummary.textContent = domainSummaryText();
       el.domainFilterList.innerHTML = available.length
         ? available.map((domain) => `
           <label class="multi-select-option">
@@ -3849,6 +4417,7 @@
           </label>
         `).join("")
         : `<div class="panel-subtitle">No domains available.</div>`;
+      el.railDomainFilterList.innerHTML = el.domainFilterList.innerHTML;
       const nextCase = nextCaseToLabel(rows);
       el.openNextUnlabeledBtn.disabled = !nextCase;
       el.openNextUnlabeledBtn.textContent = nextCase ? "Open next unlabeled" : "Open next unlabeled";
@@ -4077,11 +4646,8 @@
       }
       el.reasoningPanel.className = `panel reasoning-panel ${modelPanelClass(source)}`.trim();
       const spanAnnotations = annotationsForDocument(document.document_id);
-      const categoryLookup = categoryMap();
-      const paragraphs = traceParagraphs(document);
-      const selectedRange =
-        annotations().find((item) => item.id === STATE.activeAnnotationId) ||
-        STATE.selection;
+      const selectedRange = selectedRangeForDocument(document.document_id);
+      const traceMarkup = renderTraceDocumentMarkup(document, spanAnnotations, selectedRange);
       el.reasoningPanel.innerHTML = `
         <div class="reasoning-topline">
           <div>
@@ -4094,23 +4660,23 @@
           </div>
         </div>
         <div class="reasoning-sections">
-          <div class="trace-editor-body${paragraphs.some((paragraph) => rangeWithinBounds(selectedRange, paragraph.start, paragraph.end)) ? " selected" : ""}">
-            <div class="trace-document" data-document-id="${escapeHtml(document.document_id)}">
-              ${paragraphs.map((paragraph) => `<p class="annotation-text trace-paragraph" data-document-id="${escapeHtml(document.document_id)}" data-body-start="${escapeHtml(paragraph.start)}" data-body-end="${escapeHtml(paragraph.end)}">${splitTextIntoSentences(paragraph.text || "", paragraph.start).map((sentence) => `<span class="trace-sentence${rangeWithinBounds(selectedRange, sentence.start, sentence.end) ? " selected" : ""}" data-sentence-select="1" data-document-id="${escapeHtml(document.document_id)}" data-sentence-start="${escapeHtml(sentence.start)}" data-sentence-end="${escapeHtml(sentence.end)}">${renderHighlightedText(sentence.text || "", Number(sentence.start), spanAnnotations, categoryLookup)}</span>`).join("")}</p>`).join("")}
-            </div>
+          <div class="trace-editor-body${traceMarkup.isSelected ? " selected" : ""}">
+            ${traceMarkup.markup}
           </div>
         </div>
       `;
     }
 
     function renderComposerPanel(caseRow) {
-      const traceDocument = reasonDocument(caseRow);
-      if (!traceDocument) {
+      const targetContext = composerTargetContext(caseRow);
+      const traceDocument = targetContext.selected?.document || null;
+      if (!traceDocument || !targetContext.selected) {
         el.composerPanel.innerHTML = "";
         el.composerPanel.hidden = true;
         return;
       }
       el.composerPanel.hidden = false;
+      const selectedTarget = targetContext.selected;
       const documentNote = traceDocument ? documentNoteForDocument(traceDocument.document_id) : null;
       const documentNoteDraft = traceDocument ? draftDocumentNoteFor(traceDocument.document_id) : null;
       const documentNoteSummary = documentNoteDraft
@@ -4124,16 +4690,31 @@
         : normalizedConfidence(documentNote?.confidence, true);
 
       el.composerPanel.innerHTML = `
-        <div class="section-head">
-          <div>
-            <h2>Overall Trace Label</h2>
+        <div class="section-head composer-head">
+          <div class="composer-heading-main">
+            <h2>Overall label</h2>
+            ${targetContext.options.length > 1
+              ? `
+                <div class="composer-target-switch" aria-label="Overall label target">
+                  ${targetContext.options.map((option) => `
+                    <button
+                      class="composer-target-button ${escapeHtml(modelTone(option.source?.key))}${option.key === selectedTarget.key ? " selected" : ""}"
+                      type="button"
+                      data-composer-target-source="${escapeHtml(option.key)}"
+                      aria-pressed="${option.key === selectedTarget.key ? "true" : "false"}"
+                      title="Overall label for ${escapeAttribute(option.source?.label || option.key)}"
+                    >
+                      <span>${escapeHtml(compactSourceLabel(option.source))}</span>
+                    </button>
+                  `).join("")}
+                </div>
+              `
+              : renderModelChip(selectedTarget.source)}
           </div>
+          <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
         </div>
         <div class="control-grid">
           <div class="overall-trace-card">
-            <div class="overall-trace-status">
-              <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
-            </div>
             <div class="overall-label-list">
               ${categories().map((category) => `
                 <button
@@ -4283,15 +4864,13 @@
       const variant = primaryVariant(compareCase, compareSource);
       const verdict = scoreMeta(variant?.consensus_score);
       const traceDocument = variant?.reasoning_document || null;
-      const traceParagraphHtml = traceDocument
-        ? traceParagraphs(traceDocument)
-          .map((paragraph) => `<p class="annotation-text trace-paragraph">${escapeHtml(paragraph.text || "")}</p>`)
-          .join("")
-        : `<div class="compare-empty">No reasoning trace saved.</div>`;
       const answerHtml = variant?.response_text
         ? renderMarkdown(variant.response_text)
         : `<div class="compare-empty">No answer saved.</div>`;
       const comparePreview = clampText(String(variant?.response_text || "").replace(/\s+/g, " "), 220);
+      const spanAnnotations = traceDocument ? annotationsForDocument(traceDocument.document_id) : [];
+      const selectedRange = traceDocument ? selectedRangeForDocument(traceDocument.document_id) : null;
+      const traceMarkup = traceDocument ? renderTraceDocumentMarkup(traceDocument, spanAnnotations, selectedRange) : null;
       el.comparisonPanel.hidden = false;
       el.stageBody.classList.add("compare-active");
       el.comparisonPanel.innerHTML = `
@@ -4320,17 +4899,16 @@
           <div class="reasoning-topline">
             <div>
               <h2>Reasoning trace</h2>
+              <p class="panel-subtitle compact">Select text to label it.</p>
             </div>
             <div class="pill-row">
               ${renderModelChip(compareSource)}
-              <span class="mini-stat">Read only</span>
+              <span class="mini-stat">${escapeHtml(spanAnnotations.length)} saved labels</span>
             </div>
           </div>
           <div class="reasoning-sections">
-            <div class="trace-editor-body read-only">
-              <div class="trace-document">
-                ${traceParagraphHtml}
-              </div>
+            <div class="trace-editor-body${traceMarkup?.isSelected ? " selected" : ""}">
+              ${traceMarkup?.markup || `<div class="compare-empty">No reasoning trace saved.</div>`}
             </div>
           </div>
         </section>
@@ -4344,6 +4922,7 @@
       renderSourceSwitch();
       renderDatasetSwitch();
       renderViewSwitch();
+      renderThemeSwitch();
       const rows = sortCases(filteredCases());
       if (STATE.viewMode === "label" || STATE.selectedCaseId) {
         ensureSelection(rows);
@@ -4917,7 +5496,17 @@
         }
         render();
       });
+      el.themeSwitch.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-theme-option]");
+        if (!button) return;
+        setThemePreference(button.getAttribute("data-theme-option"));
+        renderThemeSwitch();
+      });
       el.searchInput.addEventListener("input", (event) => {
+        STATE.search = event.target.value;
+        render();
+      });
+      el.railSearchInput.addEventListener("input", (event) => {
         STATE.search = event.target.value;
         render();
       });
@@ -4925,7 +5514,15 @@
         setGradeFilter(event.target.value || "all");
         render();
       });
+      el.railGradeFilterSelect.addEventListener("change", (event) => {
+        setGradeFilter(event.target.value || "all");
+        render();
+      });
       el.annotationFilterSelect.addEventListener("change", (event) => {
+        setAnnotationFilter(event.target.value || "all");
+        render();
+      });
+      el.railAnnotationFilterSelect.addEventListener("change", (event) => {
         setAnnotationFilter(event.target.value || "all");
         render();
       });
@@ -4942,23 +5539,43 @@
         setSelectedDomainsForCurrentDataset([...selected]);
         render();
       });
+      el.railDomainFilterList.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-domain-filter]");
+        if (!input) return;
+        const selected = new Set(selectedDomainsForCurrentDataset() || availableDomains());
+        const domain = input.getAttribute("data-domain-filter") || "";
+        if (input.checked) {
+          selected.add(domain);
+        } else {
+          selected.delete(domain);
+        }
+        setSelectedDomainsForCurrentDataset([...selected]);
+        render();
+      });
       el.selectAllDomainsBtn.addEventListener("click", () => {
+        setSelectedDomainsForCurrentDataset(null);
+        render();
+      });
+      el.railSelectAllDomainsBtn.addEventListener("click", () => {
         setSelectedDomainsForCurrentDataset(null);
         render();
       });
       el.closeDomainFilterBtn.addEventListener("click", () => {
         el.domainFilterDetails.open = false;
       });
+      el.railCloseDomainFilterBtn.addEventListener("click", () => {
+        el.railDomainFilterDetails.open = false;
+      });
       el.authorInput.addEventListener("input", (event) => {
         STATE.author = event.target.value;
         window.localStorage.setItem("reasoningLab.author", STATE.author);
       });
       el.resetFiltersBtn.addEventListener("click", () => {
-        STATE.search = "";
-        setGradeFilter("all");
-        setAnnotationFilter("all");
-        setCaseSort("recommended");
-        setSelectedDomainsForCurrentDataset(null);
+        resetSharedFilters();
+        render();
+      });
+      el.railResetFiltersBtn.addEventListener("click", () => {
+        resetSharedFilters();
         render();
       });
       el.openNextUnlabeledBtn.addEventListener("click", () => {
@@ -5029,6 +5646,33 @@
           if (!target) return;
           const extracted = readSelectionFromTrace(target);
           if (!extracted) return;
+          syncComposerTarget(currentSource()?.key || "", { renderComposer: false });
+          STATE.selection = extracted;
+          STATE.activeAnnotationId = "";
+          STATE.draftComment = "";
+          STATE.draftConfidence = "clear";
+          STATE.lastSelectionAt = Date.now();
+          STATE.selectionAnchor = anchorFromRect(range.getBoundingClientRect()) || anchorFromRect(target.getBoundingClientRect());
+          refreshSelectionUi();
+        });
+      });
+      el.comparisonPanel.addEventListener("mouseup", () => {
+        if (selectionCaptureFrame) {
+          window.cancelAnimationFrame(selectionCaptureFrame);
+        }
+        selectionCaptureFrame = window.requestAnimationFrame(() => {
+          selectionCaptureFrame = 0;
+          const selection = window.getSelection();
+          if (!selection || selection.rangeCount === 0) return;
+          const range = selection.getRangeAt(0);
+          const target = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+            ? range.commonAncestorContainer.closest(".trace-document")
+            : range.commonAncestorContainer.parentElement?.closest(".trace-document");
+          if (!target) return;
+          const extracted = readSelectionFromTrace(target);
+          if (!extracted) return;
+          const caseRow = currentCaseForUi();
+          syncComposerTarget(comparisonContext(caseRow)?.sourceKey || "", { renderComposer: false });
           STATE.selection = extracted;
           STATE.activeAnnotationId = "";
           STATE.draftComment = "";
@@ -5039,6 +5683,7 @@
         });
       });
       el.reasoningPanel.addEventListener("click", (event) => {
+        syncComposerTarget(currentSource()?.key || "", { renderComposer: false });
         const mark = event.target.closest("[data-annotation-id]");
         if (mark) {
           openAnnotation(mark.getAttribute("data-annotation-id") || "");
@@ -5057,14 +5702,34 @@
         }
       });
       el.responsePanel.addEventListener("click", (event) => {
+        syncComposerTarget(currentSource()?.key || "", { renderComposer: false });
         if (!event.target.closest("[data-toggle-answer]")) return;
         setAnswerCollapsed(!STATE.answerCollapsed);
         render();
       });
       el.comparisonPanel.addEventListener("click", (event) => {
+        const caseRow = currentCaseForUi();
+        syncComposerTarget(comparisonContext(caseRow)?.sourceKey || "", { renderComposer: false });
+        const mark = event.target.closest("[data-annotation-id]");
+        if (mark) {
+          openAnnotation(mark.getAttribute("data-annotation-id") || "");
+          return;
+        }
         if (event.target.closest("[data-toggle-answer]")) {
           setAnswerCollapsed(!STATE.answerCollapsed);
           render();
+          return;
+        }
+        const selection = window.getSelection?.();
+        if (
+          selection
+          && selection.isCollapsed
+          && STATE.selection
+          && !event.target.closest("#selectionToolbar")
+          && Date.now() - STATE.lastSelectionAt > 250
+        ) {
+          clearTransientSelection();
+          refreshSelectionUi();
           return;
         }
         if (event.target.id === "hideCompareBtn") {
@@ -5079,10 +5744,16 @@
       });
       el.composerPanel.addEventListener("click", (event) => {
         void runUiAction(async () => {
+          const targetButton = event.target.closest("[data-composer-target-source]");
+          if (targetButton) {
+            setComposerTargetSourceKey(targetButton.getAttribute("data-composer-target-source") || "");
+            renderComposerPanel(currentCaseForUi());
+            return;
+          }
           const documentNoteButton = event.target.closest("[data-document-note-label]");
           if (documentNoteButton) {
             const caseRow = currentCaseForUi();
-            const traceDocument = reasonDocument(caseRow);
+            const traceDocument = composerTargetContext(caseRow).selected?.document || null;
             if (!traceDocument) return;
             const documentId = traceDocument.document_id;
             const savedNote = documentNoteForDocument(documentId);
@@ -5118,7 +5789,7 @@
           const documentNoteConfidenceButton = event.target.closest("[data-document-note-confidence]");
           if (documentNoteConfidenceButton) {
             const caseRow = currentCaseForUi();
-            const traceDocument = reasonDocument(caseRow);
+            const traceDocument = composerTargetContext(caseRow).selected?.document || null;
             if (!traceDocument) return;
             const documentId = traceDocument.document_id;
             const savedNote = documentNoteForDocument(documentId);
@@ -5197,7 +5868,7 @@
       el.composerPanel.addEventListener("input", (event) => {
         if (event.target.id === "traceSummaryInput") {
           const caseRow = currentCaseForUi();
-          const traceDocument = reasonDocument(caseRow);
+          const traceDocument = composerTargetContext(caseRow).selected?.document || null;
           if (!traceDocument) return;
           const documentId = traceDocument.document_id;
           const savedNote = documentNoteForDocument(documentId);
@@ -5249,7 +5920,7 @@
             window.clearTimeout(documentNoteSaveTimer);
           }
           const caseRow = currentCaseForUi();
-          const traceDocument = reasonDocument(caseRow);
+          const traceDocument = composerTargetContext(caseRow).selected?.document || null;
           if (!traceDocument) return;
           const documentId = traceDocument.document_id;
           const draft = draftDocumentNoteFor(documentId);
@@ -5394,9 +6065,12 @@
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
-        if (!el.domainFilterDetails?.open) return;
-        if (target.closest("#domainFilterDetails")) return;
-        el.domainFilterDetails.open = false;
+        const filterDetails = [el.domainFilterDetails, el.railDomainFilterDetails].filter(Boolean);
+        const isInsideOpenFilter = target.closest("#domainFilterDetails, #railDomainFilterDetails");
+        if (isInsideOpenFilter) return;
+        filterDetails.forEach((details) => {
+          if (details.open) details.open = false;
+        });
       });
       document.addEventListener("keydown", (event) => {
         const target = event.target;
@@ -5444,6 +6118,7 @@
       Object.assign(el, {
         filterPanel: document.getElementById("filterPanel"),
         viewSwitch: document.getElementById("viewSwitch"),
+        themeSwitch: document.getElementById("themeSwitch"),
         explorerView: document.getElementById("explorerView"),
         workspace: document.getElementById("workspace"),
         sourceSwitch: document.getElementById("sourceSwitch"),
@@ -5451,16 +6126,27 @@
         toggleSidebarBtn: document.getElementById("toggleSidebarBtn"),
         statusLine: document.getElementById("statusLine"),
         searchInput: document.getElementById("searchInput"),
+        railSearchInput: document.getElementById("railSearchInput"),
         authorInput: document.getElementById("authorInput"),
         gradeFilterSelect: document.getElementById("gradeFilterSelect"),
+        railGradeFilterSelect: document.getElementById("railGradeFilterSelect"),
         annotationFilterSelect: document.getElementById("annotationFilterSelect"),
+        railAnnotationFilterSelect: document.getElementById("railAnnotationFilterSelect"),
         domainFilterField: document.getElementById("domainFilterField"),
         domainFilterDetails: document.getElementById("domainFilterDetails"),
         domainFilterSummary: document.getElementById("domainFilterSummary"),
         domainFilterList: document.getElementById("domainFilterList"),
+        railDomainFilterField: document.getElementById("railDomainFilterField"),
+        railDomainRow: document.getElementById("railDomainRow"),
+        railDomainFilterDetails: document.getElementById("railDomainFilterDetails"),
+        railDomainFilterSummary: document.getElementById("railDomainFilterSummary"),
+        railDomainFilterList: document.getElementById("railDomainFilterList"),
         selectAllDomainsBtn: document.getElementById("selectAllDomainsBtn"),
+        railSelectAllDomainsBtn: document.getElementById("railSelectAllDomainsBtn"),
         closeDomainFilterBtn: document.getElementById("closeDomainFilterBtn"),
+        railCloseDomainFilterBtn: document.getElementById("railCloseDomainFilterBtn"),
         resetFiltersBtn: document.getElementById("resetFiltersBtn"),
+        railResetFiltersBtn: document.getElementById("railResetFiltersBtn"),
         openNextUnlabeledBtn: document.getElementById("openNextUnlabeledBtn"),
         filterMeta: document.getElementById("filterMeta"),
         caseMeta: document.getElementById("caseMeta"),
