@@ -16,7 +16,7 @@ import build_single_judge_aggregate as singleagg
 import openrouter_benchmark as bench
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 EMPTY_PLACEHOLDER = "[Model returned an empty response.]"
 
 
@@ -296,7 +296,7 @@ def publish_and_rebuild(dataset_key: str, manifest: dict[str, Any]) -> None:
 
     publish_cmd = [
         sys.executable,
-        "scripts/publish_reasoning_dataset.py",
+        "scripts/sonnet46/publish_reasoning_dataset.py",
         "--special-root",
         str(ROOT),
         "--run-dir",
@@ -306,13 +306,13 @@ def publish_and_rebuild(dataset_key: str, manifest: dict[str, Any]) -> None:
         "--aggregate-dir",
         str(aggregate_dir),
         "--output-dir",
-        str(ROOT / "data" / "viewer-input" / dataset_key),
+        str(ROOT / "data" / "sonnet46" / "viewer-input" / dataset_key),
         "--dataset-key",
         dataset_key,
     ]
     subprocess.run(publish_cmd, cwd=ROOT, check=True)
     subprocess.run(
-        [sys.executable, "scripts/build_sonnet46_reasoning_bundle.py"],
+        [sys.executable, "scripts/sonnet46/build_reasoning_bundle.py"],
         cwd=ROOT,
         check=True,
     )
@@ -320,7 +320,9 @@ def publish_and_rebuild(dataset_key: str, manifest: dict[str, Any]) -> None:
 
 def main() -> None:
     dataset_key = "v2"
-    viewer_manifest_path = ROOT / "data" / "viewer-input" / dataset_key / "manifest.json"
+    viewer_manifest_path = (
+        ROOT / "data" / "sonnet46" / "viewer-input" / dataset_key / "manifest.json"
+    )
     viewer_manifest = load_json(viewer_manifest_path)
 
     run_dir = ROOT / str(viewer_manifest["sources"]["run_dir"])

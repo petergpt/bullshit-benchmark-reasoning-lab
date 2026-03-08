@@ -29,8 +29,8 @@ inputs from this repo:
 
 - `source-data/bullshit-benchmark/data/latest/*`
 - `source-data/bullshit-benchmark/data/v2/latest/*`
-- `claude-sonnet-4.6-gemini-single-judge/data/viewer-input/v1/*`
-- `claude-sonnet-4.6-gemini-single-judge/data/viewer-input/v2/*`
+- `data/sonnet46/viewer-input/v1/*`
+- `data/sonnet46/viewer-input/v2/*`
 
 Optional override:
 

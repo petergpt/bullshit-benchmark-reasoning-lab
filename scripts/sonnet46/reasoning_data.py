@@ -9,18 +9,20 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_PATH = ROOT / "data" / "claude-sonnet-4.6-gemini-single-judge.data.js"
+LAB_ROOT = Path(__file__).resolve().parents[2]
+ROOT = LAB_ROOT
+SONNET46_DATA_ROOT = LAB_ROOT / "data" / "sonnet46"
+OUTPUT_PATH = SONNET46_DATA_ROOT / "reasoning.data.js"
 
 DATASETS = {
     "v2": {
         "label": "Benchmark v2",
-        "base_dir": ROOT / "data" / "viewer-input" / "v2",
+        "base_dir": SONNET46_DATA_ROOT / "viewer-input" / "v2",
         "description": "100-question Sonnet 4.6 reasoning capture with Gemini single-judge grading",
     },
     "v1": {
         "label": "Benchmark v1",
-        "base_dir": ROOT / "data" / "viewer-input" / "v1",
+        "base_dir": SONNET46_DATA_ROOT / "viewer-input" / "v1",
         "description": "55-question Sonnet 4.6 reasoning capture with Gemini single-judge grading",
     },
 }

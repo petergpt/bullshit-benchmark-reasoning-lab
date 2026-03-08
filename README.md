@@ -17,13 +17,13 @@ server without requiring the parent BullshitBench checkout.
 - `annotations/`
   Checked-in annotation store for the current lab state.
 - `data/`
-  Generated browser bundles and derived JSONL exports used by the viewers.
+  Generated browser bundles, derived JSONL exports, and the checked-in Sonnet
+  4.6 reasoning snapshots used by the viewers.
 - `source-data/`
   Bundled GPT-5.4 source snapshot used by the lab by default.
-- `claude-sonnet-4.6-gemini-single-judge/data/viewer-input/`
-  Published Sonnet 4.6 trace snapshots used by the lab.
 - `scripts/`
-  Local server, builders, AI-labeling utilities, and sync helpers.
+  Local server, builders, AI-labeling utilities, sync helpers, and Sonnet 4.6
+  recapture utilities under `scripts/sonnet46/`.
 - `docs/`
   Notes on the annotation model, store schema, and workflows.
 
@@ -36,12 +36,13 @@ Shared in Git:
 - the bundled GPT-5.4 and Sonnet 4.6 reasoning snapshots
 - the generated browser bundles needed to open the current lab state
 - the AI-labeling and evaluation scripts
+- the Sonnet 4.6 recapture/build scripts and their config/question inputs
 
 Kept local and ignored:
 
 - `.env`
 - annotation lock files
-- `claude-sonnet-4.6-gemini-single-judge/runs/`
+- `data/sonnet46/runs/`
 - ad hoc AI-labeling eval output under `data/ai_label_runs/` and
   `data/ai_label_evals/`
 
@@ -112,7 +113,7 @@ python3 scripts/export_reasoning_label_examples.py
 Rebuild the Sonnet 4.6 viewer bundle:
 
 ```bash
-python3 claude-sonnet-4.6-gemini-single-judge/scripts/build_sonnet46_reasoning_bundle.py
+python3 scripts/sonnet46/build_reasoning_bundle.py
 ```
 
 Sync the bundled GPT-5.4 source snapshot from a local BullshitBench checkout:
@@ -133,24 +134,31 @@ Inspect the AI-labeling evaluation workflow:
 python3 scripts/evaluate_ai_labeling_variants.py --help
 ```
 
+Inspect the Sonnet 4.6 recapture flow:
+
+```bash
+python3 scripts/sonnet46/openrouter_benchmark.py --help
+```
+
 ## Data Model Notes
 
 The lab is self-contained by default and uses these bundled inputs:
 
 - `source-data/bullshit-benchmark/data/latest/*`
 - `source-data/bullshit-benchmark/data/v2/latest/*`
-- `claude-sonnet-4.6-gemini-single-judge/data/viewer-input/v1/*`
-- `claude-sonnet-4.6-gemini-single-judge/data/viewer-input/v2/*`
+- `data/sonnet46/viewer-input/v1/*`
+- `data/sonnet46/viewer-input/v2/*`
 
 Checked-in generated outputs:
 
 - `data/gpt54-reasoning-atlas.data.js`
 - `data/gpt54_reasoning_label_examples.jsonl`
-- `claude-sonnet-4.6-gemini-single-judge/data/claude-sonnet-4.6-gemini-single-judge.data.js`
+- `data/sonnet46/reasoning.data.js`
 
 For the annotation-store schema and review-session model, see:
 
 - `docs/REASONING_ANNOTATION_STUDIO.md`
+- `docs/SONNET46_REASONING_CAPTURE.md`
 
 ## Main Entry Points
 
@@ -161,3 +169,5 @@ For the annotation-store schema and review-session model, see:
 - `scripts/ai_label_reasoning_trace.py`
 - `scripts/evaluate_ai_labeling_variants.py`
 - `scripts/sync_gpt54_source_data.py`
+- `scripts/sonnet46/build_reasoning_bundle.py`
+- `scripts/sonnet46/run_special_capture.sh`

@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from sonnet46_reasoning_data import OUTPUT_PATH, ROOT, build_payload, write_browser_bundle
+from reasoning_data import OUTPUT_PATH, ROOT, build_payload, write_browser_bundle
 
 
 def main() -> None:

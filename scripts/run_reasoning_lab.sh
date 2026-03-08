@@ -12,5 +12,5 @@ fi
 
 python3 "${ROOT_DIR}/scripts/build_gpt54_reasoning_atlas.py"
 python3 "${ROOT_DIR}/scripts/export_reasoning_label_examples.py"
-python3 "${ROOT_DIR}/claude-sonnet-4.6-gemini-single-judge/scripts/build_sonnet46_reasoning_bundle.py"
+python3 "${ROOT_DIR}/scripts/sonnet46/build_reasoning_bundle.py"
 exec python3 "${ROOT_DIR}/scripts/reasoning_annotation_server.py" "$@"

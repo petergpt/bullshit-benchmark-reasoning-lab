@@ -1,6 +1,6 @@
 {
   "collect": {
-    "questions": "questions/questions.v2.json",
+    "questions": "scripts/sonnet46/questions/questions.v1.json",
     "models": [
       "anthropic/claude-sonnet-4.6"
     ],
@@ -10,7 +10,7 @@
     "num_runs": 1,
     "parallelism": 4,
     "max_inflight_per_model": 2,
-    "techniques": "plausible_nonexistent_framework,misapplied_mechanism,authoritative_framing,false_granularity,wrong_unit_of_analysis,temporal_category_error,reified_metaphor,cross_domain_stitching,specificity_trap,fabricated_authority,sunk_cost_framing,confident_extrapolation,nested_nonsense",
+    "techniques": "cross_domain_concept_stitching,inverted_nonexistent_dependency,false_granularity,misapplied_mechanism,reified_metaphor,plausible_nonexistent_framework,wrong_unit_of_analysis,temporal_category_error,causal_chimera,authoritative_framing_of_nothing",
     "temperature": null,
     "omit_response_system_prompt": true,
     "response_reasoning_effort": "off",
@@ -23,13 +23,13 @@
       ]
     },
     "shuffle_tasks": true,
-    "retries": 1,
+    "retries": 3,
     "rate_limit_requeue": true,
     "rate_limit_cooldown_seconds": 20.0,
-    "rate_limit_cooldown_max_seconds": 240.0,
-    "rate_limit_cooldown_jitter_seconds": 1.5,
-    "rate_limit_max_attempts": 20,
-    "checkpoint_fsync_every": 10
+    "rate_limit_cooldown_max_seconds": 300.0,
+    "rate_limit_cooldown_jitter_seconds": 1.0,
+    "rate_limit_max_attempts": 12,
+    "checkpoint_fsync_every": 20
   },
   "grade": {
     "judge_model": "google/gemini-3.1-pro-preview",

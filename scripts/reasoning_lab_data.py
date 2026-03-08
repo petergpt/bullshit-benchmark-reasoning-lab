@@ -53,8 +53,8 @@ SOURCES = {
             "v2": {
                 "label": "Benchmark v2",
                 "base_dir": LAB_ROOT
-                / "claude-sonnet-4.6-gemini-single-judge"
                 / "data"
+                / "sonnet46"
                 / "viewer-input"
                 / "v2",
                 "description": "100-question isolated Sonnet 4.6 reasoning capture",
@@ -63,8 +63,8 @@ SOURCES = {
             "v1": {
                 "label": "Benchmark v1",
                 "base_dir": LAB_ROOT
-                / "claude-sonnet-4.6-gemini-single-judge"
                 / "data"
+                / "sonnet46"
                 / "viewer-input"
                 / "v1",
                 "description": "55-question isolated Sonnet 4.6 reasoning capture",

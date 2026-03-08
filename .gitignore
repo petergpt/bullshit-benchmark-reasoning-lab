@@ -19,8 +19,8 @@ __pycache__/
 /data/ai_label_runs/
 /data/ai_label_evals/
 
-# Local special-run artifacts
-/claude-sonnet-4.6-gemini-single-judge/runs/
+# Local Sonnet 4.6 recapture artifacts
+/data/sonnet46/runs/
 
 # Local QA screenshots
 /reasoning-lab-*.png

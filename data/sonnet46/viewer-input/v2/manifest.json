@@ -3,7 +3,7 @@
   "snapshot_type": "reasoning-lab-sonnet46-viewer-input",
   "dataset_key": "v2",
   "sources": {
-    "responses_file": "data/viewer-input/v2/responses.jsonl",
-    "aggregate_rows_file": "data/viewer-input/v2/aggregate.jsonl"
+    "responses_file": "data/sonnet46/viewer-input/v2/responses.jsonl",
+    "aggregate_rows_file": "data/sonnet46/viewer-input/v2/aggregate.jsonl"
   }
 }
