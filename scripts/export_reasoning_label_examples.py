@@ -12,8 +12,8 @@ from typing import Any
 from reasoning_lab_data import LAB_ROOT as ROOT, build_payload, text_or_empty
 
 
-DEFAULT_STORE_PATH = ROOT / "annotations" / "gpt54_reasoning_lab.json"
-DEFAULT_OUTPUT_PATH = ROOT / "data" / "gpt54_reasoning_label_examples.jsonl"
+DEFAULT_STORE_PATH = ROOT / "annotations" / "reasoning_lab.json"
+DEFAULT_OUTPUT_PATH = ROOT / "data" / "reasoning_label_examples.jsonl"
 
 SCORE_LABELS = {
     "clear": "Clear pushback",

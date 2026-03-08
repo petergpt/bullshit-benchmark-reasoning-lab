@@ -15,12 +15,14 @@ server without requiring the parent BullshitBench checkout.
   - `reasoning-annotation-studio.html`
   - `gpt54-reasoning-atlas.html`
 - `annotations/`
-  Checked-in annotation store for the current lab state.
+  Checked-in annotation store for the current lab state
+  (`annotations/reasoning_lab.json`).
 - `data/`
   Generated browser bundles, derived JSONL exports, and the checked-in Sonnet
   4.6 reasoning snapshots used by the viewers.
 - `source-data/`
-  Bundled GPT-5.4 source snapshot used by the lab by default.
+  Vendored GPT-5.4 benchmark snapshot used by the lab by default. This is a
+  checked-in snapshot, not a nested upstream checkout.
 - `scripts/`
   Local server, builders, AI-labeling utilities, sync helpers, and Sonnet 4.6
   recapture utilities under `scripts/sonnet46/`.
@@ -144,20 +146,20 @@ python3 scripts/sonnet46/openrouter_benchmark.py --help
 
 The lab is self-contained by default and uses these bundled inputs:
 
-- `source-data/bullshit-benchmark/data/latest/*`
-- `source-data/bullshit-benchmark/data/v2/latest/*`
+- `source-data/benchmark-snapshot/data/latest/*`
+- `source-data/benchmark-snapshot/data/v2/latest/*`
 - `data/sonnet46/viewer-input/v1/*`
 - `data/sonnet46/viewer-input/v2/*`
 
 Checked-in generated outputs:
 
 - `data/gpt54-reasoning-atlas.data.js`
-- `data/gpt54_reasoning_label_examples.jsonl`
+- `data/reasoning_label_examples.jsonl`
 - `data/sonnet46/reasoning.data.js`
 
 For the annotation-store schema and review-session model, see:
 
-- `docs/REASONING_ANNOTATION_STUDIO.md`
+- `docs/ANNOTATION_MODEL.md`
 - `docs/SONNET46_REASONING_CAPTURE.md`
 
 ## Main Entry Points

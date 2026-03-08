@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 LAB_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BENCHMARK_ROOT = LAB_ROOT / "source-data" / "bullshit-benchmark"
+DEFAULT_BENCHMARK_ROOT = LAB_ROOT / "source-data" / "benchmark-snapshot"
 
 
 def _expand_candidate(path_text: str) -> Path:
@@ -52,7 +52,7 @@ def resolve_benchmark_root() -> Path:
         "data/v2/latest/responses.jsonl.\n"
         "Checked:\n"
         f"{checked}\n"
-        "Either sync the bundled snapshot into source-data/bullshit-benchmark or "
+        "Either sync the bundled snapshot into source-data/benchmark-snapshot or "
         "set REASONING_LAB_BENCHMARK_ROOT to a BullshitBench checkout."
     )
 

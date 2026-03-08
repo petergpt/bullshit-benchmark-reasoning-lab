@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from reasoning_atlas_data import OUTPUT_PATH, ROOT, build_payload, write_browser_bundle
+from gpt54_atlas_data import OUTPUT_PATH, ROOT, build_payload, write_browser_bundle
 
 
 def main() -> None:

@@ -18,7 +18,7 @@ from export_reasoning_label_examples import export_examples, load_store
 from reasoning_lab_data import LAB_ROOT as ROOT, build_payload, text_or_empty
 
 
-DEFAULT_STORE_PATH = ROOT / "annotations" / "gpt54_reasoning_lab.json"
+DEFAULT_STORE_PATH = ROOT / "annotations" / "reasoning_lab.json"
 DEFAULT_OUTPUT_DIR = ROOT / "data" / "ai_label_runs"
 DEFAULT_MODEL = "anthropic/claude-sonnet-4.6"
 DEFAULT_REASONING_EFFORT = "high"

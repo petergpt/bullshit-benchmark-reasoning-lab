@@ -1,9 +1,10 @@
-# GPT-5.4 Reasoning Annotation Studio
+# Reasoning Lab Annotation Model
 
-This studio is a local annotation tool for BullshitBench reasoning traces.
+This studio is the shared annotation layer for Reasoning Lab across the GPT-5.4
+and Sonnet 4.6 trace sets.
 
 Its purpose is not just to read traces, but to create reusable supervision about
-how GPT-5.4 handles nonsense prompts:
+how models handle nonsense prompts:
 
 - where it clearly challenges the bogus premise
 - where it questions whether the user is joking or testing it
@@ -16,19 +17,20 @@ how GPT-5.4 handles nonsense prompts:
 
 - Frontend: `viewer/reasoning-annotation-studio.html`
 - Local server: `scripts/reasoning_annotation_server.py`
-- Shared dataset builder: `scripts/reasoning_atlas_data.py`
+- Shared multi-model dataset builder: `scripts/reasoning_lab_data.py`
+- GPT-5.4 atlas builder: `scripts/gpt54_atlas_data.py`
 - Shared path resolver: `scripts/reasoning_lab_paths.py`
-- Annotation store: `annotations/gpt54_reasoning_lab.json`
+- Annotation store: `annotations/reasoning_lab.json`
 - Generated atlas bundle: `data/gpt54-reasoning-atlas.data.js`
-- Derived model examples export: `data/gpt54_reasoning_label_examples.jsonl`
+- Derived model examples export: `data/reasoning_label_examples.jsonl`
 - JSONL exporter: `scripts/export_reasoning_label_examples.py`
 - Branding asset: `assets/bsbench.png`
 
 The lab is now self-contained by default. It reads immutable bundled source
 inputs from this repo:
 
-- `source-data/bullshit-benchmark/data/latest/*`
-- `source-data/bullshit-benchmark/data/v2/latest/*`
+- `source-data/benchmark-snapshot/data/latest/*`
+- `source-data/benchmark-snapshot/data/v2/latest/*`
 - `data/sonnet46/viewer-input/v1/*`
 - `data/sonnet46/viewer-input/v2/*`
 
@@ -36,7 +38,7 @@ Optional override:
 
 - `REASONING_LAB_BENCHMARK_ROOT`
   If set, the GPT-5.4 source builders read from that external BullshitBench
-  checkout instead of the bundled `source-data/` snapshot.
+  checkout instead of the bundled `source-data/benchmark-snapshot/`.
 
 ## Runtime Notes
 
@@ -241,7 +243,7 @@ same UI without losing the original model/prompt lineage.
 The canonical store stays normalized for integrity and editing. For prompting or
 training-style workflows, use the derived JSONL export instead:
 
-- `data/gpt54_reasoning_label_examples.jsonl`
+- `data/reasoning_label_examples.jsonl`
 
 Each row is denormalized and includes the surrounding case context:
 
@@ -264,12 +266,13 @@ later model-assisted labeling workflows.
 - `viewer/reasoning-annotation-studio.html`
 - `viewer/gpt54-reasoning-atlas.html`
 - `data/gpt54-reasoning-atlas.data.js`
-- `data/gpt54_reasoning_label_examples.jsonl`
-- `source-data/bullshit-benchmark/data/`
+- `data/reasoning_label_examples.jsonl`
+- `source-data/benchmark-snapshot/data/`
 - `scripts/reasoning_annotation_server.py`
 - `scripts/run_reasoning_lab.sh`
 - `scripts/sync_gpt54_source_data.py`
 - `scripts/reasoning_lab_paths.py`
-- `scripts/reasoning_atlas_data.py`
+- `scripts/reasoning_lab_data.py`
+- `scripts/gpt54_atlas_data.py`
 - `scripts/export_reasoning_label_examples.py`
-- `annotations/gpt54_reasoning_lab.json`
+- `annotations/reasoning_lab.json`

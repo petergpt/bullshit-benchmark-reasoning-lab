@@ -29,7 +29,7 @@ from ai_label_reasoning_trace import (
 from reasoning_lab_data import LAB_ROOT as ROOT, build_payload, text_or_empty
 
 
-DEFAULT_STORE_PATH = ROOT / "annotations" / "gpt54_reasoning_lab.json"
+DEFAULT_STORE_PATH = ROOT / "annotations" / "reasoning_lab.json"
 STORE_SCHEMA_VERSION = 6
 REVIEW_SESSION_TYPE_AI_SUGGESTION = "ai_suggestion_review"
 REVIEW_SESSION_STATUSES = {

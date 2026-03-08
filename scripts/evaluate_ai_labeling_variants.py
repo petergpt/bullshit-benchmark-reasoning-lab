@@ -17,7 +17,7 @@ from export_reasoning_label_examples import load_store
 from reasoning_lab_data import LAB_ROOT as ROOT, text_or_empty
 
 
-STORE_PATH = ROOT / "annotations" / "gpt54_reasoning_lab.json"
+STORE_PATH = ROOT / "annotations" / "reasoning_lab.json"
 RUNNER_PATH = ROOT / "scripts" / "ai_label_reasoning_trace.py"
 DEFAULT_RUN_OUTPUT_DIR = ROOT / "data" / "ai_label_runs"
 DEFAULT_EVAL_OUTPUT_DIR = ROOT / "data" / "ai_label_evals"

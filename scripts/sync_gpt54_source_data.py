@@ -149,7 +149,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dest-root",
         default=str(DEFAULT_BENCHMARK_ROOT),
-        help="Destination root for the vendored reasoning-lab snapshot.",
+        help="Destination root for the vendored benchmark-snapshot tree.",
     )
     return parser.parse_args()
 
