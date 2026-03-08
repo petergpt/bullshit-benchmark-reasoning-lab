@@ -532,6 +532,42 @@
       margin-bottom: 10px;
     }
 
+    .question-head {
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .question-heading {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .question-id-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      color: var(--text-faint);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .question-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
     .section-head p,
     .panel-subtitle {
       margin: 0;
@@ -1128,7 +1164,7 @@
 
     .explorer-table th:nth-child(1),
     .explorer-table td:nth-child(1) {
-      width: 34%;
+      width: 22%;
     }
 
     .explorer-table th:nth-child(2),
@@ -1143,32 +1179,32 @@
 
     .explorer-table th:nth-child(4),
     .explorer-table td:nth-child(4) {
-      width: 9%;
+      width: 8%;
     }
 
     .explorer-table th:nth-child(5),
     .explorer-table td:nth-child(5) {
-      width: 9%;
+      width: 12%;
     }
 
     .explorer-table th:nth-child(6),
     .explorer-table td:nth-child(6) {
-      width: 12%;
+      width: 8%;
     }
 
     .explorer-table th:nth-child(7),
     .explorer-table td:nth-child(7) {
-      width: 6%;
+      width: 8%;
     }
 
     .explorer-table th:nth-child(8),
     .explorer-table td:nth-child(8) {
-      width: 7%;
+      width: 12%;
     }
 
     .explorer-table th:nth-child(9),
     .explorer-table td:nth-child(9) {
-      width: 7%;
+      width: 8%;
     }
 
     .explorer-table th,
@@ -1196,11 +1232,10 @@
     }
 
     .explorer-sort-button {
-      display: inline-flex;
-      align-items: center;
+      display: flex;
+      align-items: flex-start;
       gap: 6px;
-      width: auto;
-      max-width: 100%;
+      width: 100%;
       padding: 0;
       border: none;
       background: transparent;
@@ -1209,7 +1244,45 @@
       font-weight: inherit;
       line-height: 1.2;
       text-align: left;
+      justify-content: space-between;
       transition: color var(--transition);
+    }
+
+    .explorer-header-label {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .explorer-header-model {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+      max-width: 100%;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .explorer-header-model.gpt {
+      color: var(--model-gpt-ink);
+    }
+
+    .explorer-header-model.sonnet {
+      color: var(--model-sonnet-ink);
+    }
+
+    .explorer-header-metric {
+      color: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
 
     .explorer-sort-button:hover,
@@ -1226,10 +1299,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 10px;
-      min-width: 10px;
+      width: 8px;
+      min-width: 8px;
       color: var(--text-faint);
-      font-size: 0.7rem;
+      font-size: 0.64rem;
       line-height: 1;
     }
 
@@ -1297,6 +1370,96 @@
       overflow: hidden;
     }
 
+    .explorer-status-cell {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .explorer-grade-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: var(--surface-muted);
+      color: var(--text-subtle);
+      font-size: 0.71rem;
+      font-weight: 700;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+
+    .explorer-grade-pill.green {
+      background: color-mix(in srgb, var(--green) 9%, var(--mix-base));
+      border-color: color-mix(in srgb, var(--green) 16%, var(--line));
+      color: color-mix(in srgb, var(--green) 82%, var(--text-subtle));
+    }
+
+    .explorer-grade-pill.amber {
+      background: color-mix(in srgb, var(--amber) 9%, var(--mix-base));
+      border-color: color-mix(in srgb, var(--amber) 16%, var(--line));
+      color: color-mix(in srgb, var(--amber) 85%, var(--text-subtle));
+    }
+
+    .explorer-grade-pill.red {
+      background: color-mix(in srgb, #bb5664 8%, var(--mix-base));
+      border-color: color-mix(in srgb, #bb5664 16%, var(--line));
+      color: color-mix(in srgb, #9c3d4c 82%, var(--text-subtle));
+    }
+
+    .explorer-grade-pill.slate {
+      background: var(--surface-muted);
+      border-color: var(--line);
+      color: var(--text-muted);
+    }
+
+    .explorer-yesno {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+
+    .explorer-yesno::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+
+    .explorer-yesno.is-yes {
+      color: var(--text-subtle);
+    }
+
+    .explorer-yesno.is-yes::before {
+      background: color-mix(in srgb, var(--blue) 75%, white);
+      border-color: color-mix(in srgb, var(--blue) 34%, var(--line));
+    }
+
+    .explorer-yesno.is-no {
+      color: var(--text-muted);
+    }
+
+    .explorer-yesno.is-no::before {
+      background: var(--surface-subtle);
+      border-color: var(--line);
+    }
+
     .explorer-id-cell {
       color: var(--text-muted);
       font-size: 0.78rem;
@@ -1323,21 +1486,35 @@
     .explorer-overall-tag {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       max-width: 100%;
-      border: 1px solid color-mix(in srgb, var(--label-color, #8aa19b) 24%, var(--mix-base));
-      border-radius: 6px;
-      background: color-mix(in srgb, var(--label-color, #8aa19b) 13%, var(--mix-base));
+      min-width: 0;
+      border: 1px solid color-mix(in srgb, var(--label-color, #8aa19b) 16%, var(--line));
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--label-color, #8aa19b) 8%, var(--mix-base));
       color: var(--text-subtle);
-      padding: 4px 7px;
-      font-size: 0.75rem;
+      padding: 3px 8px 3px 7px;
+      font-size: 0.72rem;
       font-weight: 600;
-      line-height: 1.2;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     .explorer-overall-tag .swatch {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .explorer-overall-tag .label-text {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .explorer-overall-empty {
@@ -1692,21 +1869,36 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      min-width: 32px;
-      height: 32px;
-      padding: 0;
+      gap: 9px;
+      min-height: 36px;
+      padding: 0 13px 0 11px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 999px;
       background: var(--surface-elevated);
-      color: var(--text-muted);
-      transition: border-color var(--transition), background var(--transition), color var(--transition);
+      color: var(--text-subtle);
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      box-shadow: var(--shadow-md);
+      transition:
+        border-color var(--transition),
+        background var(--transition),
+        color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
     }
 
     .compare-toggle svg {
       width: 18px;
       height: 18px;
       display: block;
+      flex: 0 0 auto;
+    }
+
+    .compare-toggle-label {
+      display: block;
+      white-space: nowrap;
     }
 
     .compare-toggle .compare-left {
@@ -1717,34 +1909,22 @@
     }
 
     .compare-toggle .compare-right {
-      fill: var(--compare-accent-soft, #eef3f7);
-      stroke: var(--compare-accent-line, #d0dbe5);
+      fill: var(--surface-muted);
+      stroke: var(--border-strong);
       stroke-width: 1.5;
     }
 
     .compare-toggle .compare-badge {
       fill: var(--surface-elevated);
-      stroke: var(--compare-accent-line, #d0dbe5);
+      stroke: var(--border-strong);
       stroke-width: 1.35;
     }
 
     .compare-toggle .compare-symbol {
       fill: none;
-      stroke: var(--compare-accent-ink, #32514a);
+      stroke: var(--text-muted);
       stroke-width: 1.55;
       stroke-linecap: round;
-    }
-
-    .compare-toggle.gpt {
-      --compare-accent-soft: var(--model-gpt-soft);
-      --compare-accent-line: var(--model-gpt-line);
-      --compare-accent-ink: var(--model-gpt-ink);
-    }
-
-    .compare-toggle.sonnet {
-      --compare-accent-soft: var(--model-sonnet-soft);
-      --compare-accent-line: var(--model-sonnet-line);
-      --compare-accent-ink: var(--model-sonnet-ink);
     }
 
     .compare-toggle:hover,
@@ -1752,16 +1932,18 @@
       outline: none;
       background: var(--surface-subtle);
       border-color: var(--border-emphasis);
+      transform: translateY(-1px);
+      box-shadow: var(--focus-ring), var(--shadow-md);
     }
 
     .compare-toggle.active {
-      background: var(--compare-accent-soft, #f6f7f6);
-      border-color: var(--compare-accent-line, #c3cbc6);
-      color: var(--compare-accent-ink, #32514a);
+      background: var(--surface-subtle);
+      border-color: var(--border-emphasis);
+      color: var(--text-subtle);
     }
 
     .compare-toggle.active .compare-right {
-      fill: color-mix(in srgb, var(--compare-accent-ink, #32514a) 12%, var(--mix-base));
+      fill: var(--surface-accent);
       stroke: currentColor;
     }
 
@@ -1771,7 +1953,7 @@
     }
 
     .compare-toggle.active .compare-symbol {
-      stroke: #ffffff;
+      stroke: var(--mix-base);
     }
 
     .answer-preview {
@@ -1946,15 +2128,17 @@
     }
 
     .composer-head {
-      align-items: flex-start;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 10px 16px;
     }
 
     .composer-heading-main {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
+      display: grid;
+      gap: 10px;
+      align-items: start;
+      min-width: 0;
     }
 
     .overall-trace-card {
@@ -1963,59 +2147,66 @@
     }
 
     .composer-target-switch {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px;
+      display: inline-flex;
+      flex-wrap: nowrap;
+      gap: 8px;
       align-items: center;
-      width: 100%;
-      max-width: 228px;
+      width: max-content;
+      max-width: 100%;
     }
 
     .composer-target-button {
-      display: flex;
+      display: inline-flex;
+      flex: 0 0 auto;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--surface-elevated);
-      padding: 4px 9px;
-      color: var(--text-subtle);
-      font-size: 0.74rem;
-      font-weight: 600;
-      line-height: 1.15;
+      border-radius: 6px;
+      background: var(--surface-muted);
+      min-height: 0;
+      padding: 3px 6px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
       white-space: nowrap;
-      min-width: 0;
       transition: border-color var(--transition), background var(--transition), color var(--transition);
     }
 
-    .composer-target-button:hover,
-    .composer-target-button:focus-visible {
+    .composer-target-button:not(.model-chip):hover,
+    .composer-target-button:not(.model-chip):focus-visible {
       outline: none;
       border-color: var(--border-emphasis);
       background: var(--surface-subtle);
     }
 
-    .composer-target-button.selected {
-      background: var(--surface-muted);
+    .composer-target-button.model-chip:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
     }
 
-    .composer-target-button.gpt.selected {
+    .composer-target-button.model-chip.gpt {
       border-color: var(--model-gpt-line);
       background: var(--model-gpt-soft);
       color: var(--model-gpt-ink);
     }
 
-    .composer-target-button.sonnet.selected {
+    .composer-target-button.model-chip.sonnet {
       border-color: var(--model-sonnet-line);
       background: var(--model-sonnet-soft);
       color: var(--model-sonnet-ink);
     }
 
     .save-state-pill {
-      min-width: 9ch;
+      min-width: auto;
+      min-height: auto;
+      padding: 3px 6px;
+      border-radius: 6px;
       justify-content: center;
       text-align: center;
+      font-size: 0.72rem;
+      line-height: 1;
       font-variant-numeric: tabular-nums;
     }
 
@@ -2626,6 +2817,19 @@
         padding-left: 0;
         border-left: none;
       }
+
+      .composer-head {
+        grid-template-columns: 1fr;
+      }
+
+      .composer-target-switch {
+        flex-wrap: wrap;
+        width: auto;
+      }
+
+      .save-state-pill {
+        justify-self: start;
+      }
     }
   </style>
 </head>
@@ -2716,8 +2920,7 @@
         <div class="explorer-summary" id="explorerSummary"></div>
         <div class="explorer-table-wrap">
           <table class="explorer-table">
-            <thead>
-              <tr id="questionExplorerHead"></tr>
+            <thead id="questionExplorerHead">
             </thead>
             <tbody id="questionExplorerList"></tbody>
           </table>
@@ -2905,11 +3108,11 @@
       const key = String(value || "").trim().toLowerCase();
       return {
         recommended: "recommended",
-        recent: "updated_desc",
-        most_labels: "highlights_desc",
-        least_labels: "highlights_asc",
-        grade: "grade_asc",
-        overall_label: "overall_label_asc",
+        recent: "recommended",
+        most_labels: "recommended",
+        least_labels: "recommended",
+        grade: "primary_grade_asc",
+        overall_label: "primary_overall_label_asc",
         trace_tokens: "recommended",
         question_id: "question_id_asc",
         question_asc: "question_asc",
@@ -2918,12 +3121,24 @@
         question_id_desc: "question_id_desc",
         domain_asc: "domain_asc",
         domain_desc: "domain_desc",
-        grade_asc: "grade_asc",
-        grade_desc: "grade_desc",
-        status_asc: "status_asc",
-        status_desc: "status_desc",
-        overall_label_asc: "overall_label_asc",
-        overall_label_desc: "overall_label_desc",
+        grade_asc: "primary_grade_asc",
+        grade_desc: "primary_grade_desc",
+        status_asc: "primary_labelled_asc",
+        status_desc: "primary_labelled_desc",
+        overall_label_asc: "primary_overall_label_asc",
+        overall_label_desc: "primary_overall_label_desc",
+        primary_grade_asc: "primary_grade_asc",
+        primary_grade_desc: "primary_grade_desc",
+        primary_labelled_asc: "primary_labelled_asc",
+        primary_labelled_desc: "primary_labelled_desc",
+        primary_overall_label_asc: "primary_overall_label_asc",
+        primary_overall_label_desc: "primary_overall_label_desc",
+        compare_grade_asc: "compare_grade_asc",
+        compare_grade_desc: "compare_grade_desc",
+        compare_labelled_asc: "compare_labelled_asc",
+        compare_labelled_desc: "compare_labelled_desc",
+        compare_overall_label_asc: "compare_overall_label_asc",
+        compare_overall_label_desc: "compare_overall_label_desc",
         highlights_asc: "highlights_asc",
         highlights_desc: "highlights_desc",
         updated_asc: "updated_asc",
@@ -3258,16 +3473,17 @@
     function compactSourceLabel(source) {
       const label = String(source?.label || "").trim();
       if (!label) return "Model";
-      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4";
+      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4 High";
+      if (/sonnet\s*4\.6/i.test(label)) return "Sonnet 4.6";
       return label;
     }
 
     function renderCompareToggle(compareSource) {
-      const tone = modelTone(compareSource?.key);
-      const className = `compare-toggle${tone ? ` ${tone}` : ""}${STATE.compareOpen ? " active" : ""}`;
+      const className = `compare-toggle${STATE.compareOpen ? " active" : ""}`;
       const label = STATE.compareOpen
-        ? `Hide ${compareSource?.label || "comparison"} comparison`
-        : `Compare with ${compareSource?.label || "the other model"}`;
+        ? `Hide side-by-side comparison${compareSource?.label ? ` with ${compareSource.label}` : ""}`
+        : `Open side-by-side comparison${compareSource?.label ? ` with ${compareSource.label}` : ""}`;
+      const buttonText = STATE.compareOpen ? "Hide side by side" : "Side by side";
       return `
         <button
           id="toggleCompareBtn"
@@ -3284,6 +3500,7 @@
             <path class="compare-symbol" d="M14.05 15.35h2.9"></path>
             ${STATE.compareOpen ? "" : `<path class="compare-symbol" d="M15.5 13.9v2.9"></path>`}
           </svg>
+          <span class="compare-toggle-label">${escapeHtml(buttonText)}</span>
         </button>
       `;
     }
@@ -3482,13 +3699,19 @@
       ) || null;
     }
 
-    function alternateSourceKey(questionId = STATE.selectedCaseId, datasetKey = STATE.datasetKey) {
+    function alternateSourceKeyForDataset(datasetKey = STATE.datasetKey) {
       const atlas = currentAtlas();
       if (!atlas) return "";
       const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
         ? atlas.source_order
         : Object.keys(atlas.sources || {});
-      return orderedKeys.find((key) => key !== STATE.sourceKey && caseForKeys(key, datasetKey, questionId)) || "";
+      return orderedKeys.find((key) => key !== STATE.sourceKey && datasetForKeys(key, datasetKey)) || "";
+    }
+
+    function alternateSourceKey(questionId = STATE.selectedCaseId, datasetKey = STATE.datasetKey) {
+      const compareSourceKey = alternateSourceKeyForDataset(datasetKey);
+      if (!compareSourceKey) return "";
+      return caseForKeys(compareSourceKey, datasetKey, questionId) ? compareSourceKey : "";
     }
 
     function scoreMeta(score) {
@@ -3564,6 +3787,13 @@
     function sortCases(rows) {
       const items = [...rows];
       const sortKey = normalizeCaseSortValue(STATE.caseSort);
+      const primarySource = currentSource();
+      const compareSourceKey = alternateSourceKeyForDataset(STATE.datasetKey);
+      const compareSource = compareSourceKey ? sourceForKey(compareSourceKey) : null;
+      const compareCaseMap = new Map(
+        ((compareSource && datasetForKeys(compareSourceKey, STATE.datasetKey)?.cases) || [])
+          .map((caseRow) => [caseRow.question_id, caseRow]),
+      );
       items.sort((left, right) => {
         const leftProgress = caseProgressMeta(left);
         const rightProgress = caseProgressMeta(right);
@@ -3571,24 +3801,44 @@
         const rightCount = caseAnnotationCount(right);
         const leftRecent = Date.parse(caseLastTouched(left) || "") || 0;
         const rightRecent = Date.parse(caseLastTouched(right) || "") || 0;
-        const leftPrimary = primaryVariant(left);
-        const rightPrimary = primaryVariant(right);
-        const leftGrade = gradeRank(leftPrimary?.consensus_score);
-        const rightGrade = gradeRank(rightPrimary?.consensus_score);
+        const leftPrimary = primaryVariant(left, primarySource);
+        const rightPrimary = primaryVariant(right, primarySource);
+        const leftPrimaryGrade = gradeRank(leftPrimary?.consensus_score);
+        const rightPrimaryGrade = gradeRank(rightPrimary?.consensus_score);
         const leftTrace = Number(leftPrimary?.response_reasoning_tokens ?? -Infinity);
         const rightTrace = Number(rightPrimary?.response_reasoning_tokens ?? -Infinity);
-        const leftBrowseState = Number(caseIsLabelledForBrowse(left));
-        const rightBrowseState = Number(caseIsLabelledForBrowse(right));
+        const leftPrimaryBrowseState = Number(caseIsLabelledForBrowse(left, primarySource));
+        const rightPrimaryBrowseState = Number(caseIsLabelledForBrowse(right, primarySource));
+        const leftPrimaryOverallLabel = documentNoteLabelName(caseDocumentNote(left, primarySource));
+        const rightPrimaryOverallLabel = documentNoteLabelName(caseDocumentNote(right, primarySource));
+        const leftPrimaryMissingOverall = Number(!leftPrimaryOverallLabel);
+        const rightPrimaryMissingOverall = Number(!rightPrimaryOverallLabel);
+        const leftCompareCase = compareCaseMap.get(left.question_id) || null;
+        const rightCompareCase = compareCaseMap.get(right.question_id) || null;
+        const leftCompareVariant = leftCompareCase ? primaryVariant(leftCompareCase, compareSource) : null;
+        const rightCompareVariant = rightCompareCase ? primaryVariant(rightCompareCase, compareSource) : null;
+        const leftCompareGrade = gradeRank(leftCompareVariant?.consensus_score);
+        const rightCompareGrade = gradeRank(rightCompareVariant?.consensus_score);
+        const leftCompareBrowseState = Number(
+          leftCompareCase && compareSource ? caseIsLabelledForBrowse(leftCompareCase, compareSource) : false,
+        );
+        const rightCompareBrowseState = Number(
+          rightCompareCase && compareSource ? caseIsLabelledForBrowse(rightCompareCase, compareSource) : false,
+        );
+        const leftCompareOverallLabel = leftCompareCase && compareSource
+          ? documentNoteLabelName(caseDocumentNote(leftCompareCase, compareSource))
+          : "";
+        const rightCompareOverallLabel = rightCompareCase && compareSource
+          ? documentNoteLabelName(caseDocumentNote(rightCompareCase, compareSource))
+          : "";
+        const leftCompareMissingOverall = Number(!leftCompareOverallLabel);
+        const rightCompareMissingOverall = Number(!rightCompareOverallLabel);
         const leftQuestion = String(left.question || "");
         const rightQuestion = String(right.question || "");
         const leftQuestionId = String(left.question_id || "");
         const rightQuestionId = String(right.question_id || "");
         const leftDomain = caseDomainLabel(left) || "";
         const rightDomain = caseDomainLabel(right) || "";
-        const leftOverallLabel = documentNoteLabelName(caseDocumentNote(left));
-        const rightOverallLabel = documentNoteLabelName(caseDocumentNote(right));
-        const leftMissingOverall = Number(!leftOverallLabel);
-        const rightMissingOverall = Number(!rightOverallLabel);
 
         if (sortKey === "question_asc") {
           const diff = leftQuestion.localeCompare(rightQuestion);
@@ -3620,32 +3870,54 @@
         } else if (sortKey === "highlights_asc") {
           const diff = leftCount - rightCount;
           if (diff) return diff;
-        } else if (sortKey === "grade_asc") {
-          const diff = leftGrade - rightGrade;
+        } else if (sortKey === "primary_grade_asc") {
+          const diff = leftPrimaryGrade - rightPrimaryGrade;
           if (diff) return diff;
-        } else if (sortKey === "grade_desc") {
-          const diff = rightGrade - leftGrade;
+        } else if (sortKey === "primary_grade_desc") {
+          const diff = rightPrimaryGrade - leftPrimaryGrade;
           if (diff) return diff;
-        } else if (sortKey === "status_desc") {
-          const diff = rightBrowseState - leftBrowseState;
+        } else if (sortKey === "primary_labelled_desc") {
+          const diff = rightPrimaryBrowseState - leftPrimaryBrowseState;
           if (diff) return diff;
-        } else if (sortKey === "status_asc") {
-          const diff = leftBrowseState - rightBrowseState;
+        } else if (sortKey === "primary_labelled_asc") {
+          const diff = leftPrimaryBrowseState - rightPrimaryBrowseState;
           if (diff) return diff;
-        } else if (sortKey === "overall_label_asc") {
-          const missingDiff = leftMissingOverall - rightMissingOverall;
+        } else if (sortKey === "primary_overall_label_asc") {
+          const missingDiff = leftPrimaryMissingOverall - rightPrimaryMissingOverall;
           if (missingDiff) return missingDiff;
-          const diff = leftOverallLabel.localeCompare(rightOverallLabel);
+          const diff = leftPrimaryOverallLabel.localeCompare(rightPrimaryOverallLabel);
           if (diff) return diff;
-        } else if (sortKey === "overall_label_desc") {
-          const missingDiff = leftMissingOverall - rightMissingOverall;
+        } else if (sortKey === "primary_overall_label_desc") {
+          const missingDiff = leftPrimaryMissingOverall - rightPrimaryMissingOverall;
           if (missingDiff) return missingDiff;
-          const diff = rightOverallLabel.localeCompare(leftOverallLabel);
+          const diff = rightPrimaryOverallLabel.localeCompare(leftPrimaryOverallLabel);
+          if (diff) return diff;
+        } else if (sortKey === "compare_grade_asc") {
+          const diff = leftCompareGrade - rightCompareGrade;
+          if (diff) return diff;
+        } else if (sortKey === "compare_grade_desc") {
+          const diff = rightCompareGrade - leftCompareGrade;
+          if (diff) return diff;
+        } else if (sortKey === "compare_labelled_desc") {
+          const diff = rightCompareBrowseState - leftCompareBrowseState;
+          if (diff) return diff;
+        } else if (sortKey === "compare_labelled_asc") {
+          const diff = leftCompareBrowseState - rightCompareBrowseState;
+          if (diff) return diff;
+        } else if (sortKey === "compare_overall_label_asc") {
+          const missingDiff = leftCompareMissingOverall - rightCompareMissingOverall;
+          if (missingDiff) return missingDiff;
+          const diff = leftCompareOverallLabel.localeCompare(rightCompareOverallLabel);
+          if (diff) return diff;
+        } else if (sortKey === "compare_overall_label_desc") {
+          const missingDiff = leftCompareMissingOverall - rightCompareMissingOverall;
+          if (missingDiff) return missingDiff;
+          const diff = rightCompareOverallLabel.localeCompare(leftCompareOverallLabel);
           if (diff) return diff;
         } else {
           const progressDiff = leftProgress.rank - rightProgress.rank;
           if (progressDiff) return progressDiff;
-          const gradeDiff = leftGrade - rightGrade;
+          const gradeDiff = leftPrimaryGrade - rightPrimaryGrade;
           if (gradeDiff) return gradeDiff;
           const traceDiff = rightTrace - leftTrace;
           if (traceDiff) return traceDiff;
@@ -3684,12 +3956,12 @@
       return documentNotes().find((item) => item.document_id === documentId) || null;
     }
 
-    function caseDocumentId(caseRow) {
-      return reasonDocument(caseRow)?.document_id || "";
+    function caseDocumentId(caseRow, source = currentSource()) {
+      return reasonDocument(caseRow, source)?.document_id || "";
     }
 
-    function caseDocumentNote(caseRow) {
-      const documentId = caseDocumentId(caseRow);
+    function caseDocumentNote(caseRow, source = currentSource()) {
+      const documentId = caseDocumentId(caseRow, source);
       return documentId ? documentNoteForDocument(documentId) : null;
     }
 
@@ -3711,18 +3983,18 @@
       };
     }
 
-    function caseLastTouched(caseRow) {
+    function caseLastTouched(caseRow, source = currentSource()) {
       const timestamps = [
-        ...annotationsForCase(caseRow).map((item) => item.updated_at_utc),
-        caseDocumentNote(caseRow)?.updated_at_utc,
+        ...annotationsForCase(caseRow, source).map((item) => item.updated_at_utc),
+        caseDocumentNote(caseRow, source)?.updated_at_utc,
       ].filter(Boolean).map((value) => new Date(value).getTime()).filter((value) => Number.isFinite(value));
       if (!timestamps.length) return "";
       return new Date(Math.max(...timestamps)).toISOString();
     }
 
-    function caseProgressMeta(caseRow) {
-      const spanCount = caseAnnotationCount(caseRow);
-      const note = caseDocumentNote(caseRow);
+    function caseProgressMeta(caseRow, source = currentSource()) {
+      const spanCount = caseAnnotationCount(caseRow, source);
+      const note = caseDocumentNote(caseRow, source);
       const hasOverallLabel = Boolean(note?.label_id);
       const hasOverallNote = Boolean((note?.summary || "").trim());
       const hasAnyLabels = spanCount > 0 || hasOverallLabel || hasOverallNote;
@@ -3759,16 +4031,16 @@
       };
     }
 
-    function caseBrowseLabelMeta(caseRow) {
-      if (caseIsLabelledForBrowse(caseRow)) {
+    function caseBrowseLabelMeta(caseRow, source = currentSource()) {
+      if (caseIsLabelledForBrowse(caseRow, source)) {
         return { label: "Labelled", tone: "green" };
       }
       return { label: "Unlabelled", tone: "slate" };
     }
 
-    function caseIsLabelledForBrowse(caseRow) {
-      const note = caseDocumentNote(caseRow);
-      return caseAnnotationCount(caseRow) > 0 || Boolean(note?.label_id);
+    function caseIsLabelledForBrowse(caseRow, source = currentSource()) {
+      const note = caseDocumentNote(caseRow, source);
+      return caseAnnotationCount(caseRow, source) > 0 || Boolean(note?.label_id);
     }
 
     function draftDocumentNoteFor(documentId) {
@@ -3875,14 +4147,14 @@
       return overlaps.length > 1 ? "Clear labels" : "Clear label";
     }
 
-    function annotationsForCase(caseRow) {
-      const documentId = reasonDocument(caseRow)?.document_id;
+    function annotationsForCase(caseRow, source = currentSource()) {
+      const documentId = reasonDocument(caseRow, source)?.document_id;
       if (!documentId) return [];
       return annotationsForDocument(documentId);
     }
 
-    function caseAnnotationCount(caseRow) {
-      return annotationsForCase(caseRow).length;
+    function caseAnnotationCount(caseRow, source = currentSource()) {
+      return annotationsForCase(caseRow, source).length;
     }
 
     function selectedCategory() {
@@ -4473,13 +4745,13 @@
     function nextSortValueForColumn(columnKey) {
       const defaultDirection = {
         question: "asc",
-        question_id: "asc",
         domain: "asc",
-        grade: "asc",
-        status: "desc",
-        overall_label: "asc",
-        highlights: "desc",
-        updated: "desc",
+        primary_grade: "asc",
+        primary_labelled: "desc",
+        primary_overall_label: "asc",
+        compare_grade: "asc",
+        compare_labelled: "desc",
+        compare_overall_label: "asc",
       }[columnKey] || "asc";
       const currentDirection = sortDirectionForColumn(columnKey);
       if (currentDirection === "ascending") return `${columnKey}_desc`;
@@ -4487,36 +4759,78 @@
       return `${columnKey}_${defaultDirection}`;
     }
 
+    function renderExplorerLabelledPill(isLabelled) {
+      return `
+        <span class="explorer-yesno ${isLabelled ? "is-yes" : "is-no"}">
+          ${isLabelled ? "Yes" : "No"}
+        </span>
+      `;
+    }
+
+    function renderExplorerGradePill(verdict) {
+      const compactLabel = {
+        "Clear pushback": "Clear",
+        "Partial challenge": "Partial",
+        "Accepted nonsense": "Accepted",
+        Missing: "Missing",
+      }[verdict?.label] || verdict?.label || "—";
+      const tone = verdict?.tone || "slate";
+      const fullLabel = verdict?.label || compactLabel;
+      return `
+        <span class="explorer-grade-pill ${escapeHtml(tone)}" title="${escapeAttribute(fullLabel)}">
+          ${escapeHtml(compactLabel)}
+        </span>
+      `;
+    }
+
+    function renderExplorerHeaderLabel(column) {
+      const metric = `<span class="explorer-header-metric">${escapeHtml(column.label)}</span>`;
+      if (!column.source) return `<span class="explorer-header-label">${metric}</span>`;
+      const tone = modelTone(column.source.key);
+      const sourceClass = tone ? `explorer-header-model ${tone}` : "explorer-header-model";
+      return `
+        <span class="explorer-header-label">
+          <span class="${escapeHtml(sourceClass)}">${escapeHtml(compactSourceLabel(column.source))}</span>
+          ${metric}
+        </span>
+      `;
+    }
+
     function renderExplorerHeader() {
       if (!el.questionExplorerHead) return;
+      const dataset = currentDataset();
+      const primarySource = currentSource();
+      const compareSource = sourceForKey(alternateSourceKeyForDataset(dataset?.key || STATE.datasetKey));
       const columns = [
         { key: "question", label: "Question" },
-        { key: "question_id", label: "ID" },
         { key: "domain", label: "Domain" },
-        { key: "grade", label: "Grade" },
-        { key: "status", label: "Status" },
-        { key: "overall_label", label: "Overall label" },
-        { key: "highlights", label: "Highlights" },
-        { key: "updated", label: "Updated" },
+        { key: "primary_grade", label: "Grade", source: primarySource },
+        { key: "primary_labelled", label: "Labelled", source: primarySource },
+        { key: "primary_overall_label", label: "Overall", source: primarySource },
+        { key: "compare_grade", label: "Grade", source: compareSource },
+        { key: "compare_labelled", label: "Labelled", source: compareSource },
+        { key: "compare_overall_label", label: "Overall", source: compareSource },
       ];
       el.questionExplorerHead.innerHTML = `
-        ${columns.map((column) => {
-          const direction = sortDirectionForColumn(column.key);
-          const indicator = direction === "ascending" ? "↑" : (direction === "descending" ? "↓" : "");
-          return `
-            <th scope="col" aria-sort="${escapeHtml(direction)}">
-              <button
-                class="explorer-sort-button${direction !== "none" ? " active" : ""}"
-                type="button"
-                data-sort-column="${escapeHtml(column.key)}"
-              >
-                <span>${escapeHtml(column.label)}</span>
-                <span class="sort-indicator" aria-hidden="true">${indicator}</span>
-              </button>
-            </th>
-          `;
-        }).join("")}
-        <th scope="col"></th>
+        <tr>
+          ${columns.map((column) => {
+            const direction = sortDirectionForColumn(column.key);
+            const indicator = direction === "ascending" ? "↑" : (direction === "descending" ? "↓" : "");
+            return `
+              <th scope="col" aria-sort="${escapeHtml(direction)}">
+                <button
+                  class="explorer-sort-button${direction !== "none" ? " active" : ""}"
+                  type="button"
+                  data-sort-column="${escapeHtml(column.key)}"
+                >
+                  ${renderExplorerHeaderLabel(column)}
+                  <span class="sort-indicator" aria-hidden="true">${indicator}</span>
+                </button>
+              </th>
+            `;
+          }).join("")}
+          <th scope="col"></th>
+        </tr>
       `;
     }
 
@@ -4524,35 +4838,56 @@
       const dataset = currentDataset();
       if (!dataset) return;
       renderExplorerHeader();
+      const primarySource = currentSource();
+      const compareSourceKey = alternateSourceKeyForDataset(dataset.key || STATE.datasetKey);
+      const compareSource = sourceForKey(compareSourceKey);
+      const compareCaseMap = new Map(
+        ((compareSource && datasetForKeys(compareSourceKey, dataset.key || STATE.datasetKey)?.cases) || [])
+          .map((caseRow) => [caseRow.question_id, caseRow]),
+      );
       el.questionExplorerList.innerHTML = rows.length ? rows.map((caseRow) => {
-        const primary = primaryVariant(caseRow) || {};
-        const verdict = scoreMeta(primary.consensus_score);
-        const browseState = caseBrowseLabelMeta(caseRow);
-        const count = caseAnnotationCount(caseRow);
-        const updatedAt = caseLastTouched(caseRow);
-        const note = caseDocumentNote(caseRow);
-        const overallLabelMeta = documentNoteLabelMeta(note);
+        const primary = primaryVariant(caseRow, primarySource) || {};
+        const primaryVerdict = scoreMeta(primary.consensus_score);
+        const primaryIsLabelled = caseIsLabelledForBrowse(caseRow, primarySource);
+        const primaryOverallLabelMeta = documentNoteLabelMeta(caseDocumentNote(caseRow, primarySource));
+        const compareCase = compareCaseMap.get(caseRow.question_id) || null;
+        const hasCompareCase = Boolean(compareCase && compareSource);
+        const compareVariant = compareCase ? (primaryVariant(compareCase, compareSource) || {}) : {};
+        const compareVerdict = scoreMeta(compareVariant.consensus_score);
+        const compareIsLabelled = compareCase && compareSource
+          ? caseIsLabelledForBrowse(compareCase, compareSource)
+          : false;
+        const compareOverallLabelMeta = compareCase && compareSource
+          ? documentNoteLabelMeta(caseDocumentNote(compareCase, compareSource))
+          : null;
         const isCurrent = caseRow.question_id === STATE.selectedCaseId;
-        const questionExcerpt = clampText(caseRow.question, 190);
-        const questionSubline = clampText(caseRow.nonsensical_element || "", 110);
+        const questionExcerpt = clampText(caseRow.question, 150);
         return `
           <tr class="${isCurrent ? "is-current" : ""}">
             <td class="explorer-question-cell">
               <div class="explorer-question-button">
                 <p class="explorer-question-line">${escapeHtml(questionExcerpt || caseRow.question || "")}</p>
-                <p class="explorer-question-subline">${escapeHtml(questionSubline || "Open in labelling to inspect the full trace.")}</p>
               </div>
             </td>
-            <td class="explorer-id-cell">${escapeHtml(caseRow.question_id)}</td>
             <td class="explorer-domain-cell">${escapeHtml(caseDomainLabel(caseRow) || "—")}</td>
-            <td><span class="pill ${escapeHtml(verdict.tone)}">${escapeHtml(verdict.label)}</span></td>
-            <td><span class="pill ${escapeHtml(browseState.tone)}">${escapeHtml(browseState.label)}</span></td>
-            <td class="explorer-overall-cell">${overallLabelMeta
-              ? `<span class="explorer-overall-tag" style="--label-color:${escapeAttribute(overallLabelMeta.color)}"><span class="swatch" style="background:${escapeAttribute(overallLabelMeta.color)}"></span><span>${escapeHtml(overallLabelMeta.name)}</span></span>`
+            <td>${renderExplorerGradePill(primaryVerdict)}</td>
+            <td class="explorer-status-cell">${renderExplorerLabelledPill(primaryIsLabelled)}</td>
+            <td class="explorer-overall-cell">${primaryOverallLabelMeta
+              ? `<span class="explorer-overall-tag" style="--label-color:${escapeAttribute(primaryOverallLabelMeta.color)}" title="${escapeAttribute(primaryOverallLabelMeta.name)}"><span class="swatch" style="background:${escapeAttribute(primaryOverallLabelMeta.color)}"></span><span class="label-text">${escapeHtml(primaryOverallLabelMeta.name)}</span></span>`
               : `<span class="explorer-overall-empty">—</span>`}
             </td>
-            <td class="explorer-count-cell">${escapeHtml(String(count))}</td>
-            <td class="explorer-updated-cell">${escapeHtml(updatedAt ? formatRelativeTime(updatedAt) : "—")}</td>
+            <td>${hasCompareCase
+              ? renderExplorerGradePill(compareVerdict)
+              : `<span class="explorer-overall-empty">—</span>`}
+            </td>
+            <td class="explorer-status-cell">${hasCompareCase
+              ? renderExplorerLabelledPill(compareIsLabelled)
+              : `<span class="explorer-overall-empty">—</span>`}
+            </td>
+            <td class="explorer-overall-cell">${compareOverallLabelMeta
+              ? `<span class="explorer-overall-tag" style="--label-color:${escapeAttribute(compareOverallLabelMeta.color)}" title="${escapeAttribute(compareOverallLabelMeta.name)}"><span class="swatch" style="background:${escapeAttribute(compareOverallLabelMeta.color)}"></span><span class="label-text">${escapeHtml(compareOverallLabelMeta.name)}</span></span>`
+              : `<span class="explorer-overall-empty">—</span>`}
+            </td>
             <td class="explorer-action-cell">
               <button class="btn small" type="button" data-open-labeling="${escapeHtml(caseRow.question_id)}">Open</button>
             </td>
@@ -4566,21 +4901,16 @@
         el.questionPanel.innerHTML = `<div class="empty-state"><strong>Choose a case to begin.</strong><br>The prompt, final answer, and reasoning trace will appear here.</div>`;
         return;
       }
-      const source = currentSource();
       const dataset = currentDataset();
       const compareKey = alternateSourceKey(caseRow.question_id, dataset?.key || STATE.datasetKey);
       const compareSource = compareKey ? sourceForKey(compareKey) : null;
       el.questionPanel.innerHTML = `
-        <div class="section-head">
-          <div>
+        <div class="section-head question-head">
+          <div class="question-heading">
             <h2>Question</h2>
+            <span class="question-id-chip">${escapeHtml(caseRow.question_id)}</span>
           </div>
-          <div class="model-meta">
-            ${renderModelChip(source)}
-            <span class="mini-stat">${escapeHtml(dataset?.label || STATE.datasetKey)}</span>
-            <span class="mini-stat">${escapeHtml(caseRow.question_id)}</span>
-            ${compareSource ? renderCompareToggle(compareSource) : ""}
-          </div>
+          ${compareSource ? `<div class="question-actions">${renderCompareToggle(compareSource)}</div>` : ""}
         </div>
         <div class="question-body">
           <p class="question-text">${escapeHtml(caseRow.question)}</p>
@@ -4698,7 +5028,7 @@
                 <div class="composer-target-switch" aria-label="Overall label target">
                   ${targetContext.options.map((option) => `
                     <button
-                      class="composer-target-button ${escapeHtml(modelTone(option.source?.key))}${option.key === selectedTarget.key ? " selected" : ""}"
+                      class="composer-target-button mini-stat${option.key === selectedTarget.key ? ` model-chip ${escapeHtml(modelTone(option.source?.key))}` : ""}"
                       type="button"
                       data-composer-target-source="${escapeHtml(option.key)}"
                       aria-pressed="${option.key === selectedTarget.key ? "true" : "false"}"
@@ -5470,11 +5800,12 @@
       STATE.draftConfidence = "clear";
     }
 
-    function openCaseForLabeling(questionId) {
+    function openCaseForLabeling(questionId, options = {}) {
       if (!questionId) return;
+      const { compare = false } = options;
       setSelectedCaseId(questionId);
       setViewMode("label");
-      STATE.compareOpen = false;
+      STATE.compareOpen = compare && Boolean(alternateSourceKey(questionId, STATE.datasetKey));
       clearTransientSelection();
       clearEditorState();
       render();
@@ -5582,7 +5913,7 @@
         const rows = sortCases(filteredCases());
         const nextCase = nextCaseToLabel(rows);
         if (!nextCase) return;
-        openCaseForLabeling(nextCase.question_id || "");
+        openCaseForLabeling(nextCase.question_id || "", { compare: true });
       });
       el.sourceSwitch.addEventListener("click", (event) => {
         const button = event.target.closest("[data-source-key]");
@@ -5623,7 +5954,7 @@
       el.questionExplorerList.addEventListener("click", (event) => {
         const openButton = event.target.closest("[data-open-labeling]");
         if (!openButton) return;
-        openCaseForLabeling(openButton.getAttribute("data-open-labeling") || "");
+        openCaseForLabeling(openButton.getAttribute("data-open-labeling") || "", { compare: true });
       });
       el.questionExplorerHead.addEventListener("click", (event) => {
         const button = event.target.closest("[data-sort-column]");
