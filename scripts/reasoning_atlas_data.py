@@ -8,21 +8,20 @@ import re
 from pathlib import Path
 from typing import Any
 
+from reasoning_lab_paths import LAB_ROOT, benchmark_dataset_dir
 
-LAB_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = LAB_ROOT.parent
 ROOT = LAB_ROOT
 OUTPUT_PATH = LAB_ROOT / "data" / "gpt54-reasoning-atlas.data.js"
 
 DATASETS = {
     "v2": {
         "label": "Benchmark v2",
-        "base_dir": REPO_ROOT / "data" / "v2" / "latest",
+        "base_dir": benchmark_dataset_dir("v2"),
         "description": "100-question refreshed benchmark",
     },
     "v1": {
         "label": "Benchmark v1",
-        "base_dir": REPO_ROOT / "data" / "latest",
+        "base_dir": benchmark_dataset_dir("v1"),
         "description": "55-question original benchmark",
     },
 }

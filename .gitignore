@@ -10,14 +10,17 @@ __pycache__/
 .venv/
 .env
 .env.*
+!.env.example
 
-# Rebuildable root artifacts
-/data/gpt54-reasoning-atlas.data.js
-/data/gpt54_reasoning_label_examples.jsonl
+# Local lock files
+/annotations/*.lock
 
-# Rebuildable special-run artifacts
+# Local experiment outputs
+/data/ai_label_runs/
+/data/ai_label_evals/
+
+# Local special-run artifacts
 /claude-sonnet-4.6-gemini-single-judge/runs/
-/claude-sonnet-4.6-gemini-single-judge/data/claude-sonnet-4.6-gemini-single-judge.data.js
 
 # Local QA screenshots
 /reasoning-lab-*.png

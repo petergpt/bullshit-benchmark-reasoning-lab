@@ -23,6 +23,43 @@ SCORE_LABELS = {
 }
 
 
+def normalize_bool(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    text = text_or_empty(value).strip().lower()
+    if not text:
+        return default
+    if text in {"1", "true", "yes", "y", "on"}:
+        return True
+    if text in {"0", "false", "no", "n", "off"}:
+        return False
+    return default
+
+
+def record_is_ai_labelled(record: dict[str, Any]) -> bool:
+    if "ai_labelled" in record:
+        return normalize_bool(record.get("ai_labelled"))
+    provenance = record.get("provenance") or {}
+    return (
+        text_or_empty(provenance.get("labeler_type")).strip() == "model"
+        or text_or_empty(provenance.get("source")).strip() == "ai_labelling"
+    )
+
+
+def record_is_human_reviewed(record: dict[str, Any]) -> bool:
+    if "human_reviewed" in record:
+        return normalize_bool(record.get("human_reviewed"))
+    provenance = record.get("provenance") or {}
+    return (
+        text_or_empty(provenance.get("labeler_type")).strip() == "human"
+        and not record_is_ai_labelled(record)
+    )
+
+
 def verdict_key(score: Any) -> str:
     if isinstance(score, (int, float)):
         if score >= 1.5:
@@ -52,6 +89,8 @@ def build_case_index(payload: dict[str, Any]) -> tuple[dict[str, dict[str, Any]]
                     f"{text_or_empty(dataset.get('key'))}:"
                     f"{text_or_empty(case.get('question_id'))}"
                 )
+                if case_key in cases:
+                    raise ValueError(f"Duplicate case key in atlas payload: {case_key}")
                 cases[case_key] = case
                 variant = (case.get("variants") or {}).get(primary_variant_key) or {}
                 document = variant.get("reasoning_document")
@@ -65,10 +104,16 @@ def build_case_index(payload: dict[str, Any]) -> tuple[dict[str, dict[str, Any]]
                             "source": source,
                             "variant": variant,
                         }
+                        if document_id in documents and documents[document_id] != bundle:
+                            raise ValueError(f"Duplicate document_id in atlas payload: {document_id}")
                         documents[document_id] = bundle
                         for legacy_id in document.get("legacy_document_ids") or []:
                             legacy_text = text_or_empty(legacy_id).strip()
                             if legacy_text:
+                                if legacy_text in documents and documents[legacy_text] != bundle:
+                                    raise ValueError(
+                                        f"Duplicate legacy document_id in atlas payload: {legacy_text}"
+                                    )
                                 documents[legacy_text] = bundle
     return cases, documents
 
@@ -99,16 +144,46 @@ def compact_case_context(bundle: dict[str, Any]) -> dict[str, Any]:
 
 def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict[str, Any]]:
     _cases, documents = build_case_index(payload)
-    notes_by_document = {
-        text_or_empty(note.get("document_id")): note
-        for note in store.get("document_notes") or []
-    }
-    category_lookup = {
-        text_or_empty(category.get("id")): category
-        for category in store.get("categories") or []
-    }
+    notes_by_document: dict[str, dict[str, Any]] = {}
+    for note in store.get("document_notes") or []:
+        document_id = text_or_empty(note.get("document_id"))
+        if document_id in notes_by_document:
+            raise ValueError(f"Duplicate document note in store export: {document_id}")
+        notes_by_document[document_id] = note
+    category_lookup: dict[str, dict[str, Any]] = {}
+    for category in store.get("categories") or []:
+        category_id = text_or_empty(category.get("id"))
+        if category_id in category_lookup:
+            raise ValueError(f"Duplicate category id in store export: {category_id}")
+        category_lookup[category_id] = category
+    review_sessions_by_id: dict[str, dict[str, Any]] = {}
+    for session in store.get("review_sessions") or []:
+        session_id = text_or_empty(session.get("id"))
+        if session_id in review_sessions_by_id:
+            raise ValueError(f"Duplicate review session id in store export: {session_id}")
+        review_sessions_by_id[session_id] = session
+    review_event_counts_by_session: dict[str, int] = {}
+    review_feedback_by_record: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for event in store.get("review_events") or []:
+        session_id = text_or_empty(event.get("session_id"))
+        if not session_id:
+            continue
+        review_event_counts_by_session[session_id] = review_event_counts_by_session.get(session_id, 0) + 1
+        feedback = text_or_empty(event.get("feedback")).strip()
+        if not feedback:
+            continue
+        record_id = text_or_empty(event.get("record_id"))
+        review_feedback_by_record.setdefault((session_id, record_id), []).append(
+            {
+                "record_kind": text_or_empty(event.get("record_kind")),
+                "action": text_or_empty(event.get("action")),
+                "feedback": feedback,
+                "created_at_utc": text_or_empty(event.get("created_at_utc")),
+            }
+        )
 
     examples: list[dict[str, Any]] = []
+    unresolved_document_ids: set[str] = set()
 
     for annotation in sorted(
         store.get("annotations") or [],
@@ -123,6 +198,7 @@ def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict
         document_id = text_or_empty(annotation.get("document_id"))
         bundle = documents.get(document_id)
         if not bundle:
+            unresolved_document_ids.add(document_id)
             continue
         document = bundle["document"]
         note = notes_by_document.get(document_id) or {}
@@ -132,6 +208,8 @@ def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict
         note_label_snapshot = note.get("label_snapshot") or category_lookup.get(note_label_id) or {}
         case_context = compact_case_context(bundle)
         reasoning_trace = text_or_empty(document.get("text"))
+        review_session_id = text_or_empty(annotation.get("review_session_id"))
+        review_session = review_sessions_by_id.get(review_session_id) or {}
 
         examples.append(
             {
@@ -156,16 +234,26 @@ def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict
                     "description": text_or_empty(label_snapshot.get("description")),
                     "guidance": text_or_empty(label_snapshot.get("guidance")),
                 },
-                "confidence": text_or_empty(annotation.get("confidence")) or "clear",
                 "why_label": text_or_empty(annotation.get("comment")),
                 "overall_trace_label": {
                     "id": note_label_id,
                     "name": text_or_empty(note_label_snapshot.get("name")) if note_label_id else "",
-                    "confidence": text_or_empty(note.get("confidence")),
-                } if (note_label_id or note.get("confidence")) else None,
+                } if note_label_id else None,
                 "overall_trace_note": text_or_empty(note.get("summary")),
                 "author": text_or_empty(annotation.get("author")),
                 "status": text_or_empty(annotation.get("status")),
+                "ai_labelled": record_is_ai_labelled(annotation),
+                "human_reviewed": record_is_human_reviewed(annotation),
+                "reviewed_by": text_or_empty(annotation.get("reviewed_by")),
+                "reviewed_at_utc": text_or_empty(annotation.get("reviewed_at_utc")),
+                "review_session_id": review_session_id,
+                "review_origin": text_or_empty(annotation.get("review_origin")),
+                "origin_suggestion_id": text_or_empty(annotation.get("origin_suggestion_id")),
+                "review_session_status": text_or_empty(review_session.get("status")),
+                "review_event_count": int(review_event_counts_by_session.get(review_session_id) or 0),
+                "review_feedback": review_feedback_by_record.get(
+                    (review_session_id, text_or_empty(annotation.get("id")))
+                ) or [],
                 "provenance": annotation.get("provenance") or {},
                 "created_at_utc": text_or_empty(annotation.get("created_at_utc")),
                 "updated_at_utc": text_or_empty(annotation.get("updated_at_utc")),
@@ -185,12 +273,15 @@ def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict
         document_id = text_or_empty(note.get("document_id"))
         bundle = documents.get(document_id)
         if not bundle:
+            unresolved_document_ids.add(document_id)
             continue
         document = bundle["document"]
         case_context = compact_case_context(bundle)
         label_id = text_or_empty(note.get("label_id"))
         label_snapshot = note.get("label_snapshot") or category_lookup.get(label_id) or {}
         reasoning_trace = text_or_empty(document.get("text"))
+        review_session_id = text_or_empty(note.get("review_session_id"))
+        review_session = review_sessions_by_id.get(review_session_id) or {}
         examples.append(
             {
                 "example_type": "overall_trace_annotation",
@@ -206,15 +297,30 @@ def export_examples(store: dict[str, Any], payload: dict[str, Any]) -> list[dict
                     "description": text_or_empty(label_snapshot.get("description")),
                     "guidance": text_or_empty(label_snapshot.get("guidance")),
                 } if label_id else None,
-                "confidence": text_or_empty(note.get("confidence")),
                 "overall_trace_note": text_or_empty(note.get("summary")),
                 "author": text_or_empty(note.get("author")),
+                "ai_labelled": record_is_ai_labelled(note),
+                "human_reviewed": record_is_human_reviewed(note),
+                "reviewed_by": text_or_empty(note.get("reviewed_by")),
+                "reviewed_at_utc": text_or_empty(note.get("reviewed_at_utc")),
+                "review_session_id": review_session_id,
+                "review_origin": text_or_empty(note.get("review_origin")),
+                "origin_suggestion_id": text_or_empty(note.get("origin_suggestion_id")),
+                "review_session_status": text_or_empty(review_session.get("status")),
+                "review_event_count": int(review_event_counts_by_session.get(review_session_id) or 0),
+                "review_feedback": review_feedback_by_record.get(
+                    (review_session_id, f"{document_id}:overall")
+                ) or [],
                 "provenance": note.get("provenance") or {},
                 "created_at_utc": text_or_empty(note.get("created_at_utc")),
                 "updated_at_utc": text_or_empty(note.get("updated_at_utc")),
                 "source_text_hash": text_or_empty(note.get("source_text_hash")),
             }
         )
+
+    if unresolved_document_ids:
+        missing = ", ".join(sorted(unresolved_document_ids))
+        raise ValueError(f"Unresolved document ids during export: {missing}")
 
     return examples
 

@@ -21,11 +21,29 @@ What this flow does:
 5. Publish viewer-only dataset snapshots under `data/viewer-input/v1` and `data/viewer-input/v2`
 6. Build a normalized browser bundle for later viewer work
 
-Key outputs:
+Share-ready outputs:
 
 - `data/viewer-input/v1/`
 - `data/viewer-input/v2/`
 - `data/claude-sonnet-4.6-gemini-single-judge.data.js`
+
+The shared repo keeps only the published viewer inputs needed by the reasoning
+lab:
+
+- `responses.jsonl`
+- `aggregate.jsonl`
+- `manifest.json`
+
+Raw run directories under `runs/` are intentionally local-only and remain
+ignored. They are useful for recapture/debugging, but they are not required to
+reproduce the current lab UI and trace content.
+
+Runtime notes:
+
+- `OPENROUTER_API_KEY` is required for `scripts/run_special_capture.sh`
+- `OPENROUTER_REFERER` and `OPENROUTER_APP_NAME` are optional headers
+- `OPENAI_API_KEY`, `OPENAI_PROJECT`, and `OPENAI_ORGANIZATION` are only needed
+  if you change the provider mix in the copied benchmark runner
 
 Repro entrypoint:
 

@@ -8,10 +8,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-
-LAB_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = LAB_ROOT.parent
-
+from reasoning_lab_paths import LAB_ROOT, benchmark_dataset_dir
 
 SOURCES = {
     "gpt54_high": {
@@ -28,13 +25,15 @@ SOURCES = {
         "datasets": {
             "v2": {
                 "label": "Benchmark v2",
-                "base_dir": REPO_ROOT / "data" / "v2" / "latest",
+                "base_dir": benchmark_dataset_dir("v2"),
                 "description": "100-question refreshed benchmark",
+                "expected_question_count": 100,
             },
             "v1": {
                 "label": "Benchmark v1",
-                "base_dir": REPO_ROOT / "data" / "latest",
+                "base_dir": benchmark_dataset_dir("v1"),
                 "description": "55-question original benchmark",
+                "expected_question_count": 55,
             },
         },
     },
@@ -59,6 +58,7 @@ SOURCES = {
                 / "viewer-input"
                 / "v2",
                 "description": "100-question isolated Sonnet 4.6 reasoning capture",
+                "expected_question_count": 100,
             },
             "v1": {
                 "label": "Benchmark v1",
@@ -68,6 +68,7 @@ SOURCES = {
                 / "viewer-input"
                 / "v1",
                 "description": "55-question isolated Sonnet 4.6 reasoning capture",
+                "expected_question_count": 55,
             },
         },
     },
@@ -347,6 +348,9 @@ def build_dataset(source_key: str, dataset_key: str, source_config: dict[str, An
             if model != model_label:
                 continue
             question_id = text_or_empty(row.get("question_id")).strip()
+            key = (question_id, variant_name)
+            if key in response_lookup:
+                raise ValueError(f"Duplicate response row for {source_key}:{dataset_key}:{question_id}:{variant_name}")
             response_lookup[(question_id, variant_name)] = row
             question_ids.add(question_id)
 
@@ -356,8 +360,17 @@ def build_dataset(source_key: str, dataset_key: str, source_config: dict[str, An
             if model != model_label:
                 continue
             question_id = text_or_empty(row.get("question_id")).strip()
+            key = (question_id, variant_name)
+            if key in aggregate_lookup:
+                raise ValueError(f"Duplicate aggregate row for {source_key}:{dataset_key}:{question_id}:{variant_name}")
             aggregate_lookup[(question_id, variant_name)] = row
             question_ids.add(question_id)
+
+    expected_question_count = int(dataset_config.get("expected_question_count") or 0)
+    if expected_question_count and len(question_ids) != expected_question_count:
+        raise ValueError(
+            f"Expected {expected_question_count} questions for {source_key}:{dataset_key}, found {len(question_ids)}."
+        )
 
     cases: list[dict[str, Any]] = []
     for question_id in sorted(question_ids):

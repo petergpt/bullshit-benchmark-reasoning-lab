@@ -1,0 +1,17 @@
+{
+  "generated_at_utc": "2026-03-07T21:11:36Z",
+  "snapshot_type": "reasoning-lab-gpt54-filtered-source",
+  "dataset_key": "v1",
+  "models": [
+    "openai/gpt-5.4@reasoning=none",
+    "openai/gpt-5.4@reasoning=xhigh"
+  ],
+  "sources": {
+    "responses_file": "data/latest/responses.jsonl",
+    "aggregate_rows_file": "data/latest/aggregate.jsonl"
+  },
+  "counts": {
+    "responses_rows": 110,
+    "aggregate_rows": 110
+  }
+}
