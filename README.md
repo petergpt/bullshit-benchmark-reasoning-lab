@@ -21,8 +21,9 @@ server without requiring the parent BullshitBench checkout.
   Generated browser bundles, derived JSONL exports, and the checked-in Sonnet
   4.6 reasoning snapshots used by the viewers.
 - `source-data/`
-  Vendored GPT-5.4 benchmark snapshot used by the lab by default. This is a
-  checked-in snapshot, not a nested upstream checkout.
+  Bundled GPT-5.4 source snapshot used by the lab by default. This is a
+  checked-in local snapshot under `source-data/gpt54/`, not a nested upstream
+  checkout.
 - `scripts/`
   Local server, builders, AI-labeling utilities, sync helpers, and Sonnet 4.6
   recapture utilities under `scripts/sonnet46/`.
@@ -96,7 +97,7 @@ Supported variables:
   Only needed if you change the provider mix used by the special-capture flow.
 - `REASONING_LAB_BENCHMARK_ROOT`
   Optional override. If set, the GPT-5.4 builders read from that external
-  BullshitBench checkout instead of the bundled `source-data/` snapshot.
+  BullshitBench checkout instead of the bundled `source-data/gpt54/` snapshot.
 
 ## Useful Commands
 
@@ -146,8 +147,8 @@ python3 scripts/sonnet46/openrouter_benchmark.py --help
 
 The lab is self-contained by default and uses these bundled inputs:
 
-- `source-data/benchmark-snapshot/data/latest/*`
-- `source-data/benchmark-snapshot/data/v2/latest/*`
+- `source-data/gpt54/latest/*`
+- `source-data/gpt54/v2/latest/*`
 - `data/sonnet46/viewer-input/v1/*`
 - `data/sonnet46/viewer-input/v2/*`
 

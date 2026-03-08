@@ -19,12 +19,12 @@ MODEL_FILTER = {
 DATASET_SPECS = {
     "v1": {
         "source_dir": Path("data") / "latest",
-        "dest_dir": Path("data") / "latest",
+        "dest_dir": Path("latest"),
         "expected_question_count": 55,
     },
     "v2": {
         "source_dir": Path("data") / "v2" / "latest",
-        "dest_dir": Path("data") / "v2" / "latest",
+        "dest_dir": Path("v2") / "latest",
         "expected_question_count": 100,
     },
 }
@@ -149,7 +149,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dest-root",
         default=str(DEFAULT_BENCHMARK_ROOT),
-        help="Destination root for the vendored benchmark-snapshot tree.",
+        help="Destination root for the bundled GPT-5.4 snapshot tree.",
     )
     return parser.parse_args()
 

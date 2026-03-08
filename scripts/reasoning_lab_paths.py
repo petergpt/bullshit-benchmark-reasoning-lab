@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 LAB_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BENCHMARK_ROOT = LAB_ROOT / "source-data" / "benchmark-snapshot"
+DEFAULT_BENCHMARK_ROOT = LAB_ROOT / "source-data" / "gpt54"
 
 
 def _expand_candidate(path_text: str) -> Path:
@@ -34,10 +34,20 @@ def iter_benchmark_root_candidates() -> list[Path]:
     return unique_candidates
 
 
-def is_benchmark_root(path: Path) -> bool:
+def is_repo_layout_root(path: Path) -> bool:
     return (path / "data" / "latest" / "responses.jsonl").exists() and (
         path / "data" / "v2" / "latest" / "responses.jsonl"
     ).exists()
+
+
+def is_snapshot_layout_root(path: Path) -> bool:
+    return (path / "latest" / "responses.jsonl").exists() and (
+        path / "v2" / "latest" / "responses.jsonl"
+    ).exists()
+
+
+def is_benchmark_root(path: Path) -> bool:
+    return is_repo_layout_root(path) or is_snapshot_layout_root(path)
 
 
 def resolve_benchmark_root() -> Path:
@@ -48,19 +58,29 @@ def resolve_benchmark_root() -> Path:
     checked = "\n".join(f"- {candidate}" for candidate in candidates)
     raise FileNotFoundError(
         "Could not locate BullshitBench source data for the reasoning lab.\n"
-        "Expected a root containing both data/latest/responses.jsonl and "
-        "data/v2/latest/responses.jsonl.\n"
+        "Expected either a BullshitBench repo root containing "
+        "data/latest/responses.jsonl and data/v2/latest/responses.jsonl, or a "
+        "bundled snapshot root containing latest/responses.jsonl and "
+        "v2/latest/responses.jsonl.\n"
         "Checked:\n"
         f"{checked}\n"
-        "Either sync the bundled snapshot into source-data/benchmark-snapshot or "
+        "Either sync the bundled snapshot into source-data/gpt54 or "
         "set REASONING_LAB_BENCHMARK_ROOT to a BullshitBench checkout."
     )
 
 
 def benchmark_dataset_dir(dataset_key: str) -> Path:
     benchmark_root = resolve_benchmark_root()
-    if dataset_key == "v1":
-        return benchmark_root / "data" / "latest"
-    if dataset_key == "v2":
-        return benchmark_root / "data" / "v2" / "latest"
-    raise ValueError(f"Unsupported dataset key: {dataset_key}")
+    if is_snapshot_layout_root(benchmark_root):
+        if dataset_key == "v1":
+            return benchmark_root / "latest"
+        if dataset_key == "v2":
+            return benchmark_root / "v2" / "latest"
+        raise ValueError(f"Unsupported dataset key: {dataset_key}")
+    if is_repo_layout_root(benchmark_root):
+        if dataset_key == "v1":
+            return benchmark_root / "data" / "latest"
+        if dataset_key == "v2":
+            return benchmark_root / "data" / "v2" / "latest"
+        raise ValueError(f"Unsupported dataset key: {dataset_key}")
+    raise ValueError(f"Unsupported benchmark root layout: {benchmark_root}")

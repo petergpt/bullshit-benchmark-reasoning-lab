@@ -29,8 +29,8 @@ how models handle nonsense prompts:
 The lab is now self-contained by default. It reads immutable bundled source
 inputs from this repo:
 
-- `source-data/benchmark-snapshot/data/latest/*`
-- `source-data/benchmark-snapshot/data/v2/latest/*`
+- `source-data/gpt54/latest/*`
+- `source-data/gpt54/v2/latest/*`
 - `data/sonnet46/viewer-input/v1/*`
 - `data/sonnet46/viewer-input/v2/*`
 
@@ -38,7 +38,7 @@ Optional override:
 
 - `REASONING_LAB_BENCHMARK_ROOT`
   If set, the GPT-5.4 source builders read from that external BullshitBench
-  checkout instead of the bundled `source-data/benchmark-snapshot/`.
+  checkout instead of the bundled `source-data/gpt54/`.
 
 ## Runtime Notes
 
@@ -267,7 +267,7 @@ later model-assisted labeling workflows.
 - `viewer/gpt54-reasoning-atlas.html`
 - `data/gpt54-reasoning-atlas.data.js`
 - `data/reasoning_label_examples.jsonl`
-- `source-data/benchmark-snapshot/data/`
+- `source-data/gpt54/`
 - `scripts/reasoning_annotation_server.py`
 - `scripts/run_reasoning_lab.sh`
 - `scripts/sync_gpt54_source_data.py`
