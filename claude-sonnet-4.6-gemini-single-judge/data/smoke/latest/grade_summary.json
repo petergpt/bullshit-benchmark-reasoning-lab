@@ -1,0 +1,73 @@
+{
+  "leaderboard": [
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=high",
+      "count": 1,
+      "scored_count": 1,
+      "nonsense_count": 1,
+      "control_count": 0,
+      "nonsense_score_0": 0,
+      "nonsense_score_1": 0,
+      "nonsense_score_2": 1,
+      "nonsense_score_3": 0,
+      "control_score_0": 0,
+      "control_score_1": 0,
+      "control_score_2": 0,
+      "control_score_3": 0,
+      "score_0": 0,
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 0,
+      "avg_score": 2.0,
+      "detection_rate_score_2": 1.0,
+      "full_engagement_rate_score_0": 0.0,
+      "control_correct_rate_score_3": null,
+      "error_count": 0,
+      "technique_breakdown": {
+        "cross_domain_concept_stitching": 2.0
+      },
+      "run_average_scores": {
+        "1": 2.0
+      },
+      "run_average_stddev": null
+    },
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=none",
+      "count": 1,
+      "scored_count": 1,
+      "nonsense_count": 1,
+      "control_count": 0,
+      "nonsense_score_0": 0,
+      "nonsense_score_1": 0,
+      "nonsense_score_2": 1,
+      "nonsense_score_3": 0,
+      "control_score_0": 0,
+      "control_score_1": 0,
+      "control_score_2": 0,
+      "control_score_3": 0,
+      "score_0": 0,
+      "score_1": 0,
+      "score_2": 1,
+      "score_3": 0,
+      "avg_score": 2.0,
+      "detection_rate_score_2": 1.0,
+      "full_engagement_rate_score_0": 0.0,
+      "control_correct_rate_score_3": null,
+      "error_count": 0,
+      "technique_breakdown": {
+        "cross_domain_concept_stitching": 2.0
+      },
+      "run_average_scores": {
+        "1": 2.0
+      },
+      "run_average_stddev": null
+    }
+  ],
+  "total_records": 2,
+  "total_scored_records": 2,
+  "total_error_records": 0,
+  "elapsed_seconds": 7.681,
+  "resumed": false,
+  "checkpoint_rows_at_start": 0,
+  "new_rows_processed": 2
+}

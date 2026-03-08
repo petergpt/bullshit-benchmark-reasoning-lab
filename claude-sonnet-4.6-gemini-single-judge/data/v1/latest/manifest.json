@@ -1,0 +1,18 @@
+{
+  "generated_at_utc": "2026-03-07T21:00:07.905148Z",
+  "dataset_key": "v1",
+  "special_run": true,
+  "sources": {
+    "run_dir": "runs/v1/sonnet46_reasoning_v1_20260307_205051",
+    "grade_dir": "runs/v1/sonnet46_reasoning_v1_20260307_205051/grades/sonnet46_reasoning_v1_20260307_205051__judge_google_gemini-3.1-pro-preview",
+    "aggregate_dir": "runs/v1/sonnet46_reasoning_v1_20260307_205051/aggregates/sonnet46_reasoning_v1_20260307_205051__judge_google_gemini-3.1-pro-preview__aggregate",
+    "responses_file": "data/v1/latest/responses.jsonl",
+    "grades_file": "data/v1/latest/grades.jsonl",
+    "aggregate_rows_file": "data/v1/latest/aggregate.jsonl"
+  },
+  "counts": {
+    "responses_rows": 110,
+    "grades_rows": 110,
+    "aggregate_rows": 110
+  }
+}

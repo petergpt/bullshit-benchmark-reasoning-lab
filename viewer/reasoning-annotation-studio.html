@@ -1,0 +1,5518 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BullshitBench Reasoning Lab</title>
+  <link rel="icon" href="../assets/bsbench.png">
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --panel: #ffffff;
+      --panel-strong: #ffffff;
+      --ink: #17211d;
+      --muted: #5d6965;
+      --line: #d8ddd9;
+      --teal: #185f55;
+      --teal-soft: #edf6f2;
+      --teal-deep: #123f3a;
+      --amber: #d28a13;
+      --rose: #f7dfdd;
+      --green: #1f8f5c;
+      --red: #d1495b;
+      --blue: #2878c7;
+      --violet: #7b5cc7;
+      --model-gpt: #2878c7;
+      --model-gpt-soft: #eef4fb;
+      --model-gpt-line: #cfdced;
+      --model-gpt-ink: #28547d;
+      --model-sonnet: #c57a1f;
+      --model-sonnet-soft: #fbf1e4;
+      --model-sonnet-line: #ead1ad;
+      --model-sonnet-ink: #85501a;
+      --shadow-lg: 0 4px 12px rgba(28, 38, 35, 0.04);
+      --shadow-md: 0 1px 3px rgba(28, 38, 35, 0.03);
+      --radius-xl: 10px;
+      --radius-lg: 10px;
+      --radius-md: 8px;
+      --radius-sm: 6px;
+      --transition: 160ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    }
+
+    body::before {
+      display: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .app {
+      width: min(1520px, calc(100vw - 24px));
+      margin: 12px auto;
+      display: grid;
+      gap: 12px;
+    }
+
+    .appbar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-height: 44px;
+      padding: 0 0 2px;
+      border-bottom: 1px solid #e4e8e5;
+    }
+
+    .appbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+      flex: 0 1 auto;
+    }
+
+    .appbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .appbar-logo {
+      width: 22px;
+      height: 22px;
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .appbar-brand-name {
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.2;
+      font-weight: 600;
+      color: #24312c;
+      white-space: nowrap;
+    }
+
+    .appbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .appbar-right-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .appbar-right-group::-webkit-scrollbar {
+      display: none;
+    }
+
+    .switch-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      min-width: 0;
+      flex: 0 0 auto;
+    }
+
+    .switch-cluster.model-cluster {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .switch-cluster.benchmark-cluster {
+      padding-left: 14px;
+      border-left: 1px solid #e2e6e3;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-left: auto;
+      flex: 0 0 auto;
+    }
+
+    .toolbar button,
+    .toolbar a {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #22312c;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .toolbar button:hover,
+    .toolbar a:hover,
+    .toolbar button:focus-visible,
+    .toolbar a:focus-visible {
+      outline: none;
+      background: #f6f7f6;
+      border-color: #c3cbc6;
+    }
+
+    .dataset-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      justify-content: flex-start;
+    }
+
+    .source-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-height: 30px;
+      border-bottom: 1px solid #d8ddd9;
+      justify-content: flex-start;
+    }
+
+    .view-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-height: 34px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .view-chip {
+      border: none;
+      background: transparent;
+      color: #5d6965;
+      padding: 7px 2px 8px;
+      margin-right: 12px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      line-height: 1;
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .view-chip.active {
+      color: var(--teal-deep);
+      border-bottom-color: var(--teal-deep);
+    }
+
+    .dataset-segment {
+      border: 1px solid #d4dbd7;
+      background: #ffffff;
+      color: #5d6965;
+      padding: 5px 10px;
+      margin-right: 0;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: color var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    .dataset-segment.active {
+      color: var(--teal-deep);
+      background: #eef3f1;
+      border-color: #cdd7d2;
+      font-weight: 600;
+    }
+
+    .source-segment {
+      border: none;
+      background: transparent;
+      color: #5d6965;
+      padding: 7px 1px 8px;
+      margin-right: 16px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .source-segment.active {
+      color: var(--teal-deep);
+      border-bottom-color: var(--teal-deep);
+      font-weight: 600;
+    }
+
+    .source-segment.gpt.active {
+      color: var(--model-gpt-ink);
+      border-bottom-color: var(--model-gpt);
+    }
+
+    .source-segment.sonnet.active {
+      color: var(--model-sonnet-ink);
+      border-bottom-color: var(--model-sonnet);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 312px minmax(0, 1fr) 252px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .workspace.sidebar-collapsed {
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    }
+
+    .workspace.sidebar-collapsed .right-rail {
+      display: none;
+    }
+
+    .view-pane.is-active {
+      animation: view-appear 160ms ease both;
+    }
+
+    @keyframes view-appear {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .explorer-view {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      min-width: 0;
+      align-items: start;
+    }
+
+    .rail,
+    .stage {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .rail {
+      position: static;
+    }
+
+    .left-rail > .panel {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: clamp(460px, calc(100vh - 176px), 760px);
+    }
+
+    .left-rail .control-grid {
+      min-height: 0;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: none;
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .panel[hidden] {
+      display: none !important;
+    }
+
+    .view-pane[hidden] {
+      display: none !important;
+    }
+
+    .panel h2,
+    .panel h3 {
+      margin: 0;
+      font-family: inherit;
+      letter-spacing: normal;
+      line-height: 1.25;
+    }
+
+    .panel h2 {
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .panel h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .section-head p,
+    .panel-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .filter-panel {
+      padding: 10px 12px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 2.5fr) repeat(2, minmax(132px, 0.9fr)) minmax(170px, 1.1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .filter-grid .field {
+      min-width: 0;
+    }
+
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-meta {
+      margin: 8px 0 0;
+      color: #61706a;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .panel-subtitle.compact {
+      font-size: 0.78rem;
+      line-height: 1.36;
+    }
+
+    .control-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    label.field {
+      display: grid;
+      gap: 5px;
+      color: #3a4743;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #c7d0cc;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #4f8d80;
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(31, 101, 89, 0.1);
+    }
+
+    details.multi-select {
+      position: relative;
+    }
+
+    details.multi-select summary {
+      list-style: none;
+      width: 100%;
+      border: 1px solid #c7d0cc;
+      border-radius: 10px;
+      padding: 8px 38px 8px 10px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    details.multi-select summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.multi-select summary::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-right: 1.5px solid #55645f;
+      border-bottom: 1.5px solid #55645f;
+      transform: translateY(-65%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    details.multi-select[open] summary {
+      border-color: #4f8d80;
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(31, 101, 89, 0.1);
+    }
+
+    details.multi-select[open] summary::after {
+      transform: translateY(-35%) rotate(225deg);
+    }
+
+    .multi-select-summary {
+      display: block;
+      color: #24312c;
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .multi-select-panel {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      top: calc(100% + 6px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow-lg);
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .multi-select-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #edf0ee;
+    }
+
+    .multi-select-actions button {
+      border: none;
+      background: transparent;
+      color: #2d5a51;
+      padding: 0;
+      font-size: 0.76rem;
+      font-weight: 500;
+    }
+
+    .multi-select-actions button:hover,
+    .multi-select-actions button:focus-visible {
+      color: #173f38;
+      outline: none;
+      text-decoration: underline;
+    }
+
+    .multi-select-list {
+      display: grid;
+      gap: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 2px;
+      color: #23312c;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .multi-select-option input {
+      margin: 0;
+      width: auto;
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toggle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #365049;
+    }
+
+    .toggle-chip input {
+      width: auto;
+      margin: 0;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .explorer-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #60706a;
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    .explorer-stat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .explorer-stat strong {
+      font-size: 0.9rem;
+      line-height: 1;
+      color: #1f2c28;
+      font-weight: 600;
+    }
+
+    .explorer-stat span {
+      color: #60706a;
+      font-size: 0.76rem;
+      line-height: 1.25;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #23453e;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      border-color: #c3cbc6;
+      background: #f6f7f6;
+      outline: none;
+    }
+
+    .btn.primary {
+      background: #1d564c;
+      color: #ffffff;
+      border-color: #1d564c;
+    }
+
+    .btn.ghost {
+      background: #ffffff;
+    }
+
+    .btn.warn {
+      background: var(--rose);
+      color: #872c38;
+      border-color: rgba(161, 49, 69, 0.12);
+    }
+
+    .btn.small {
+      padding: 6px 8px;
+      font-size: 0.76rem;
+    }
+
+    .status-line {
+      display: none;
+      color: rgba(230, 244, 239, 0.9);
+      font-size: 0.76rem;
+      line-height: 1.2;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: min(100%, 360px);
+    }
+
+    .explorer-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .explorer-panel-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .case-list {
+      display: grid;
+      gap: 7px;
+      max-height: calc(100vh - 184px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 1px 8px 1px 1px;
+      scrollbar-gutter: stable;
+    }
+
+    .left-rail .case-list {
+      min-height: 0;
+      max-height: none;
+      align-content: start;
+    }
+
+    .case-list::-webkit-scrollbar,
+    .annotation-list::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .case-list::-webkit-scrollbar-thumb,
+    .annotation-list::-webkit-scrollbar-thumb {
+      background: rgba(36, 70, 62, 0.16);
+      border-radius: 8px;
+    }
+
+    .case-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      text-align: left;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .case-card::before {
+      display: none;
+    }
+
+    .case-card:hover,
+    .case-card:focus-visible,
+    .case-card.selected {
+      outline: none;
+      border-color: #9ca8a3;
+      background: #fbfcfb;
+    }
+
+    .case-card.selected {
+      border-color: #1d564c;
+      background: #fbfcfb;
+    }
+
+    .case-top {
+      display: grid;
+      gap: 6px;
+      align-items: start;
+    }
+
+    .case-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .case-id {
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #43524d;
+    }
+
+    .pill-row,
+    .tag-row,
+    .judge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill,
+    .tag,
+    .mini-stat,
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .tag {
+      background: #f4f6f5;
+      border: 1px solid var(--line);
+      color: #41504b;
+    }
+
+    .mini-stat {
+      background: #f7f8f7;
+      border: 1px solid var(--line);
+      color: #55645f;
+    }
+
+    .mini-stat.model-chip {
+      font-weight: 700;
+    }
+
+    .mini-stat.model-chip.gpt {
+      background: var(--model-gpt-soft);
+      border-color: var(--model-gpt-line);
+      color: var(--model-gpt-ink);
+    }
+
+    .mini-stat.model-chip.sonnet {
+      background: var(--model-sonnet-soft);
+      border-color: var(--model-sonnet-line);
+      color: var(--model-sonnet-ink);
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      color: #35504a;
+      background: #f7f8f7;
+    }
+
+    .pill.green { background: #edf5f1; border-color: #cfe0d8; color: #295f4a; }
+    .pill.amber { background: #faf4e8; border-color: #e7d6ab; color: #7a5a13; }
+    .pill.red { background: #faeded; border-color: #e6c3c7; color: #8d404a; }
+    .pill.blue { background: #eef3f7; border-color: #d0dbe5; color: #41596d; }
+    .pill.violet { background: #f3eff7; border-color: #d9cfe6; color: #5d4e74; }
+    .pill.slate { background: #f3f4f3; border-color: #d6dbd8; color: #576762; }
+
+    .case-question {
+      margin: 0;
+      font-family: inherit;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      letter-spacing: normal;
+      color: #1c2a25;
+    }
+
+    .case-meta {
+      margin: 0;
+      color: #667770;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .case-helper {
+      margin: 0;
+      color: #566761;
+      font-size: 0.77rem;
+      line-height: 1.45;
+    }
+
+    .explorer-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: auto;
+      max-height: calc(100vh - 238px);
+      background: #ffffff;
+    }
+
+    .explorer-table-wrap::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .explorer-table-wrap::-webkit-scrollbar-thumb {
+      background: rgba(36, 70, 62, 0.16);
+      border-radius: 8px;
+    }
+
+    .explorer-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .explorer-table th:nth-child(1),
+    .explorer-table td:nth-child(1) {
+      width: 34%;
+    }
+
+    .explorer-table th:nth-child(2),
+    .explorer-table td:nth-child(2) {
+      width: 8%;
+    }
+
+    .explorer-table th:nth-child(3),
+    .explorer-table td:nth-child(3) {
+      width: 8%;
+    }
+
+    .explorer-table th:nth-child(4),
+    .explorer-table td:nth-child(4) {
+      width: 9%;
+    }
+
+    .explorer-table th:nth-child(5),
+    .explorer-table td:nth-child(5) {
+      width: 9%;
+    }
+
+    .explorer-table th:nth-child(6),
+    .explorer-table td:nth-child(6) {
+      width: 12%;
+    }
+
+    .explorer-table th:nth-child(7),
+    .explorer-table td:nth-child(7) {
+      width: 6%;
+    }
+
+    .explorer-table th:nth-child(8),
+    .explorer-table td:nth-child(8) {
+      width: 7%;
+    }
+
+    .explorer-table th:nth-child(9),
+    .explorer-table td:nth-child(9) {
+      width: 7%;
+    }
+
+    .explorer-table th,
+    .explorer-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #edf1ef;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .explorer-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #fbfcfb;
+      color: #596862;
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .explorer-table thead th[aria-sort="ascending"],
+    .explorer-table thead th[aria-sort="descending"] {
+      color: #314740;
+    }
+
+    .explorer-sort-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: auto;
+      max-width: 100%;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      line-height: 1.2;
+      text-align: left;
+      transition: color var(--transition);
+    }
+
+    .explorer-sort-button:hover,
+    .explorer-sort-button:focus-visible {
+      color: #314740;
+      outline: none;
+    }
+
+    .explorer-sort-button.active {
+      color: #22332d;
+    }
+
+    .sort-indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 10px;
+      min-width: 10px;
+      color: #7a8782;
+      font-size: 0.7rem;
+      line-height: 1;
+    }
+
+    .explorer-sort-button.active .sort-indicator {
+      color: #22332d;
+    }
+
+    .explorer-table tbody tr {
+      transition: background var(--transition);
+    }
+
+    .explorer-table tbody tr:hover {
+      background: #fafbfa;
+    }
+
+    .explorer-table tbody tr.is-current {
+      background: #fcfdfc;
+    }
+
+    .explorer-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .explorer-question-cell {
+      min-width: 0;
+    }
+
+    .explorer-question-button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      text-align: left;
+      color: inherit;
+      display: grid;
+      gap: 4px;
+    }
+
+    .explorer-question-button:focus-visible {
+      outline: 2px solid rgba(29, 86, 76, 0.18);
+      outline-offset: 2px;
+    }
+
+    .explorer-question-line {
+      margin: 0;
+      color: #1c2a25;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      font-weight: 500;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .explorer-question-subline {
+      margin: 0;
+      color: #61706a;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+    }
+
+    .explorer-id-cell {
+      color: #44524d;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .explorer-updated-cell,
+    .explorer-count-cell,
+    .explorer-domain-cell {
+      color: #5a6863;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .explorer-overall-cell {
+      color: #465650;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      white-space: normal;
+    }
+
+    .explorer-overall-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      border: 1px solid color-mix(in srgb, var(--label-color, #8aa19b) 24%, white);
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--label-color, #8aa19b) 13%, white);
+      color: #22332d;
+      padding: 4px 7px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .explorer-overall-tag .swatch {
+      width: 10px;
+      height: 10px;
+    }
+
+    .explorer-overall-empty {
+      color: #7c8883;
+    }
+
+    .explorer-action-cell {
+      width: 92px;
+    }
+
+    .question-panel {
+      padding: 9px 11px;
+      background: #ffffff;
+    }
+
+    .stage-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      min-width: 0;
+      align-items: start;
+    }
+
+    .stage-body.compare-active {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        "main-answer compare-answer"
+        "main-reason compare-reason";
+      align-items: stretch;
+    }
+
+    .stage-body.compare-active .primary-stack,
+    .stage-body.compare-active .comparison-stack {
+      display: contents;
+    }
+
+    .stage-body.compare-active #responsePanel {
+      grid-area: main-answer;
+      height: 100%;
+    }
+
+    .stage-body.compare-active #reasoningPanel {
+      grid-area: main-reason;
+      height: 100%;
+    }
+
+    .stage-body.compare-active [data-compare-panel="answer"] {
+      grid-area: compare-answer;
+      height: 100%;
+    }
+
+    .stage-body.compare-active [data-compare-panel="reasoning"] {
+      grid-area: compare-reason;
+      height: 100%;
+    }
+
+    .primary-stack {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      align-content: start;
+    }
+
+    .comparison-stack {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      align-content: start;
+    }
+
+    .question-body {
+      display: grid;
+      gap: 8px;
+    }
+
+    .question-text {
+      margin: 0;
+      font-family: inherit;
+      font-size: clamp(0.94rem, 1.22vw, 1.08rem);
+      line-height: 1.32;
+      letter-spacing: -0.01em;
+    }
+
+    .context-card {
+      border: 1px solid rgba(23, 44, 39, 0.06);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.76);
+      padding: 7px 9px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .context-card summary {
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .context-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .context-label {
+      color: #204f45;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .context-text {
+      margin: 0;
+      color: #445650;
+      font-size: 0.88rem;
+      line-height: 1.48;
+    }
+
+    .compare-empty {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .trace-editor-body.read-only {
+      cursor: default;
+    }
+
+    .card {
+      border: 1px solid rgba(27, 47, 41, 0.08);
+      border-radius: 16px;
+      background: var(--panel-strong);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .card.xhigh {
+      background: #ffffff;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #16332c;
+    }
+
+    .card-title small {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .plain-text {
+      white-space: pre-wrap;
+      color: #263531;
+      font-size: 0.94rem;
+      line-height: 1.62;
+    }
+
+    .response-panel {
+      padding: 11px;
+      background: #ffffff;
+      border-color: var(--line);
+    }
+
+    .panel.model-panel.gpt,
+    .panel.model-panel.sonnet {
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .panel-kicker {
+      display: none;
+    }
+
+    .markdown-body {
+      color: #223530;
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+
+    .markdown-body > :first-child {
+      margin-top: 0;
+    }
+
+    .markdown-body > :last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-body p,
+    .markdown-body ul,
+    .markdown-body ol,
+    .markdown-body blockquote,
+    .markdown-body pre,
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4 {
+      margin: 0 0 0.95em;
+    }
+
+    .markdown-body ul,
+    .markdown-body ol {
+      padding-left: 1.4em;
+    }
+
+    .markdown-body li + li {
+      margin-top: 0.28em;
+    }
+
+    .markdown-body code {
+      border-radius: 6px;
+      background: #f3f5f4;
+      padding: 0.14em 0.4em;
+      font-family: "SFMono-Regular", "Menlo", monospace;
+      font-size: 0.92em;
+    }
+
+    .markdown-body pre {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafbfa;
+      padding: 12px;
+    }
+
+    .markdown-body pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    .markdown-body blockquote {
+      border-left: 3px solid #c6d0cb;
+      padding-left: 12px;
+      color: #45615a;
+    }
+
+    .markdown-body a {
+      color: var(--teal);
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 0.16em;
+    }
+
+    .judge-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .judge-item {
+      border: 1px solid rgba(28, 46, 41, 0.08);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 11px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .judge-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .judge-name {
+      color: #334842;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .judge-justification {
+      margin: 0;
+      color: #556862;
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+
+    .reasoning-panel {
+      padding: 12px;
+      background: #ffffff;
+      border-color: var(--line);
+    }
+
+    .reasoning-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .reasoning-note {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.52;
+      max-width: 76ch;
+    }
+
+    .reasoning-sections {
+      display: grid;
+      gap: 8px;
+    }
+
+    .panel-control-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .panel-control-row.answer-controls {
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
+    .answer-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #32514a;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .answer-toggle:hover,
+    .answer-toggle:focus-visible {
+      outline: none;
+      background: #f6f7f6;
+      border-color: #c3cbc6;
+    }
+
+    .compare-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      min-width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #5a6863;
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+    }
+
+    .compare-toggle svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .compare-toggle .compare-left {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      opacity: 0.88;
+    }
+
+    .compare-toggle .compare-right {
+      fill: var(--compare-accent-soft, #eef3f7);
+      stroke: var(--compare-accent-line, #d0dbe5);
+      stroke-width: 1.5;
+    }
+
+    .compare-toggle .compare-badge {
+      fill: #ffffff;
+      stroke: var(--compare-accent-line, #d0dbe5);
+      stroke-width: 1.35;
+    }
+
+    .compare-toggle .compare-symbol {
+      fill: none;
+      stroke: var(--compare-accent-ink, #32514a);
+      stroke-width: 1.55;
+      stroke-linecap: round;
+    }
+
+    .compare-toggle.gpt {
+      --compare-accent-soft: var(--model-gpt-soft);
+      --compare-accent-line: var(--model-gpt-line);
+      --compare-accent-ink: var(--model-gpt-ink);
+    }
+
+    .compare-toggle.sonnet {
+      --compare-accent-soft: var(--model-sonnet-soft);
+      --compare-accent-line: var(--model-sonnet-line);
+      --compare-accent-ink: var(--model-sonnet-ink);
+    }
+
+    .compare-toggle:hover,
+    .compare-toggle:focus-visible {
+      outline: none;
+      background: #f6f7f6;
+      border-color: #c3cbc6;
+    }
+
+    .compare-toggle.active {
+      background: var(--compare-accent-soft, #f6f7f6);
+      border-color: var(--compare-accent-line, #c3cbc6);
+      color: var(--compare-accent-ink, #32514a);
+    }
+
+    .compare-toggle.active .compare-right {
+      fill: color-mix(in srgb, var(--compare-accent-ink, #32514a) 12%, white);
+      stroke: currentColor;
+    }
+
+    .compare-toggle.active .compare-badge {
+      fill: currentColor;
+      stroke: currentColor;
+    }
+
+    .compare-toggle.active .compare-symbol {
+      stroke: #ffffff;
+    }
+
+    .answer-preview {
+      margin: 0;
+      color: #4d605a;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .reasoning-section {
+      border: 1px solid rgba(27, 47, 41, 0.06);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 12px 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .reasoning-section h3 {
+      margin: 0;
+      padding: 0;
+      font-size: 0.84rem;
+      color: #415750;
+    }
+
+    .trace-editor-body {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: none;
+      padding: 14px 16px;
+      min-height: 220px;
+      cursor: text;
+    }
+
+    .trace-editor-body.selected {
+      border-color: #bcc6c1;
+      background: #ffffff;
+    }
+
+    .trace-document {
+      display: block;
+    }
+
+    .trace-paragraph {
+      display: block;
+      margin: 0 0 0.64em;
+    }
+
+    .trace-paragraph:last-child {
+      margin-bottom: 0;
+    }
+
+    .trace-sentence {
+      display: inline;
+      border-radius: 2px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      transition: background var(--transition), box-shadow var(--transition);
+      cursor: text;
+    }
+
+    .trace-sentence:hover {
+      background: transparent;
+    }
+
+    .trace-sentence.selected {
+      background: rgba(29, 86, 76, 0.06);
+    }
+
+    .annotation-text {
+      position: relative;
+      white-space: normal;
+      color: #25342f;
+      font-size: 0.93rem;
+      line-height: 1.64;
+      user-select: text;
+    }
+
+    .annotation-mark {
+      background: color-mix(in srgb, var(--mark-bg) 26%, white);
+      color: #20322d;
+      border: 1px solid color-mix(in srgb, var(--mark-bg) 18%, white);
+      border-bottom: 1px solid color-mix(in srgb, var(--mark-bg) 60%, white);
+      border-radius: 2px;
+      padding: 0.01em 0.08em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      transition: box-shadow var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+
+    .annotation-mark:hover,
+    .annotation-mark.active,
+    .annotation-mark.fresh {
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mark-bg) 18%, transparent);
+      background: color-mix(in srgb, var(--mark-bg) 28%, white);
+    }
+
+    .annotation-mark.fresh {
+      animation: mark-flash 1.35s ease-out;
+    }
+
+    @keyframes mark-flash {
+      0% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--mark-bg) 40%, transparent);
+        background: color-mix(in srgb, var(--mark-bg) 54%, white);
+      }
+      100% {
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--mark-bg) 28%, transparent);
+        background: color-mix(in srgb, var(--mark-bg) 38%, white);
+      }
+    }
+
+    .selection-preview {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .selection-label {
+      color: #4c5e59;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .selection-quote {
+      margin: 0;
+      font-size: 0.92rem;
+      color: #30453f;
+      line-height: 1.56;
+      white-space: pre-wrap;
+    }
+
+    .inspector-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .inspector-tools {
+      gap: 6px;
+    }
+
+    .field.compact {
+      gap: 0;
+    }
+
+    .field.compact span {
+      display: none;
+    }
+
+    .field.compact textarea {
+      min-height: 76px;
+      font-size: 0.88rem;
+      line-height: 1.48;
+    }
+
+    .category-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .overall-trace-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .overall-trace-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .save-state-pill {
+      min-width: 12ch;
+      justify-content: center;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .overall-label-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .overall-label-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 8px 10px;
+      text-align: left;
+      color: #213b35;
+      font-weight: 600;
+      font-size: 0.88rem;
+      line-height: 1.25;
+    }
+
+    .overall-label-item.selected {
+      border-color: #1d564c;
+      background: #f3f8f6;
+    }
+
+    .overall-note-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .overall-note-field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #556761;
+    }
+
+    .confidence-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .confidence-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #355048;
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .confidence-chip.selected {
+      border-color: #1d564c;
+      background: #f3f8f6;
+      color: #193a33;
+    }
+
+    .category-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 5px 8px;
+      max-width: 100%;
+      font-size: 0.82rem;
+      line-height: 1.2;
+    }
+
+    .category-item.selected {
+      border-color: #1d564c;
+      box-shadow: none;
+    }
+
+    .category-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .category-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #213b35;
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+
+    .category-description {
+      display: none;
+      margin: 0;
+      color: #556761;
+      font-size: 0.86rem;
+      line-height: 1.48;
+    }
+
+    .annotation-list {
+      display: grid;
+      gap: 8px;
+      max-height: calc(100vh - 208px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .annotation-detail-card {
+      border: 1px solid rgba(24, 47, 42, 0.1);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 10px;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .annotation-detail-title {
+      margin: 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #223a34;
+    }
+
+    .annotation-detail-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .annotation-detail-actions .toolbar-btn {
+      padding: 6px 8px;
+    }
+
+    .selection-toolbar {
+      position: fixed;
+      z-index: 100;
+      display: none;
+      width: min(420px, calc(100vw - 24px));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #243531;
+      box-shadow: var(--shadow-lg);
+      padding: 7px 9px 9px;
+    }
+
+    .selection-toolbar.visible {
+      display: grid;
+      gap: 8px;
+    }
+
+    .selection-toolbar.flash-mode {
+      width: auto;
+      min-width: 220px;
+      max-width: min(360px, calc(100vw - 24px));
+      gap: 6px;
+      padding: 9px 11px;
+      pointer-events: none;
+    }
+
+    .selection-flash-title {
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: #61706a;
+    }
+
+    .selection-flash-body {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #223530;
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .selection-toolbar-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toolbar-category-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 8px;
+      background: #ffffff;
+      color: #26403a;
+      font-size: 0.77rem;
+      font-weight: 500;
+      border-radius: 8px;
+      border-color: var(--line);
+    }
+
+    .toolbar-category-chip.selected {
+      border-color: #1d564c;
+      background: #f6f8f7;
+    }
+
+    .toolbar-btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #27413b;
+      padding: 6px 10px;
+      font-size: 0.77rem;
+      font-weight: 500;
+    }
+
+    .toolbar-btn.primary {
+      background: rgba(28, 142, 120, 0.14);
+      border-color: rgba(28, 142, 120, 0.14);
+      color: #165b51;
+    }
+
+    .toolbar-meta {
+      color: #667771;
+      font-size: 0.78rem;
+    }
+
+    details.inline-details {
+      border-top: 1px solid rgba(27, 47, 41, 0.08);
+      padding-top: 12px;
+    }
+
+    details.inline-details summary {
+      cursor: pointer;
+      color: #31534b;
+      font-size: 0.84rem;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    details.inline-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .model-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .annotation-card {
+      border: 1px solid rgba(24, 47, 42, 0.1);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 9px 10px;
+      display: grid;
+      gap: 5px;
+      text-align: left;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .annotation-card:hover,
+    .annotation-card.active {
+      border-color: #9ca8a3;
+      background: #fbfcfb;
+    }
+
+    .annotation-quote {
+      margin: 0;
+      color: #25342f;
+      font-size: 0.84rem;
+      line-height: 1.48;
+      text-align: left;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+    }
+
+    .annotation-comment {
+      margin: 0;
+      color: #556862;
+      font-size: 0.8rem;
+      line-height: 1.42;
+      text-align: left;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .annotation-meta {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.4;
+    }
+
+    .inline-note-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .inline-note-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #556761;
+    }
+
+    .inline-note-field textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .empty-state {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafbfa;
+      padding: 16px;
+      text-align: center;
+      color: #536660;
+      font-size: 0.88rem;
+      line-height: 1.52;
+    }
+
+    .empty-state strong {
+      color: #21433b;
+    }
+
+    dialog {
+      border: none;
+      padding: 0;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(20, 25, 23, 0.12);
+      width: min(560px, calc(100vw - 32px));
+      background: transparent;
+    }
+
+    dialog::backdrop {
+      background: rgba(20, 25, 23, 0.18);
+    }
+
+    .dialog-card {
+      background: var(--panel-strong);
+      border-radius: 10px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .app-toast {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 120;
+      display: none;
+      max-width: min(360px, calc(100vw - 24px));
+      border: 1px solid rgba(21, 69, 61, 0.08);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow-lg);
+      color: #233833;
+      padding: 9px 11px;
+      font-size: 0.82rem;
+      line-height: 1.42;
+    }
+
+    .app-toast.visible {
+      display: block;
+    }
+
+    .app-toast.error {
+      border-color: rgba(209, 73, 91, 0.18);
+      color: #7e3440;
+    }
+
+    .inspector-tools .btn {
+      padding: 6px 8px;
+      border-color: var(--line);
+      background: #f7f8f7;
+      color: #5a6c67;
+      box-shadow: none;
+      text-decoration: none;
+    }
+
+    .inspector-tools .btn:hover,
+    .inspector-tools .btn:focus-visible {
+      transform: none;
+      border-color: #c3cbc6;
+      background: #f1f3f2;
+      box-shadow: none;
+      color: #24483f;
+    }
+
+    .dialog-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1440px) {
+      .workspace {
+        grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+      }
+
+      .workspace > .right-rail {
+        grid-column: 1 / -1;
+        position: static;
+      }
+
+      .right-rail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filter-grid {
+        grid-template-columns: minmax(240px, 2fr) repeat(2, minmax(150px, 1fr)) minmax(170px, 1fr);
+      }
+
+      .filter-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .stage-body,
+      .right-rail {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .explorer-view {
+        grid-template-columns: 1fr;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        position: static;
+      }
+
+      .left-rail > .panel {
+        min-height: 0;
+      }
+
+      .left-rail .control-grid {
+        grid-template-rows: none;
+      }
+
+      .case-list,
+      .annotation-list {
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100%, 100vw);
+        margin: 10px auto 16px;
+      }
+
+      .appbar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .appbar-left {
+        flex-wrap: wrap;
+      }
+
+      .panel,
+      .question-panel,
+      .reasoning-panel {
+        padding: 14px;
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .appbar-actions {
+        min-width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .appbar-right-group {
+        justify-content: flex-start;
+        width: 100%;
+        overflow: visible;
+        flex-wrap: wrap;
+      }
+
+      .view-switch {
+        order: 3;
+      }
+
+      .switch-cluster.model-cluster,
+      .switch-cluster.benchmark-cluster {
+        min-width: 0;
+        width: auto;
+      }
+
+      .switch-cluster.benchmark-cluster {
+        padding-left: 0;
+        border-left: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="appbar">
+      <div class="appbar-left">
+        <div class="appbar-brand">
+          <img class="appbar-logo" src="../assets/bsbench.png" alt="BullshitBench logo">
+          <p class="appbar-brand-name">BullshitBench</p>
+        </div>
+        <div class="view-switch" id="viewSwitch" aria-label="Workspace view"></div>
+      </div>
+      <div class="appbar-actions">
+        <div class="appbar-right-group">
+          <div class="switch-cluster model-cluster">
+            <div class="source-switch" id="sourceSwitch" aria-label="Model switch"></div>
+          </div>
+          <div class="switch-cluster benchmark-cluster">
+            <div class="dataset-switch" id="datasetSwitch" aria-label="Dataset switch"></div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button id="exportBtn" type="button">Export</button>
+          <button id="importBtn" type="button">Import</button>
+          <button id="toggleSidebarBtn" type="button">Show tools</button>
+        </div>
+        <div class="status-line" id="statusLine">Connecting to local annotation store...</div>
+      </div>
+    </header>
+
+    <section class="panel filter-panel view-pane" id="filterPanel">
+      <div class="filter-grid">
+        <label class="field">
+          <span>Search</span>
+          <input id="searchInput" type="text" placeholder="Question id, wording, note text, label...">
+        </label>
+        <label class="field">
+          <span>Grade</span>
+          <select id="gradeFilterSelect">
+            <option value="all">All grades</option>
+            <option value="accepted">Accepted nonsense</option>
+            <option value="partial">Partial challenge</option>
+            <option value="clear">Clear pushback</option>
+            <option value="missing">Missing</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Labels</span>
+          <select id="annotationFilterSelect">
+            <option value="all">All</option>
+            <option value="labelled">Labelled</option>
+            <option value="unlabelled">Unlabelled</option>
+          </select>
+        </label>
+        <label id="domainFilterField" class="field">
+          <span>Domains</span>
+          <details id="domainFilterDetails" class="multi-select">
+            <summary>
+              <span id="domainFilterSummary" class="multi-select-summary">All domains</span>
+            </summary>
+            <div class="multi-select-panel">
+              <div class="multi-select-actions">
+                <button id="selectAllDomainsBtn" type="button">All domains</button>
+                <button id="closeDomainFilterBtn" type="button">Done</button>
+              </div>
+              <div id="domainFilterList" class="multi-select-list"></div>
+            </div>
+          </details>
+        </label>
+        <div class="filter-actions">
+          <button id="openNextUnlabeledBtn" class="btn" type="button">Open next unlabeled</button>
+          <button id="resetFiltersBtn" class="btn ghost" type="button">Reset filters</button>
+        </div>
+      </div>
+      <p class="filter-meta" id="filterMeta"></p>
+    </section>
+
+    <section class="explorer-view view-pane" id="explorerView">
+      <section class="panel explorer-panel">
+        <div class="section-head">
+          <div>
+            <h2>Questions</h2>
+            <p class="panel-subtitle" id="explorerMeta"></p>
+          </div>
+        </div>
+        <div class="explorer-summary" id="explorerSummary"></div>
+        <div class="explorer-table-wrap">
+          <table class="explorer-table">
+            <thead>
+              <tr id="questionExplorerHead"></tr>
+            </thead>
+            <tbody id="questionExplorerList"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <main class="workspace view-pane" id="workspace">
+      <aside class="rail left-rail">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Cases</h2>
+            </div>
+            <button id="openExplorerBtn" class="btn ghost small" type="button">Back to browse</button>
+          </div>
+          <div class="control-grid">
+            <label class="field">
+              <span>Author</span>
+              <input id="authorInput" type="text" placeholder="Your name for saved labels">
+            </label>
+            <p class="panel-subtitle" id="caseMeta"></p>
+            <div class="case-list" id="caseList"></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="stage">
+        <section class="panel question-panel" id="questionPanel"></section>
+        <div class="stage-body" id="stageBody">
+          <div class="primary-stack">
+            <section class="panel response-panel" id="responsePanel"></section>
+            <section class="panel reasoning-panel" id="reasoningPanel"></section>
+          </div>
+          <div class="comparison-stack" id="comparisonPanel" hidden></div>
+        </div>
+      </section>
+
+      <aside class="rail right-rail">
+        <section class="panel" id="composerPanel"></section>
+        <section class="panel" id="annotationPanel"></section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="categoryDialog">
+    <form class="dialog-card" id="categoryForm" method="dialog">
+      <div class="section-head">
+        <div>
+          <h2 id="categoryDialogTitle">Category</h2>
+        </div>
+      </div>
+      <input id="categoryFormMode" type="hidden" value="create">
+      <input id="categoryFormId" type="hidden" value="">
+      <div class="dialog-grid">
+        <label class="field">
+          <span>Name</span>
+          <input id="categoryNameInput" type="text" required placeholder="For example: Reframe to real question">
+        </label>
+        <label class="field">
+          <span>Description</span>
+          <textarea id="categoryDescriptionInput" placeholder="What this label means in the context of BullshitBench"></textarea>
+        </label>
+        <label class="field">
+          <span>Guidance</span>
+          <textarea id="categoryGuidanceInput" placeholder="How you want future annotations or AI assist to interpret this category"></textarea>
+        </label>
+        <div class="field-grid">
+          <label class="field">
+            <span>Color</span>
+            <input id="categoryColorInput" type="text" placeholder="#2878c7">
+          </label>
+          <label class="field">
+            <span>Text color</span>
+            <input id="categoryTextColorInput" type="text" placeholder="#ffffff">
+          </label>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="btn primary" type="submit">Save category</button>
+        <button class="btn ghost" type="button" id="closeCategoryDialogBtn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input id="importInput" class="visually-hidden" type="file" accept="application/json">
+  <div id="selectionToolbar" class="selection-toolbar"></div>
+  <div id="appToast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const SCORE_META = {
+      2: { label: "Clear pushback", tone: "green" },
+      1: { label: "Partial challenge", tone: "amber" },
+      0: { label: "Accepted nonsense", tone: "red" },
+      missing: { label: "Missing", tone: "slate" },
+    };
+
+    const CONFIDENCE_META = {
+      clear: { label: "Clear" },
+      borderline: { label: "Borderline" },
+    };
+
+    function initialAnnotationFilter() {
+      const direct = window.localStorage.getItem("reasoningLab.annotationFilter");
+      if (direct) return direct;
+      const legacyStatus = window.localStorage.getItem("reasoningLab.caseStatusFilter") || "";
+      const legacyAnnotated = window.localStorage.getItem("reasoningLab.onlyAnnotated") === "1";
+      if (legacyStatus === "unlabeled") return "unlabelled";
+      if (legacyAnnotated || ["in_progress", "reviewed", "any_labels"].includes(legacyStatus)) return "labelled";
+      return "all";
+    }
+
+    function normalizeCaseSortValue(value) {
+      const key = String(value || "").trim().toLowerCase();
+      return {
+        recommended: "recommended",
+        recent: "updated_desc",
+        most_labels: "highlights_desc",
+        least_labels: "highlights_asc",
+        grade: "grade_asc",
+        overall_label: "overall_label_asc",
+        trace_tokens: "recommended",
+        question_id: "question_id_asc",
+        question_asc: "question_asc",
+        question_desc: "question_desc",
+        question_id_asc: "question_id_asc",
+        question_id_desc: "question_id_desc",
+        domain_asc: "domain_asc",
+        domain_desc: "domain_desc",
+        grade_asc: "grade_asc",
+        grade_desc: "grade_desc",
+        status_asc: "status_asc",
+        status_desc: "status_desc",
+        overall_label_asc: "overall_label_asc",
+        overall_label_desc: "overall_label_desc",
+        highlights_asc: "highlights_asc",
+        highlights_desc: "highlights_desc",
+        updated_asc: "updated_asc",
+        updated_desc: "updated_desc",
+      }[key] || "recommended";
+    }
+
+    const STATE = {
+      bootstrap: null,
+      sourceKey: window.localStorage.getItem("reasoningLab.sourceKey") || "gpt54_high",
+      datasetKey: window.localStorage.getItem("reasoningLab.datasetKey") || "v2",
+      viewMode: window.localStorage.getItem("reasoningLab.viewMode") || "explorer",
+      search: "",
+      gradeFilter: window.localStorage.getItem("reasoningLab.gradeFilter") || "all",
+      annotationFilter: initialAnnotationFilter(),
+      caseSort: normalizeCaseSortValue(window.localStorage.getItem("reasoningLab.caseSort") || "recommended"),
+      selectedDomainsByDataset: (() => {
+        try {
+          const raw = window.localStorage.getItem("reasoningLab.selectedDomainsByDataset");
+          const parsed = raw ? JSON.parse(raw) : {};
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (_error) {
+          return {};
+        }
+      })(),
+      selectedCaseId: window.localStorage.getItem("reasoningLab.selectedCaseId") || "",
+      selection: null,
+      activeAnnotationId: "",
+      selectedCategoryId: "",
+      answerCollapsed: window.localStorage.getItem("reasoningLab.answerCollapsed") === "1",
+      sidebarOpen: window.localStorage.getItem("reasoningLab.sidebarOpen") === "1",
+      author: window.localStorage.getItem("reasoningLab.author") || "",
+      draftComment: "",
+      draftConfidence: "clear",
+      draftDocumentNote: null,
+      documentNoteStatus: null,
+      lastSelectionAt: 0,
+      selectionAnchor: null,
+      flashNotice: null,
+      justSavedAnnotationId: "",
+      toast: null,
+      compareOpen: false,
+    };
+
+    const el = {};
+    let flashNoticeTimer = 0;
+    let toastTimer = 0;
+    let commentSaveTimer = 0;
+    let documentNoteSaveTimer = 0;
+    let selectionCaptureFrame = 0;
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, "&#96;");
+    }
+
+    function categoryTooltip(category) {
+      if (!category) return "";
+      const name = String(category.name || category.id || "").trim();
+      const description = String(category.description || "").trim();
+      const guidance = String(category.guidance || "").trim();
+      return [name, description || guidance].filter(Boolean).join(": ");
+    }
+
+    function normalizedConfidence(value, allowBlank = false) {
+      const key = String(value || "").trim().toLowerCase();
+      if (!key) return allowBlank ? "" : "clear";
+      return CONFIDENCE_META[key] ? key : (allowBlank ? "" : "clear");
+    }
+
+    function confidenceOptions(allowBlank = false) {
+      const keys = Object.keys(CONFIDENCE_META);
+      return allowBlank ? ["", ...keys] : keys;
+    }
+
+    function confidenceLabel(value) {
+      if (!value) return "";
+      return CONFIDENCE_META[value]?.label || value;
+    }
+
+    function renderInlineMarkdown(text) {
+      let html = escapeHtml(text || "");
+      html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>');
+      return html;
+    }
+
+    function renderMarkdown(text) {
+      const source = String(text || "").replace(/\r\n?/g, "\n");
+      if (!source.trim()) return `<p>${escapeHtml("No response saved.")}</p>`;
+      const lines = source.split("\n");
+      const html = [];
+      let paragraph = [];
+      let listType = "";
+      let codeFence = false;
+      let codeLines = [];
+
+      function flushParagraph() {
+        if (!paragraph.length) return;
+        html.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
+        paragraph = [];
+      }
+
+      function closeList() {
+        if (!listType) return;
+        html.push(`</${listType}>`);
+        listType = "";
+      }
+
+      function flushCodeFence() {
+        if (!codeFence) return;
+        html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+        codeFence = false;
+        codeLines = [];
+      }
+
+      for (const line of lines) {
+        if (/^```/.test(line.trim())) {
+          flushParagraph();
+          closeList();
+          if (codeFence) {
+            flushCodeFence();
+          } else {
+            codeFence = true;
+            codeLines = [];
+          }
+          continue;
+        }
+
+        if (codeFence) {
+          codeLines.push(line);
+          continue;
+        }
+
+        const trimmed = line.trim();
+        if (!trimmed) {
+          flushParagraph();
+          closeList();
+          continue;
+        }
+
+        const heading = trimmed.match(/^(#{1,4})\s+(.+)$/);
+        if (heading) {
+          flushParagraph();
+          closeList();
+          const level = Math.min(heading[1].length + 1, 4);
+          html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+          continue;
+        }
+
+        const unordered = trimmed.match(/^[-*]\s+(.+)$/);
+        if (unordered) {
+          flushParagraph();
+          if (listType !== "ul") {
+            closeList();
+            listType = "ul";
+            html.push("<ul>");
+          }
+          html.push(`<li>${renderInlineMarkdown(unordered[1])}</li>`);
+          continue;
+        }
+
+        const ordered = trimmed.match(/^\d+\.\s+(.+)$/);
+        if (ordered) {
+          flushParagraph();
+          if (listType !== "ol") {
+            closeList();
+            listType = "ol";
+            html.push("<ol>");
+          }
+          html.push(`<li>${renderInlineMarkdown(ordered[1])}</li>`);
+          continue;
+        }
+
+        const quote = trimmed.match(/^>\s?(.+)$/);
+        if (quote) {
+          flushParagraph();
+          closeList();
+          html.push(`<blockquote><p>${renderInlineMarkdown(quote[1])}</p></blockquote>`);
+          continue;
+        }
+
+        paragraph.push(trimmed);
+      }
+
+      flushParagraph();
+      closeList();
+      flushCodeFence();
+      return html.join("");
+    }
+
+    function formatNumber(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) return "-";
+      return new Intl.NumberFormat("en-US").format(Math.round(value));
+    }
+
+    function formatScore(value) {
+      return typeof value === "number" ? value.toFixed(1) : "-";
+    }
+
+    function formatDate(value) {
+      if (!value) return "Unknown";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+
+    function formatRelativeTime(value) {
+      if (!value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      const diffMs = Date.now() - parsed.getTime();
+      const diffMinutes = Math.round(diffMs / 60000);
+      if (Math.abs(diffMinutes) < 1) return "just now";
+      if (Math.abs(diffMinutes) < 60) return `${diffMinutes}m ago`;
+      const diffHours = Math.round(diffMinutes / 60);
+      if (Math.abs(diffHours) < 24) return `${diffHours}h ago`;
+      const diffDays = Math.round(diffHours / 24);
+      return `${diffDays}d ago`;
+    }
+
+    function clampText(text, limit) {
+      const source = String(text || "").trim();
+      if (!source) return "";
+      if (source.length <= limit) return source;
+      return source.slice(0, limit).trimEnd() + "...";
+    }
+
+    function currentStore() {
+      return STATE.bootstrap?.store || null;
+    }
+
+    function readDocumentNoteDrafts() {
+      try {
+        const raw = window.localStorage.getItem("reasoningLab.documentNoteDrafts");
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch (_error) {
+        return {};
+      }
+    }
+
+    function writeDocumentNoteDrafts(drafts) {
+      window.localStorage.setItem("reasoningLab.documentNoteDrafts", JSON.stringify(drafts || {}));
+    }
+
+    function persistDocumentNoteDraft(documentId, draft) {
+      if (!documentId) return;
+      const drafts = readDocumentNoteDrafts();
+      const summary = String(draft?.summary || "");
+      const labelId = String(draft?.labelId || "");
+      const confidence = normalizedConfidence(draft?.confidence, true);
+      if (!summary.trim() && !labelId) {
+        delete drafts[documentId];
+      } else {
+        drafts[documentId] = {
+          documentId,
+          summary,
+          labelId,
+          confidence,
+        };
+      }
+      writeDocumentNoteDrafts(drafts);
+    }
+
+    function clearDocumentNoteDraft(documentId) {
+      if (!documentId) return;
+      const drafts = readDocumentNoteDrafts();
+      if (!(documentId in drafts)) return;
+      delete drafts[documentId];
+      writeDocumentNoteDrafts(drafts);
+    }
+
+    function currentAtlas() {
+      return STATE.bootstrap?.atlas || null;
+    }
+
+    function currentSource() {
+      return currentAtlas()?.sources?.[STATE.sourceKey] || null;
+    }
+
+    function modelTone(sourceKey) {
+      const key = String(sourceKey || "").toLowerCase();
+      if (key.includes("gpt")) return "gpt";
+      if (key.includes("sonnet")) return "sonnet";
+      return "";
+    }
+
+    function modelPanelClass(source) {
+      const tone = modelTone(source?.key);
+      return tone ? `model-panel ${tone}` : "";
+    }
+
+    function renderModelChip(source) {
+      const tone = modelTone(source?.key);
+      const className = tone ? `mini-stat model-chip ${tone}` : "mini-stat";
+      return `<span class="${className}">${escapeHtml(source?.label || "Model")}</span>`;
+    }
+
+    function renderCompareToggle(compareSource) {
+      const tone = modelTone(compareSource?.key);
+      const className = `compare-toggle${tone ? ` ${tone}` : ""}${STATE.compareOpen ? " active" : ""}`;
+      const label = STATE.compareOpen
+        ? `Hide ${compareSource?.label || "comparison"} comparison`
+        : `Compare with ${compareSource?.label || "the other model"}`;
+      return `
+        <button
+          id="toggleCompareBtn"
+          class="${className}"
+          type="button"
+          aria-label="${escapeAttribute(label)}"
+          aria-pressed="${STATE.compareOpen ? "true" : "false"}"
+          title="${escapeAttribute(label)}"
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <rect class="compare-left" x="2.5" y="4.25" width="6.4" height="10.75" rx="1.55"></rect>
+            <rect class="compare-right" x="10.15" y="4.25" width="6.7" height="10.75" rx="1.55"></rect>
+            <circle class="compare-badge" cx="15.5" cy="15.35" r="3.05"></circle>
+            <path class="compare-symbol" d="M14.05 15.35h2.9"></path>
+            ${STATE.compareOpen ? "" : `<path class="compare-symbol" d="M15.5 13.9v2.9"></path>`}
+          </svg>
+        </button>
+      `;
+    }
+
+    function currentDataset() {
+      return currentSource()?.datasets?.[STATE.datasetKey] || null;
+    }
+
+    function setAnswerCollapsed(collapsed) {
+      STATE.answerCollapsed = Boolean(collapsed);
+      window.localStorage.setItem("reasoningLab.answerCollapsed", STATE.answerCollapsed ? "1" : "0");
+    }
+
+    function setSidebarOpen(open) {
+      STATE.sidebarOpen = Boolean(open);
+      window.localStorage.setItem("reasoningLab.sidebarOpen", STATE.sidebarOpen ? "1" : "0");
+    }
+
+    function setSourceKey(key) {
+      STATE.sourceKey = key;
+      window.localStorage.setItem("reasoningLab.sourceKey", STATE.sourceKey);
+    }
+
+    function setDatasetKey(key) {
+      STATE.datasetKey = key;
+      window.localStorage.setItem("reasoningLab.datasetKey", STATE.datasetKey);
+    }
+
+    function setViewMode(mode) {
+      STATE.viewMode = mode === "label" ? "label" : "explorer";
+      window.localStorage.setItem("reasoningLab.viewMode", STATE.viewMode);
+    }
+
+    function setGradeFilter(value) {
+      STATE.gradeFilter = value || "all";
+      window.localStorage.setItem("reasoningLab.gradeFilter", STATE.gradeFilter);
+    }
+
+    function setAnnotationFilter(value) {
+      STATE.annotationFilter = value || "all";
+      window.localStorage.setItem("reasoningLab.annotationFilter", STATE.annotationFilter);
+    }
+
+    function setCaseSort(value) {
+      STATE.caseSort = normalizeCaseSortValue(value || "recommended");
+      window.localStorage.setItem("reasoningLab.caseSort", STATE.caseSort);
+    }
+
+    function setSelectedCaseId(questionId) {
+      STATE.selectedCaseId = questionId || "";
+      window.localStorage.setItem("reasoningLab.selectedCaseId", STATE.selectedCaseId);
+    }
+
+    function availableDomains() {
+      const dataset = currentDataset();
+      if (!dataset || dataset.key !== "v2") return [];
+      return [...new Set(
+        (dataset.cases || [])
+          .map((caseRow) => caseDomainLabel(caseRow))
+          .filter(Boolean)
+      )].sort((left, right) => left.localeCompare(right));
+    }
+
+    function caseDomainLabel(caseRow) {
+      const prefix = String(caseRow?.question_id || "").split("_")[0];
+      const label = {
+        sw: "Coding",
+        med: "Medical",
+        fin: "Finance",
+        leg: "Legal",
+        phys: "Physics",
+      }[prefix];
+      return label || "";
+    }
+
+    function selectedDomainsForCurrentDataset() {
+      const available = availableDomains();
+      const stored = Array.isArray(STATE.selectedDomainsByDataset?.[STATE.datasetKey])
+        ? STATE.selectedDomainsByDataset[STATE.datasetKey]
+        : null;
+      if (stored === null) return null;
+      const valid = stored
+        .map((item) => String(item || "").trim())
+        .filter((item) => available.includes(item));
+      if (!valid.length && stored.length) return null;
+      if (valid.length === available.length) return null;
+      return valid;
+    }
+
+    function setSelectedDomainsForCurrentDataset(domains) {
+      const available = availableDomains();
+      if (domains === null) {
+        delete STATE.selectedDomainsByDataset[STATE.datasetKey];
+        window.localStorage.setItem(
+          "reasoningLab.selectedDomainsByDataset",
+          JSON.stringify(STATE.selectedDomainsByDataset),
+        );
+        return;
+      }
+      const valid = [...new Set((domains || [])
+        .map((item) => String(item || "").trim())
+        .filter((item) => available.includes(item)))].sort((left, right) => left.localeCompare(right));
+      if (valid.length === available.length) {
+        delete STATE.selectedDomainsByDataset[STATE.datasetKey];
+      } else {
+        STATE.selectedDomainsByDataset[STATE.datasetKey] = valid;
+      }
+      window.localStorage.setItem(
+        "reasoningLab.selectedDomainsByDataset",
+        JSON.stringify(STATE.selectedDomainsByDataset),
+      );
+    }
+
+    function domainSummaryText() {
+      const available = availableDomains();
+      const selected = selectedDomainsForCurrentDataset();
+      if (!available.length) return "All domains";
+      if (selected === null) return "All domains";
+      if (!selected.length) return "No domains";
+      if (selected.length === 1) return selected[0];
+      if (selected.length === 2) return selected.join(", ");
+      return `${selected.length} domains`;
+    }
+
+    function categories() {
+      const items = currentStore()?.categories || [];
+      return [...items].sort((left, right) => {
+        const leftOrder = Number(left?.order ?? 999);
+        const rightOrder = Number(right?.order ?? 999);
+        if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+        return String(left?.name || "").localeCompare(String(right?.name || ""));
+      });
+    }
+
+    function categoryMap() {
+      const map = new Map();
+      categories().forEach((category) => map.set(category.id, category));
+      return map;
+    }
+
+    function primaryVariantKey(source = currentSource()) {
+      return String(source?.primary_variant_key || "");
+    }
+
+    function baselineVariantKey(source = currentSource()) {
+      return String(source?.baseline_variant_key || "");
+    }
+
+    function primaryVariant(caseRow, source = currentSource()) {
+      const key = primaryVariantKey(source);
+      return key ? (caseRow?.variants?.[key] || null) : null;
+    }
+
+    function sourceForKey(sourceKey) {
+      return currentAtlas()?.sources?.[sourceKey] || null;
+    }
+
+    function datasetForKeys(sourceKey, datasetKey) {
+      return sourceForKey(sourceKey)?.datasets?.[datasetKey] || null;
+    }
+
+    function caseForKeys(sourceKey, datasetKey, questionId) {
+      if (!questionId) return null;
+      return (datasetForKeys(sourceKey, datasetKey)?.cases || []).find(
+        (caseRow) => caseRow.question_id === questionId,
+      ) || null;
+    }
+
+    function alternateSourceKey(questionId = STATE.selectedCaseId, datasetKey = STATE.datasetKey) {
+      const atlas = currentAtlas();
+      if (!atlas) return "";
+      const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
+        ? atlas.source_order
+        : Object.keys(atlas.sources || {});
+      return orderedKeys.find((key) => key !== STATE.sourceKey && caseForKeys(key, datasetKey, questionId)) || "";
+    }
+
+    function scoreMeta(score) {
+      if (typeof score === "number") {
+        if (score >= 1.5) return SCORE_META[2];
+        if (score >= 0.5) return SCORE_META[1];
+        if (score >= 0) return SCORE_META[0];
+      }
+      return SCORE_META.missing;
+    }
+
+    function verdictKey(score) {
+      if (typeof score === "number") {
+        if (score >= 1.5) return "clear";
+        if (score >= 0.5) return "partial";
+        if (score >= 0) return "accepted";
+      }
+      return "missing";
+    }
+
+    function gradeRank(score) {
+      return {
+        accepted: 0,
+        partial: 1,
+        clear: 2,
+        missing: 3,
+      }[verdictKey(score)] ?? 3;
+    }
+
+    function filteredCases() {
+      const dataset = currentDataset();
+      if (!dataset) return [];
+      const query = STATE.search.trim().toLowerCase();
+      const selectedDomainList = selectedDomainsForCurrentDataset();
+      const selectedDomains = new Set(selectedDomainList || []);
+      return dataset.cases.filter((caseRow) => {
+        const primary = primaryVariant(caseRow);
+        const annotationCount = caseAnnotationCount(caseRow);
+        const documentNote = caseDocumentNote(caseRow);
+        const progress = caseProgressMeta(caseRow);
+        if (STATE.gradeFilter !== "all") {
+          const caseVerdict = verdictKey(primary?.consensus_score);
+          if (caseVerdict !== STATE.gradeFilter) return false;
+        }
+        if (STATE.annotationFilter !== "all") {
+          const isLabelled = caseIsLabelledForBrowse(caseRow);
+          if (STATE.annotationFilter === "labelled" && !isLabelled) return false;
+          if (STATE.annotationFilter === "unlabelled" && isLabelled) return false;
+        }
+        if (selectedDomainList !== null && !selectedDomains.has(caseDomainLabel(caseRow))) return false;
+        if (!query) return true;
+        const haystack = [
+          caseRow.question_id,
+          caseDomainLabel(caseRow),
+          caseRow.domain,
+          caseRow.technique,
+          caseRow.question,
+          caseRow.nonsensical_element,
+          progress.label,
+          primary?.response_text,
+          primary?.reasoning_summary,
+          documentNote?.summary,
+          documentNote?.label_id,
+          documentNote?.label_snapshot?.name,
+          documentNote?.confidence,
+          documentNote?.author,
+          ...(annotationsForCase(caseRow).map((item) => `${item.quote} ${item.comment} ${item.author} ${item.label_id} ${item.confidence || ""}`)),
+        ].join(" ").toLowerCase();
+        return haystack.includes(query);
+      });
+    }
+
+    function sortCases(rows) {
+      const items = [...rows];
+      const sortKey = normalizeCaseSortValue(STATE.caseSort);
+      items.sort((left, right) => {
+        const leftProgress = caseProgressMeta(left);
+        const rightProgress = caseProgressMeta(right);
+        const leftCount = caseAnnotationCount(left);
+        const rightCount = caseAnnotationCount(right);
+        const leftRecent = Date.parse(caseLastTouched(left) || "") || 0;
+        const rightRecent = Date.parse(caseLastTouched(right) || "") || 0;
+        const leftPrimary = primaryVariant(left);
+        const rightPrimary = primaryVariant(right);
+        const leftGrade = gradeRank(leftPrimary?.consensus_score);
+        const rightGrade = gradeRank(rightPrimary?.consensus_score);
+        const leftTrace = Number(leftPrimary?.response_reasoning_tokens ?? -Infinity);
+        const rightTrace = Number(rightPrimary?.response_reasoning_tokens ?? -Infinity);
+        const leftBrowseState = Number(caseIsLabelledForBrowse(left));
+        const rightBrowseState = Number(caseIsLabelledForBrowse(right));
+        const leftQuestion = String(left.question || "");
+        const rightQuestion = String(right.question || "");
+        const leftQuestionId = String(left.question_id || "");
+        const rightQuestionId = String(right.question_id || "");
+        const leftDomain = caseDomainLabel(left) || "";
+        const rightDomain = caseDomainLabel(right) || "";
+        const leftOverallLabel = documentNoteLabelName(caseDocumentNote(left));
+        const rightOverallLabel = documentNoteLabelName(caseDocumentNote(right));
+        const leftMissingOverall = Number(!leftOverallLabel);
+        const rightMissingOverall = Number(!rightOverallLabel);
+
+        if (sortKey === "question_asc") {
+          const diff = leftQuestion.localeCompare(rightQuestion);
+          if (diff) return diff;
+        } else if (sortKey === "question_desc") {
+          const diff = rightQuestion.localeCompare(leftQuestion);
+          if (diff) return diff;
+        } else if (sortKey === "question_id_asc") {
+          const diff = leftQuestionId.localeCompare(rightQuestionId);
+          if (diff) return diff;
+        } else if (sortKey === "question_id_desc") {
+          const diff = rightQuestionId.localeCompare(leftQuestionId);
+          if (diff) return diff;
+        } else if (sortKey === "domain_asc") {
+          const diff = leftDomain.localeCompare(rightDomain);
+          if (diff) return diff;
+        } else if (sortKey === "domain_desc") {
+          const diff = rightDomain.localeCompare(leftDomain);
+          if (diff) return diff;
+        } else if (sortKey === "updated_desc") {
+          const diff = rightRecent - leftRecent;
+          if (diff) return diff;
+        } else if (sortKey === "updated_asc") {
+          const diff = leftRecent - rightRecent;
+          if (diff) return diff;
+        } else if (sortKey === "highlights_desc") {
+          const diff = rightCount - leftCount;
+          if (diff) return diff;
+        } else if (sortKey === "highlights_asc") {
+          const diff = leftCount - rightCount;
+          if (diff) return diff;
+        } else if (sortKey === "grade_asc") {
+          const diff = leftGrade - rightGrade;
+          if (diff) return diff;
+        } else if (sortKey === "grade_desc") {
+          const diff = rightGrade - leftGrade;
+          if (diff) return diff;
+        } else if (sortKey === "status_desc") {
+          const diff = rightBrowseState - leftBrowseState;
+          if (diff) return diff;
+        } else if (sortKey === "status_asc") {
+          const diff = leftBrowseState - rightBrowseState;
+          if (diff) return diff;
+        } else if (sortKey === "overall_label_asc") {
+          const missingDiff = leftMissingOverall - rightMissingOverall;
+          if (missingDiff) return missingDiff;
+          const diff = leftOverallLabel.localeCompare(rightOverallLabel);
+          if (diff) return diff;
+        } else if (sortKey === "overall_label_desc") {
+          const missingDiff = leftMissingOverall - rightMissingOverall;
+          if (missingDiff) return missingDiff;
+          const diff = rightOverallLabel.localeCompare(leftOverallLabel);
+          if (diff) return diff;
+        } else {
+          const progressDiff = leftProgress.rank - rightProgress.rank;
+          if (progressDiff) return progressDiff;
+          const gradeDiff = leftGrade - rightGrade;
+          if (gradeDiff) return gradeDiff;
+          const traceDiff = rightTrace - leftTrace;
+          if (traceDiff) return traceDiff;
+          const countDiff = rightCount - leftCount;
+          if (countDiff) return countDiff;
+        }
+
+        return leftQuestionId.localeCompare(rightQuestionId);
+      });
+      return items;
+    }
+
+    function ensureSelection(rows) {
+      if (!rows.length) {
+        setSelectedCaseId("");
+        return;
+      }
+      if (!rows.some((row) => row.question_id === STATE.selectedCaseId)) {
+        setSelectedCaseId(rows[0].question_id);
+      }
+    }
+
+    function selectedCase(rows) {
+      return rows.find((row) => row.question_id === STATE.selectedCaseId) || null;
+    }
+
+    function annotations() {
+      return currentStore()?.annotations || [];
+    }
+
+    function documentNotes() {
+      return currentStore()?.document_notes || [];
+    }
+
+    function documentNoteForDocument(documentId) {
+      return documentNotes().find((item) => item.document_id === documentId) || null;
+    }
+
+    function caseDocumentId(caseRow) {
+      return reasonDocument(caseRow)?.document_id || "";
+    }
+
+    function caseDocumentNote(caseRow) {
+      const documentId = caseDocumentId(caseRow);
+      return documentId ? documentNoteForDocument(documentId) : null;
+    }
+
+    function documentNoteLabelName(note) {
+      if (!note) return "";
+      if (note?.label_snapshot?.name) return String(note.label_snapshot.name);
+      if (note?.label_id) return String(categoryMap().get(note.label_id)?.name || note.label_id);
+      return "";
+    }
+
+    function documentNoteLabelMeta(note) {
+      if (!note) return null;
+      const category = note?.label_id ? categoryMap().get(note.label_id) : null;
+      const name = documentNoteLabelName(note);
+      if (!name) return null;
+      return {
+        name,
+        color: String(note?.label_snapshot?.color || category?.color || "#8aa19b"),
+      };
+    }
+
+    function caseLastTouched(caseRow) {
+      const timestamps = [
+        ...annotationsForCase(caseRow).map((item) => item.updated_at_utc),
+        caseDocumentNote(caseRow)?.updated_at_utc,
+      ].filter(Boolean).map((value) => new Date(value).getTime()).filter((value) => Number.isFinite(value));
+      if (!timestamps.length) return "";
+      return new Date(Math.max(...timestamps)).toISOString();
+    }
+
+    function caseProgressMeta(caseRow) {
+      const spanCount = caseAnnotationCount(caseRow);
+      const note = caseDocumentNote(caseRow);
+      const hasOverallLabel = Boolean(note?.label_id);
+      const hasOverallNote = Boolean((note?.summary || "").trim());
+      const hasAnyLabels = spanCount > 0 || hasOverallLabel || hasOverallNote;
+      if (!hasAnyLabels) {
+        return {
+          key: "unlabeled",
+          label: "Unlabelled",
+          tone: "slate",
+          rank: 0,
+          hasAnyLabels: false,
+          hasOverallLabel: false,
+          hasOverallNote: false,
+        };
+      }
+      if (spanCount > 0 && (hasOverallLabel || hasOverallNote)) {
+        return {
+          key: "reviewed",
+          label: "Reviewed",
+          tone: "green",
+          rank: 2,
+          hasAnyLabels: true,
+          hasOverallLabel,
+          hasOverallNote,
+        };
+      }
+      return {
+        key: "in_progress",
+        label: "In progress",
+        tone: "blue",
+        rank: 1,
+        hasAnyLabels: true,
+        hasOverallLabel,
+        hasOverallNote,
+      };
+    }
+
+    function caseBrowseLabelMeta(caseRow) {
+      if (caseIsLabelledForBrowse(caseRow)) {
+        return { label: "Labelled", tone: "green" };
+      }
+      return { label: "Unlabelled", tone: "slate" };
+    }
+
+    function caseIsLabelledForBrowse(caseRow) {
+      const note = caseDocumentNote(caseRow);
+      return caseAnnotationCount(caseRow) > 0 || Boolean(note?.label_id);
+    }
+
+    function draftDocumentNoteFor(documentId) {
+      if (!STATE.draftDocumentNote || STATE.draftDocumentNote.documentId !== documentId) {
+        const drafts = readDocumentNoteDrafts();
+        const stored = drafts[documentId];
+        if (!stored || typeof stored !== "object") return null;
+        return {
+          documentId,
+          summary: String(stored.summary || ""),
+          labelId: String(stored.labelId || ""),
+          confidence: normalizedConfidence(stored.confidence, true),
+        };
+      }
+      return STATE.draftDocumentNote;
+    }
+
+    function setDocumentNoteStatus(documentId, message) {
+      STATE.documentNoteStatus = documentId
+        ? { documentId, message: String(message || "") }
+        : null;
+      const statusNode = document.getElementById("documentNoteSaveState");
+      if (statusNode && STATE.documentNoteStatus?.documentId === statusNode.dataset.documentId) {
+        statusNode.textContent = STATE.documentNoteStatus.message;
+      }
+    }
+
+    function documentNoteStatusText(documentId, documentNote, documentNoteDraft = null) {
+      if (STATE.documentNoteStatus?.documentId === documentId && STATE.documentNoteStatus.message) {
+        return STATE.documentNoteStatus.message;
+      }
+      if (
+        documentNoteDraft
+        && (
+          (documentNoteDraft.summary || "") !== (documentNote?.summary || "")
+          || (documentNoteDraft.labelId || "") !== (documentNote?.label_id || "")
+          || normalizedConfidence(documentNoteDraft.confidence, true) !== normalizedConfidence(documentNote?.confidence, true)
+        )
+      ) {
+        return "Saved locally";
+      }
+      if (documentNote?.updated_at_utc) return "Saved";
+      return "Autosave on";
+    }
+
+    function annotationsForDocument(documentId) {
+      return annotations()
+        .filter((item) => item.document_id === documentId)
+        .sort((left, right) => {
+          const startDiff = Number(left.start || 0) - Number(right.start || 0);
+          if (startDiff) return startDiff;
+          return Number(left.end || 0) - Number(right.end || 0);
+        });
+    }
+
+    function overlappingAnnotationsForSelection(selection = STATE.selection) {
+      if (!selection) return [];
+      const documentId = selection.document_id || selection.documentId;
+      if (!documentId) return [];
+      const start = Number(selection.start);
+      const end = Number(selection.end);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return [];
+      return annotationsForDocument(documentId).filter((item) => {
+        const itemStart = Number(item.start || 0);
+        const itemEnd = Number(item.end || 0);
+        return start < itemEnd && end > itemStart;
+      });
+    }
+
+    function annotationForSelection(selection = STATE.selection) {
+      const overlaps = overlappingAnnotationsForSelection(selection);
+      if (overlaps.length !== 1) return null;
+      return overlaps[0];
+    }
+
+    function annotationSegmentsAfterClear(annotation, selection = STATE.selection) {
+      if (!annotation || !selection) return [];
+      const annotationStart = Number(annotation.start);
+      const annotationEnd = Number(annotation.end);
+      const selectionStart = Number(selection.start);
+      const selectionEnd = Number(selection.end);
+      if (
+        !Number.isFinite(annotationStart)
+        || !Number.isFinite(annotationEnd)
+        || !Number.isFinite(selectionStart)
+        || !Number.isFinite(selectionEnd)
+      ) {
+        return [];
+      }
+      if (selectionEnd <= annotationStart || selectionStart >= annotationEnd) {
+        return [{ start: annotationStart, end: annotationEnd }];
+      }
+      return [
+        selectionStart > annotationStart ? { start: annotationStart, end: Math.min(selectionStart, annotationEnd) } : null,
+        selectionEnd < annotationEnd ? { start: Math.max(selectionEnd, annotationStart), end: annotationEnd } : null,
+      ].filter((segment) => segment && Number(segment.end) > Number(segment.start));
+    }
+
+    function clearActionLabel(selection = STATE.selection) {
+      const overlaps = overlappingAnnotationsForSelection(selection);
+      if (!overlaps.length) return "Clear";
+      const isPartial = overlaps.some((annotation) => annotationSegmentsAfterClear(annotation, selection).length > 0);
+      if (isPartial) return "Clear selected part";
+      return overlaps.length > 1 ? "Clear labels" : "Clear label";
+    }
+
+    function annotationsForCase(caseRow) {
+      const documentId = reasonDocument(caseRow)?.document_id;
+      if (!documentId) return [];
+      return annotationsForDocument(documentId);
+    }
+
+    function caseAnnotationCount(caseRow) {
+      return annotationsForCase(caseRow).length;
+    }
+
+    function selectedCategory() {
+      const items = categories();
+      if (!items.length) return null;
+      const match = items.find((item) => item.id === STATE.selectedCategoryId);
+      if (match) return match;
+      STATE.selectedCategoryId = items[0].id;
+      return items[0];
+    }
+
+    function reasonDocument(caseRow) {
+      return primaryVariant(caseRow)?.reasoning_document || null;
+    }
+
+    function atlasDocument(documentId) {
+      if (!documentId) return null;
+      const atlas = currentAtlas();
+      for (const source of Object.values(atlas?.sources || {})) {
+        for (const dataset of Object.values(source?.datasets || {})) {
+          for (const caseRow of dataset?.cases || []) {
+            for (const variant of Object.values(caseRow?.variants || {})) {
+              const document = variant?.reasoning_document;
+              const legacyIds = Array.isArray(document?.legacy_document_ids)
+                ? document.legacy_document_ids
+                : [];
+              if (document?.document_id === documentId || legacyIds.includes(documentId)) {
+                return document;
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function splitTextIntoSentences(text, absoluteStart) {
+      const source = String(text || "");
+      if (!source.trim()) return [];
+      const sentences = [];
+      if (typeof Intl !== "undefined" && typeof Intl.Segmenter === "function") {
+        const segmenter = new Intl.Segmenter("en", { granularity: "sentence" });
+        let index = 0;
+        for (const part of segmenter.segment(source)) {
+          if (!part.segment.trim()) continue;
+          index += 1;
+          sentences.push({
+            index,
+            text: part.segment,
+            start: absoluteStart + part.index,
+            end: absoluteStart + part.index + part.segment.length,
+          });
+        }
+      }
+      if (sentences.length) return sentences;
+
+      const regex = /.+?(?:[.!?](?=\s|$)|\n+|$)/gs;
+      let match;
+      let index = 0;
+      while ((match = regex.exec(source))) {
+        if (!match[0].trim()) continue;
+        index += 1;
+        sentences.push({
+          index,
+          text: match[0],
+          start: absoluteStart + match.index,
+          end: absoluteStart + match.index + match[0].length,
+        });
+      }
+      return sentences;
+    }
+
+    function splitTextIntoParagraphs(text, absoluteStart) {
+      const source = String(text || "");
+      if (!source.trim()) return [];
+      const paragraphs = [];
+      const regex = /[\s\S]*?(?:\n\s*\n|$)/g;
+      let match;
+      while ((match = regex.exec(source))) {
+        if (!match[0]) break;
+        const rawBlock = match[0];
+        const trimmedSeparatorBlock = rawBlock.replace(/\n\s*\n$/, "");
+        if (!trimmedSeparatorBlock.trim()) {
+          if (regex.lastIndex >= source.length) break;
+          continue;
+        }
+        const leadingWhitespace = trimmedSeparatorBlock.match(/^\s*/)?.[0]?.length || 0;
+        const trailingWhitespace = trimmedSeparatorBlock.match(/\s*$/)?.[0]?.length || 0;
+        const bodyEnd = trimmedSeparatorBlock.length - trailingWhitespace;
+        const paragraphText = trimmedSeparatorBlock.slice(leadingWhitespace, bodyEnd);
+        if (paragraphText) {
+          const paragraphStart = absoluteStart + match.index + leadingWhitespace;
+          paragraphs.push({
+            text: paragraphText,
+            start: paragraphStart,
+            end: paragraphStart + paragraphText.length,
+          });
+        }
+        if (regex.lastIndex >= source.length) break;
+      }
+      return paragraphs;
+    }
+
+    function traceParagraphs(document) {
+      const sections = (document?.sections || []).length
+        ? document.sections.map((section) => ({
+          text: section.body || "",
+          start: Number(section.body_start || 0),
+        }))
+        : [{
+          text: document?.text || "",
+          start: 0,
+        }];
+      return sections.flatMap((section) => splitTextIntoParagraphs(section.text, section.start));
+    }
+
+    function rangeWithinBounds(item, start, end) {
+      if (!item) return false;
+      return Number(item.start) >= Number(start) && Number(item.end) <= Number(end);
+    }
+
+    function renderHighlightedText(source, absoluteStart, spanAnnotations, categoryLookup) {
+      const sectionStart = absoluteStart;
+      const sectionEnd = absoluteStart + source.length;
+      const relevant = spanAnnotations
+        .filter((item) => Number(item.start) < sectionEnd && Number(item.end) > sectionStart)
+        .sort((left, right) => Number(left.start) - Number(right.start));
+      let cursor = sectionStart;
+      let html = "";
+      relevant.forEach((annotation) => {
+        const start = Math.max(Number(annotation.start), sectionStart);
+        const end = Math.min(Number(annotation.end), sectionEnd);
+        if (end <= start) return;
+        const safeStart = Math.max(cursor, start);
+        if (end <= safeStart) return;
+        html += escapeHtml(source.slice(cursor - sectionStart, safeStart - sectionStart));
+        const category = categoryLookup.get(annotation.label_id) || {
+          color: "#8aa19b",
+          text_color: "#1f2825",
+          name: annotation.label_id,
+        };
+        const activeClass = annotation.id === STATE.activeAnnotationId ? " active" : "";
+        const freshClass = annotation.id === STATE.justSavedAnnotationId ? " fresh" : "";
+        html += `
+          <mark
+            class="annotation-mark${activeClass}${freshClass}"
+            data-annotation-id="${escapeHtml(annotation.id)}"
+            title="${escapeHtml(category.name || annotation.label_id)}"
+            style="--mark-bg:${escapeHtml(category.color || "#8aa19b")};--mark-ink:${escapeHtml(category.text_color || "#1f2825")};"
+          >${escapeHtml(source.slice(safeStart - sectionStart, end - sectionStart))}</mark>
+        `;
+        cursor = end;
+      });
+      html += escapeHtml(source.slice(cursor - sectionStart));
+      return html;
+    }
+
+    function anchorFromRect(rect) {
+      if (!rect) return null;
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+      };
+    }
+
+    function toolbarAnchorForSelection() {
+      return STATE.selectionAnchor || {
+        x: window.innerWidth / 2,
+        y: Math.max(120, window.innerHeight * 0.25),
+      };
+    }
+
+    function renderToast() {
+      const toast = el.appToast;
+      if (!toast) return;
+      if (!STATE.toast?.message) {
+        toast.className = "app-toast";
+        toast.textContent = "";
+        return;
+      }
+      toast.className = `app-toast visible ${STATE.toast.tone || ""}`.trim();
+      toast.textContent = STATE.toast.message;
+    }
+
+    function setToast(message, tone = "neutral", durationMs = 2600) {
+      if (toastTimer) {
+        window.clearTimeout(toastTimer);
+      }
+      STATE.toast = { message, tone };
+      renderToast();
+      if (durationMs > 0) {
+        toastTimer = window.setTimeout(() => {
+          STATE.toast = null;
+          renderToast();
+        }, durationMs);
+      }
+    }
+
+    async function runUiAction(action, fallbackMessage = "Something went wrong.") {
+      try {
+        await action();
+      } catch (error) {
+        console.error(error);
+        setToast(error?.message || fallbackMessage, "error");
+      }
+    }
+
+    function queueFlashNoticeClear() {
+      if (flashNoticeTimer) {
+        window.clearTimeout(flashNoticeTimer);
+      }
+      flashNoticeTimer = window.setTimeout(() => {
+        STATE.flashNotice = null;
+        STATE.justSavedAnnotationId = "";
+        render();
+      }, 1400);
+    }
+
+    function setFlashNotice(labelId, annotationId, anchor, message) {
+      const category = categoryMap().get(labelId) || {
+        name: labelId,
+        color: "#8aa19b",
+      };
+      STATE.flashNotice = {
+        message: message || `Saved as ${category.name || labelId}`,
+        color: category.color || "#8aa19b",
+        anchor: anchor || toolbarAnchorForSelection(),
+      };
+      STATE.justSavedAnnotationId = annotationId || "";
+      queueFlashNoticeClear();
+    }
+
+    function clearTransientSelection() {
+      if (commentSaveTimer) {
+        window.clearTimeout(commentSaveTimer);
+      }
+      STATE.selection = null;
+      STATE.selectionAnchor = null;
+      STATE.flashNotice = null;
+      STATE.justSavedAnnotationId = "";
+      const selection = window.getSelection?.();
+      if (selection && selection.rangeCount) {
+        selection.removeAllRanges();
+      }
+    }
+
+    function renderSelectionToolbar() {
+      const toolbar = el.selectionToolbar;
+      if (!toolbar) return;
+      if (STATE.viewMode !== "label") {
+        toolbar.classList.remove("visible");
+        toolbar.classList.remove("flash-mode");
+        toolbar.innerHTML = "";
+        return;
+      }
+      if ((!STATE.selection || STATE.activeAnnotationId) && !STATE.flashNotice) {
+        toolbar.classList.remove("visible");
+        toolbar.classList.remove("flash-mode");
+        toolbar.innerHTML = "";
+        return;
+      }
+      if (!STATE.selection && STATE.flashNotice) {
+        toolbar.innerHTML = `
+          <div class="selection-flash-title">Saved</div>
+          <div class="selection-flash-body">
+            <span class="swatch" style="background:${escapeAttribute(STATE.flashNotice.color || "#8aa19b")}"></span>
+            <span>${escapeHtml(STATE.flashNotice.message || "Label saved")}</span>
+          </div>
+        `;
+        toolbar.classList.add("visible", "flash-mode");
+        window.requestAnimationFrame(() => {
+          const rect = toolbar.getBoundingClientRect();
+          const anchor = STATE.flashNotice?.anchor || toolbarAnchorForSelection();
+          const centeredLeft = anchor.x - rect.width / 2;
+          const left = Math.max(12, Math.min(window.innerWidth - rect.width - 12, centeredLeft));
+          const topAbove = anchor.y - rect.height - 14;
+          const top =
+            topAbove > 84
+              ? topAbove
+              : Math.min(window.innerHeight - rect.height - 12, anchor.y + 18);
+          toolbar.style.left = `${left}px`;
+          toolbar.style.top = `${top}px`;
+        });
+        return;
+      }
+      const matchedAnnotations = overlappingAnnotationsForSelection();
+      toolbar.classList.remove("flash-mode");
+      toolbar.innerHTML = `
+        <div class="selection-toolbar-categories">
+          ${categories().map((category) => `
+            <button
+              class="toolbar-category-chip"
+              type="button"
+              data-toolbar-category="${escapeAttribute(category.id)}"
+              title="${escapeAttribute(categoryTooltip(category))}"
+            >
+              <span class="swatch" style="background:${escapeAttribute(category.color || "#8aa19b")}"></span>
+              <span>${escapeHtml(category.name || category.id)}</span>
+            </button>
+          `).join("")}
+          <button class="toolbar-btn" type="button" id="toolbarClearBtn">${escapeHtml(clearActionLabel())}</button>
+        </div>
+      `;
+      toolbar.classList.add("visible");
+      window.requestAnimationFrame(() => {
+        const rect = toolbar.getBoundingClientRect();
+        const anchor = toolbarAnchorForSelection();
+        const centeredLeft = anchor.x - rect.width / 2;
+        const left = Math.max(12, Math.min(window.innerWidth - rect.width - 12, centeredLeft));
+        const topAbove = anchor.y - rect.height - 14;
+        const top =
+          topAbove > 84
+            ? topAbove
+            : Math.min(window.innerHeight - rect.height - 12, anchor.y + 18);
+        toolbar.style.left = `${left}px`;
+        toolbar.style.top = `${top}px`;
+      });
+    }
+
+    function renderHeroSummary(rows) {
+      const dataset = currentDataset();
+      const store = currentStore();
+      if (!dataset || !store) return;
+      el.statusLine.textContent = `${STATE.bootstrap.app.store_path} • updated ${formatDate(store.updated_at_utc)}`;
+    }
+
+    function renderSourceSwitch() {
+      const atlas = currentAtlas();
+      if (!atlas || !el.sourceSwitch) return;
+      const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
+        ? atlas.source_order
+        : Object.keys(atlas.sources || {});
+      el.sourceSwitch.innerHTML = orderedKeys
+        .map((sourceKey) => {
+          const source = atlas.sources?.[sourceKey];
+          if (!source) return "";
+          return `
+        <button
+          class="source-segment ${escapeHtml(modelTone(source.key))}${source.key === STATE.sourceKey ? " active" : ""}"
+          data-source-key="${escapeHtml(source.key)}"
+          type="button"
+        >${escapeHtml(source.label)}</button>
+      `;
+        })
+        .join("");
+    }
+
+    function renderDatasetSwitch() {
+      const source = currentSource();
+      if (!source) return;
+      el.datasetSwitch.innerHTML = Object.values(source.datasets || {}).map((dataset) => `
+        <button
+          class="dataset-segment${dataset.key === STATE.datasetKey ? " active" : ""}"
+          data-dataset-key="${escapeHtml(dataset.key)}"
+          type="button"
+        >${escapeHtml(dataset.label)}</button>
+      `).join("");
+    }
+
+    function renderLayoutChrome() {
+      if (el.filterPanel) {
+        el.filterPanel.hidden = STATE.viewMode !== "explorer";
+        el.filterPanel.classList.toggle("is-active", STATE.viewMode === "explorer");
+      }
+      if (el.workspace) {
+        el.workspace.hidden = STATE.viewMode !== "label";
+        el.workspace.classList.toggle("sidebar-collapsed", !STATE.sidebarOpen && STATE.viewMode === "label");
+        el.workspace.classList.toggle("is-active", STATE.viewMode === "label");
+      }
+      if (el.explorerView) {
+        el.explorerView.hidden = STATE.viewMode !== "explorer";
+        el.explorerView.classList.toggle("is-active", STATE.viewMode === "explorer");
+      }
+      if (el.toggleSidebarBtn) {
+        el.toggleSidebarBtn.hidden = STATE.viewMode !== "label";
+        el.toggleSidebarBtn.textContent = STATE.sidebarOpen ? "Hide tools" : "Show tools";
+      }
+    }
+
+    function renderViewSwitch() {
+      if (!el.viewSwitch) return;
+      el.viewSwitch.innerHTML = `
+        <button class="view-chip${STATE.viewMode === "explorer" ? " active" : ""}" type="button" data-view-mode="explorer">Explore</button>
+        <button class="view-chip${STATE.viewMode === "label" ? " active" : ""}" type="button" data-view-mode="label">Labelling</button>
+      `;
+    }
+
+    function nextCaseToLabel(rows) {
+      return rows.find((caseRow) => !caseIsLabelledForBrowse(caseRow)) || rows[0] || null;
+    }
+
+    function renderSharedFilters(rows) {
+      const dataset = currentDataset();
+      if (!dataset) return;
+      const available = availableDomains();
+      const selectedDomainList = selectedDomainsForCurrentDataset();
+      const selectedDomains = new Set(selectedDomainList || []);
+      const allCases = dataset.cases || [];
+      const labeledCount = allCases.filter((caseRow) => caseIsLabelledForBrowse(caseRow)).length;
+      const unlabeledCount = Math.max(0, allCases.length - labeledCount);
+      const reviewedCount = allCases.filter((caseRow) => caseProgressMeta(caseRow).key === "reviewed").length;
+      el.searchInput.value = STATE.search;
+      el.gradeFilterSelect.value = STATE.gradeFilter;
+      el.annotationFilterSelect.value = STATE.annotationFilter;
+      el.filterMeta.textContent = `Showing ${rows.length} of ${dataset.case_count} cases. ${labeledCount} labelled, ${unlabeledCount} unlabelled, ${reviewedCount} reviewed.`;
+      el.explorerSummary.innerHTML = `
+        <div class="explorer-stat">
+          <strong>${escapeHtml(String(dataset.case_count))}</strong>
+          <span>questions</span>
+        </div>
+        <div class="explorer-stat">
+          <strong>${escapeHtml(String(labeledCount))}</strong>
+          <span>labelled</span>
+        </div>
+        <div class="explorer-stat">
+          <strong>${escapeHtml(String(unlabeledCount))}</strong>
+          <span>unlabelled</span>
+        </div>
+        <div class="explorer-stat">
+          <strong>${escapeHtml(String(reviewedCount))}</strong>
+          <span>reviewed</span>
+        </div>
+      `;
+      el.domainFilterField.hidden = dataset.key !== "v2";
+      el.domainFilterSummary.textContent = domainSummaryText();
+      el.domainFilterList.innerHTML = available.length
+        ? available.map((domain) => `
+          <label class="multi-select-option">
+            <input
+              type="checkbox"
+              data-domain-filter="${escapeAttribute(domain)}"
+              ${selectedDomainList === null || selectedDomains.has(domain) ? "checked" : ""}
+            >
+            <span>${escapeHtml(domain)}</span>
+          </label>
+        `).join("")
+        : `<div class="panel-subtitle">No domains available.</div>`;
+      const nextCase = nextCaseToLabel(rows);
+      el.openNextUnlabeledBtn.disabled = !nextCase;
+      el.openNextUnlabeledBtn.textContent = nextCase ? "Open next unlabeled" : "Open next unlabeled";
+      el.explorerMeta.textContent = `${rows.length} of ${dataset.case_count} questions`;
+    }
+
+    function renderCaseRail(rows) {
+      const dataset = currentDataset();
+      if (!dataset) return;
+      el.authorInput.value = STATE.author;
+      el.caseMeta.textContent = `${rows.length} of ${dataset.case_count} cases`;
+      el.caseList.innerHTML = rows.length ? rows.map((caseRow) => {
+        const primary = primaryVariant(caseRow) || {};
+        const verdict = scoreMeta(primary.consensus_score);
+        const progress = caseProgressMeta(caseRow);
+        const count = caseAnnotationCount(caseRow);
+        const note = caseDocumentNote(caseRow);
+        const updatedAt = caseLastTouched(caseRow);
+        const overallLabelName = documentNoteLabelName(note);
+        return `
+          <button class="case-card${caseRow.question_id === STATE.selectedCaseId ? " selected" : ""}" type="button" data-question-id="${escapeHtml(caseRow.question_id)}">
+            <div class="case-top">
+              <div class="case-heading">
+                <span class="case-id">${escapeHtml(caseRow.question_id)}</span>
+                <span class="pill ${escapeHtml(progress.tone)}">${escapeHtml(progress.label)}</span>
+              </div>
+              <div class="pill-row">
+                <span class="pill ${escapeHtml(verdict.tone)}">${escapeHtml(verdict.label)}</span>
+                ${overallLabelName ? `<span class="tag">Overall: ${escapeHtml(overallLabelName)}</span>` : ""}
+                ${dataset.key === "v2" && caseDomainLabel(caseRow) ? `<span class="tag">${escapeHtml(caseDomainLabel(caseRow))}</span>` : ""}
+              </div>
+            </div>
+            <p class="case-question">${escapeHtml(clampText(caseRow.question, 145))}</p>
+            <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 120))}</p>
+            <div class="pill-row">
+              <span class="mini-stat">${escapeHtml(count)} span labels</span>
+              ${note?.summary ? `<span class="mini-stat">overall note</span>` : ""}
+              <span class="mini-stat">${escapeHtml(formatNumber(primary.response_reasoning_tokens))} trace tokens</span>
+            </div>
+            <p class="case-helper">${updatedAt ? `Updated ${escapeHtml(formatRelativeTime(updatedAt))}` : "No labels yet"}</p>
+          </button>
+        `;
+      }).join("") : `<div class="empty-state"><strong>No cases match the current filters.</strong><br>Reset filters or switch to Explorer.</div>`;
+    }
+
+    function sortDirectionForColumn(columnKey) {
+      const sortKey = normalizeCaseSortValue(STATE.caseSort);
+      if (sortKey === `${columnKey}_asc`) return "ascending";
+      if (sortKey === `${columnKey}_desc`) return "descending";
+      return "none";
+    }
+
+    function nextSortValueForColumn(columnKey) {
+      const defaultDirection = {
+        question: "asc",
+        question_id: "asc",
+        domain: "asc",
+        grade: "asc",
+        status: "desc",
+        overall_label: "asc",
+        highlights: "desc",
+        updated: "desc",
+      }[columnKey] || "asc";
+      const currentDirection = sortDirectionForColumn(columnKey);
+      if (currentDirection === "ascending") return `${columnKey}_desc`;
+      if (currentDirection === "descending") return `${columnKey}_asc`;
+      return `${columnKey}_${defaultDirection}`;
+    }
+
+    function renderExplorerHeader() {
+      if (!el.questionExplorerHead) return;
+      const columns = [
+        { key: "question", label: "Question" },
+        { key: "question_id", label: "ID" },
+        { key: "domain", label: "Domain" },
+        { key: "grade", label: "Grade" },
+        { key: "status", label: "Status" },
+        { key: "overall_label", label: "Overall label" },
+        { key: "highlights", label: "Highlights" },
+        { key: "updated", label: "Updated" },
+      ];
+      el.questionExplorerHead.innerHTML = `
+        ${columns.map((column) => {
+          const direction = sortDirectionForColumn(column.key);
+          const indicator = direction === "ascending" ? "↑" : (direction === "descending" ? "↓" : "");
+          return `
+            <th scope="col" aria-sort="${escapeHtml(direction)}">
+              <button
+                class="explorer-sort-button${direction !== "none" ? " active" : ""}"
+                type="button"
+                data-sort-column="${escapeHtml(column.key)}"
+              >
+                <span>${escapeHtml(column.label)}</span>
+                <span class="sort-indicator" aria-hidden="true">${indicator}</span>
+              </button>
+            </th>
+          `;
+        }).join("")}
+        <th scope="col"></th>
+      `;
+    }
+
+    function renderExplorerView(rows) {
+      const dataset = currentDataset();
+      if (!dataset) return;
+      renderExplorerHeader();
+      el.questionExplorerList.innerHTML = rows.length ? rows.map((caseRow) => {
+        const primary = primaryVariant(caseRow) || {};
+        const verdict = scoreMeta(primary.consensus_score);
+        const browseState = caseBrowseLabelMeta(caseRow);
+        const count = caseAnnotationCount(caseRow);
+        const updatedAt = caseLastTouched(caseRow);
+        const note = caseDocumentNote(caseRow);
+        const overallLabelMeta = documentNoteLabelMeta(note);
+        const isCurrent = caseRow.question_id === STATE.selectedCaseId;
+        const questionExcerpt = clampText(caseRow.question, 190);
+        const questionSubline = clampText(caseRow.nonsensical_element || "", 110);
+        return `
+          <tr class="${isCurrent ? "is-current" : ""}">
+            <td class="explorer-question-cell">
+              <div class="explorer-question-button">
+                <p class="explorer-question-line">${escapeHtml(questionExcerpt || caseRow.question || "")}</p>
+                <p class="explorer-question-subline">${escapeHtml(questionSubline || "Open in labelling to inspect the full trace.")}</p>
+              </div>
+            </td>
+            <td class="explorer-id-cell">${escapeHtml(caseRow.question_id)}</td>
+            <td class="explorer-domain-cell">${escapeHtml(caseDomainLabel(caseRow) || "—")}</td>
+            <td><span class="pill ${escapeHtml(verdict.tone)}">${escapeHtml(verdict.label)}</span></td>
+            <td><span class="pill ${escapeHtml(browseState.tone)}">${escapeHtml(browseState.label)}</span></td>
+            <td class="explorer-overall-cell">${overallLabelMeta
+              ? `<span class="explorer-overall-tag" style="--label-color:${escapeAttribute(overallLabelMeta.color)}"><span class="swatch" style="background:${escapeAttribute(overallLabelMeta.color)}"></span><span>${escapeHtml(overallLabelMeta.name)}</span></span>`
+              : `<span class="explorer-overall-empty">—</span>`}
+            </td>
+            <td class="explorer-count-cell">${escapeHtml(String(count))}</td>
+            <td class="explorer-updated-cell">${escapeHtml(updatedAt ? formatRelativeTime(updatedAt) : "—")}</td>
+            <td class="explorer-action-cell">
+              <button class="btn small" type="button" data-open-labeling="${escapeHtml(caseRow.question_id)}">Open</button>
+            </td>
+          </tr>
+        `;
+      }).join("") : `<tr><td colspan="9"><div class="empty-state"><strong>No questions match the current filters.</strong><br>Reset filters to widen the explorer.</div></td></tr>`;
+    }
+
+    function renderQuestionPanel(caseRow) {
+      if (!caseRow) {
+        el.questionPanel.innerHTML = `<div class="empty-state"><strong>Choose a case to begin.</strong><br>The prompt, final answer, and reasoning trace will appear here.</div>`;
+        return;
+      }
+      const source = currentSource();
+      const dataset = currentDataset();
+      const compareKey = alternateSourceKey(caseRow.question_id, dataset?.key || STATE.datasetKey);
+      const compareSource = compareKey ? sourceForKey(compareKey) : null;
+      el.questionPanel.innerHTML = `
+        <div class="section-head">
+          <div>
+            <h2>Question</h2>
+          </div>
+          <div class="model-meta">
+            ${renderModelChip(source)}
+            <span class="mini-stat">${escapeHtml(dataset?.label || STATE.datasetKey)}</span>
+            <span class="mini-stat">${escapeHtml(caseRow.question_id)}</span>
+            ${compareSource ? renderCompareToggle(compareSource) : ""}
+          </div>
+        </div>
+        <div class="question-body">
+          <p class="question-text">${escapeHtml(caseRow.question)}</p>
+          <details class="context-card">
+            <summary class="context-label">Why it is nonsense</summary>
+            <p class="context-text">${escapeHtml(caseRow.nonsensical_element || "No explanation saved.")}</p>
+          </details>
+        </div>
+      `;
+    }
+
+    function renderResponsePanel(caseRow) {
+      if (!caseRow) {
+        el.responsePanel.className = "panel response-panel";
+        el.responsePanel.innerHTML = "";
+        return;
+      }
+      const source = currentSource();
+      const primary = primaryVariant(caseRow);
+      if (!primary) {
+        el.responsePanel.className = "panel response-panel";
+        el.responsePanel.innerHTML = `<div class="empty-state"><strong>No saved model answer.</strong></div>`;
+        return;
+      }
+      el.responsePanel.className = `panel response-panel ${modelPanelClass(source)}`.trim();
+      const verdict = scoreMeta(primary.consensus_score);
+      const preview = clampText(String(primary.response_text || "").replace(/\s+/g, " "), 220);
+      el.responsePanel.innerHTML = `
+        <div class="section-head">
+          <div>
+            <h2>Answer</h2>
+          </div>
+          <div class="panel-control-row answer-controls">
+            ${renderModelChip(source)}
+            <span class="pill ${escapeHtml(verdict.tone)}">Grade: ${escapeHtml(verdict.label)}</span>
+            <button
+              class="answer-toggle"
+              type="button"
+              data-toggle-answer="1"
+              aria-label="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+              title="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+            >${STATE.answerCollapsed ? "+" : "-"}</button>
+          </div>
+        </div>
+        ${STATE.answerCollapsed
+          ? `<p class="answer-preview">${escapeHtml(preview || "No response saved.")}</p>`
+          : `<div class="markdown-body answer-body">${renderMarkdown(primary.response_text || "No response saved.")}</div>`}
+      `;
+    }
+
+    function renderReasoningPanel(caseRow) {
+      if (!caseRow) {
+        el.reasoningPanel.className = "panel reasoning-panel";
+        el.reasoningPanel.innerHTML = "";
+        return;
+      }
+      const source = currentSource();
+      const document = reasonDocument(caseRow);
+      if (!document) {
+        el.reasoningPanel.className = "panel reasoning-panel";
+        el.reasoningPanel.innerHTML = `<div class="empty-state"><strong>No reasoning trace is available for this case.</strong></div>`;
+        return;
+      }
+      el.reasoningPanel.className = `panel reasoning-panel ${modelPanelClass(source)}`.trim();
+      const spanAnnotations = annotationsForDocument(document.document_id);
+      const categoryLookup = categoryMap();
+      const paragraphs = traceParagraphs(document);
+      const selectedRange =
+        annotations().find((item) => item.id === STATE.activeAnnotationId) ||
+        STATE.selection;
+      el.reasoningPanel.innerHTML = `
+        <div class="reasoning-topline">
+          <div>
+            <h2>Reasoning trace</h2>
+            <p class="panel-subtitle compact">Select text to label it.</p>
+          </div>
+          <div class="pill-row">
+            ${renderModelChip(source)}
+            <span class="mini-stat">${escapeHtml(spanAnnotations.length)} saved labels</span>
+          </div>
+        </div>
+        <div class="reasoning-sections">
+          <div class="trace-editor-body${paragraphs.some((paragraph) => rangeWithinBounds(selectedRange, paragraph.start, paragraph.end)) ? " selected" : ""}">
+            <div class="trace-document" data-document-id="${escapeHtml(document.document_id)}">
+              ${paragraphs.map((paragraph) => `<p class="annotation-text trace-paragraph" data-document-id="${escapeHtml(document.document_id)}" data-body-start="${escapeHtml(paragraph.start)}" data-body-end="${escapeHtml(paragraph.end)}">${splitTextIntoSentences(paragraph.text || "", paragraph.start).map((sentence) => `<span class="trace-sentence${rangeWithinBounds(selectedRange, sentence.start, sentence.end) ? " selected" : ""}" data-sentence-select="1" data-document-id="${escapeHtml(document.document_id)}" data-sentence-start="${escapeHtml(sentence.start)}" data-sentence-end="${escapeHtml(sentence.end)}">${renderHighlightedText(sentence.text || "", Number(sentence.start), spanAnnotations, categoryLookup)}</span>`).join("")}</p>`).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderComposerPanel(caseRow) {
+      const traceDocument = reasonDocument(caseRow);
+      if (!traceDocument) {
+        el.composerPanel.innerHTML = "";
+        el.composerPanel.hidden = true;
+        return;
+      }
+      el.composerPanel.hidden = false;
+      const documentNote = traceDocument ? documentNoteForDocument(traceDocument.document_id) : null;
+      const documentNoteDraft = traceDocument ? draftDocumentNoteFor(traceDocument.document_id) : null;
+      const documentNoteSummary = documentNoteDraft
+        ? documentNoteDraft.summary
+        : (documentNote?.summary || "");
+      const documentNoteLabelId = documentNoteDraft
+        ? documentNoteDraft.labelId
+        : (documentNote?.label_id || "");
+      const documentNoteConfidence = documentNoteDraft
+        ? normalizedConfidence(documentNoteDraft.confidence, true)
+        : normalizedConfidence(documentNote?.confidence, true);
+
+      el.composerPanel.innerHTML = `
+        <div class="section-head">
+          <div>
+            <h2>Overall Trace Label</h2>
+          </div>
+        </div>
+        <div class="control-grid">
+          <div class="overall-trace-card">
+            <div class="overall-trace-status">
+              <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
+            </div>
+            <div class="overall-label-list">
+              ${categories().map((category) => `
+                <button
+                  class="overall-label-item${category.id === documentNoteLabelId ? " selected" : ""}"
+                  type="button"
+                  data-document-note-label="${escapeHtml(category.id)}"
+                  title="${escapeAttribute(categoryTooltip(category))}"
+                >
+                  <span class="swatch" style="background:${escapeHtml(category.color || "#8aa19b")}"></span>
+                  <span>${escapeHtml(category.name || category.id)}</span>
+                </button>
+              `).join("")}
+            </div>
+            ${documentNoteLabelId ? `
+              <div class="confidence-list">
+                ${confidenceOptions(false).map((confidence) => `
+                  <button
+                    class="confidence-chip${documentNoteConfidence === confidence ? " selected" : ""}"
+                    type="button"
+                    data-document-note-confidence="${escapeHtml(confidence)}"
+                  >${escapeHtml(confidenceLabel(confidence))}</button>
+                `).join("")}
+              </div>
+            ` : ""}
+            <div class="overall-note-field">
+              <label for="traceSummaryInput">Overall note</label>
+              <textarea id="traceSummaryInput" placeholder="Write one note about the reasoning trace as a whole">${escapeHtml(documentNoteSummary)}</textarea>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAnnotationPanel(caseRow) {
+      if (!caseRow) {
+        el.annotationPanel.innerHTML = "";
+        el.annotationPanel.hidden = true;
+        return;
+      }
+      const items = annotationsForCase(caseRow);
+      if (!items.length) {
+        el.annotationPanel.innerHTML = "";
+        el.annotationPanel.hidden = true;
+        return;
+      }
+      el.annotationPanel.hidden = false;
+      const categoryLookup = categoryMap();
+      const activeAnnotation = items.find((annotation) => annotation.id === STATE.activeAnnotationId) || null;
+      const activeConfidence = normalizedConfidence(
+        STATE.draftConfidence || activeAnnotation?.confidence,
+        false,
+      );
+      el.annotationPanel.innerHTML = `
+        <div class="section-head">
+          <div>
+            <h2>Saved Highlights</h2>
+          </div>
+        </div>
+        ${activeAnnotation ? `
+          <div class="annotation-detail-card">
+            <p class="annotation-detail-title">Selected highlight</p>
+            <div class="overall-label-list">
+              ${categories().map((category) => `
+                <button
+                  class="overall-label-item${category.id === activeAnnotation.label_id ? " selected" : ""}"
+                  type="button"
+                  data-category-select="${escapeHtml(category.id)}"
+                  title="${escapeAttribute(categoryTooltip(category))}"
+                >
+                  <span class="swatch" style="background:${escapeHtml(category.color || "#8aa19b")}"></span>
+                  <span>${escapeHtml(category.name || category.id)}</span>
+                </button>
+              `).join("")}
+            </div>
+            <div class="confidence-list">
+              ${confidenceOptions(false).map((confidence) => `
+                <button
+                  class="confidence-chip${activeConfidence === confidence ? " selected" : ""}"
+                  type="button"
+                  data-annotation-confidence="${escapeHtml(confidence)}"
+                >${escapeHtml(confidenceLabel(confidence))}</button>
+              `).join("")}
+            </div>
+            <div class="inline-note-field">
+              <label for="annotationCommentInput">Why this label</label>
+              <textarea id="annotationCommentInput" placeholder="Add a short reason for why this span fits the label.">${escapeHtml(STATE.draftComment || activeAnnotation.comment || "")}</textarea>
+            </div>
+            <div class="annotation-detail-actions">
+              <button class="toolbar-btn" type="button" id="deleteAnnotationBtn">Delete highlight</button>
+            </div>
+          </div>
+        ` : ""}
+        <div class="annotation-list">
+          ${items.map((annotation) => {
+            const category = categoryLookup.get(annotation.label_id) || {
+              name: annotation.label_id,
+              color: "#8aa19b",
+              text_color: "#ffffff",
+            };
+            return `
+              <button
+                class="annotation-card${annotation.id === STATE.activeAnnotationId ? " active" : ""}"
+                type="button"
+                data-annotation-open="${escapeHtml(annotation.id)}"
+                title="${escapeAttribute((annotation.quote || "").trim())}"
+              >
+                <div class="category-head">
+                  <div class="category-name">
+                    <span class="swatch" style="background:${escapeHtml(category.color || "#8aa19b")}"></span>
+                    <span>${escapeHtml(category.name || annotation.label_id)}</span>
+                  </div>
+                  ${annotation.confidence && annotation.confidence !== "clear"
+                    ? `<span class="annotation-meta">${escapeHtml(confidenceLabel(annotation.confidence))}</span>`
+                    : ""}
+                </div>
+                <p class="annotation-quote">${escapeHtml(annotation.quote || "")}</p>
+                ${annotation.comment ? `<p class="annotation-comment">${escapeHtml(annotation.comment)}</p>` : ""}
+                <div class="annotation-meta">
+                  ${escapeHtml(formatDate(annotation.updated_at_utc))}
+                </div>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderComparisonPanel(caseRow) {
+      if (!el.comparisonPanel || !el.stageBody) return;
+      if (!STATE.compareOpen || !caseRow) {
+        el.comparisonPanel.hidden = true;
+        el.comparisonPanel.innerHTML = "";
+        el.stageBody.classList.remove("compare-active");
+        return;
+      }
+      const dataset = currentDataset();
+      const compareKey = alternateSourceKey(caseRow.question_id, dataset?.key || STATE.datasetKey);
+      const compareSource = compareKey ? sourceForKey(compareKey) : null;
+      const compareCase = compareKey ? caseForKeys(compareKey, dataset?.key || STATE.datasetKey, caseRow.question_id) : null;
+      if (!compareSource || !compareCase) {
+        STATE.compareOpen = false;
+        el.comparisonPanel.hidden = true;
+        el.comparisonPanel.innerHTML = "";
+        el.stageBody.classList.remove("compare-active");
+        return;
+      }
+      const variant = primaryVariant(compareCase, compareSource);
+      const verdict = scoreMeta(variant?.consensus_score);
+      const traceDocument = variant?.reasoning_document || null;
+      const traceParagraphHtml = traceDocument
+        ? traceParagraphs(traceDocument)
+          .map((paragraph) => `<p class="annotation-text trace-paragraph">${escapeHtml(paragraph.text || "")}</p>`)
+          .join("")
+        : `<div class="compare-empty">No reasoning trace saved.</div>`;
+      const answerHtml = variant?.response_text
+        ? renderMarkdown(variant.response_text)
+        : `<div class="compare-empty">No answer saved.</div>`;
+      const comparePreview = clampText(String(variant?.response_text || "").replace(/\s+/g, " "), 220);
+      el.comparisonPanel.hidden = false;
+      el.stageBody.classList.add("compare-active");
+      el.comparisonPanel.innerHTML = `
+        <section class="panel response-panel ${escapeHtml(modelPanelClass(compareSource))}" data-compare-panel="answer">
+          <div class="section-head">
+            <div>
+              <h2>Answer</h2>
+            </div>
+            <div class="panel-control-row answer-controls">
+              ${renderModelChip(compareSource)}
+              <span class="pill ${escapeHtml(verdict.tone)}">Grade: ${escapeHtml(verdict.label)}</span>
+              <button
+                class="answer-toggle"
+                type="button"
+                data-toggle-answer="1"
+                aria-label="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+                title="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+              >${STATE.answerCollapsed ? "+" : "-"}</button>
+            </div>
+          </div>
+          ${STATE.answerCollapsed
+            ? `<p class="answer-preview">${escapeHtml(comparePreview || "No answer saved.")}</p>`
+            : `<div class="markdown-body answer-body">${answerHtml}</div>`}
+        </section>
+        <section class="panel reasoning-panel ${escapeHtml(modelPanelClass(compareSource))}" data-compare-panel="reasoning">
+          <div class="reasoning-topline">
+            <div>
+              <h2>Reasoning trace</h2>
+            </div>
+            <div class="pill-row">
+              ${renderModelChip(compareSource)}
+              <span class="mini-stat">Read only</span>
+            </div>
+          </div>
+          <div class="reasoning-sections">
+            <div class="trace-editor-body read-only">
+              <div class="trace-document">
+                ${traceParagraphHtml}
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function render() {
+      const dataset = currentDataset();
+      if (!dataset) return;
+      renderLayoutChrome();
+      renderSourceSwitch();
+      renderDatasetSwitch();
+      renderViewSwitch();
+      const rows = sortCases(filteredCases());
+      if (STATE.viewMode === "label" || STATE.selectedCaseId) {
+        ensureSelection(rows);
+      }
+      const caseRow = selectedCase(rows);
+      renderHeroSummary(rows);
+      renderSharedFilters(rows);
+      renderCaseRail(rows);
+      renderExplorerView(rows);
+      renderQuestionPanel(caseRow);
+      renderResponsePanel(caseRow);
+      renderReasoningPanel(caseRow);
+      renderComposerPanel(caseRow);
+      renderAnnotationPanel(caseRow);
+      renderComparisonPanel(caseRow);
+      renderSelectionToolbar();
+      renderToast();
+    }
+
+    function currentCaseForUi() {
+      const dataset = currentDataset();
+      if (!dataset) return null;
+      const rows = sortCases(filteredCases());
+      ensureSelection(rows);
+      return selectedCase(rows);
+    }
+
+    function refreshSelectionUi() {
+      const caseRow = currentCaseForUi();
+      renderComposerPanel(caseRow);
+      renderSelectionToolbar();
+    }
+
+    function nearestSentenceNode(node) {
+      if (!node) return null;
+      const element =
+        node.nodeType === Node.ELEMENT_NODE
+          ? node
+          : node.parentElement;
+      return element?.closest?.("[data-sentence-select]") || null;
+    }
+
+    function nearestParagraphNode(node) {
+      if (!node) return null;
+      const element =
+        node.nodeType === Node.ELEMENT_NODE
+          ? node
+          : node.parentElement;
+      return element?.closest?.(".trace-paragraph") || null;
+    }
+
+    function adjacentParagraphNode(paragraph, direction) {
+      if (!paragraph) return null;
+      let cursor = paragraph;
+      while (cursor) {
+        cursor = direction === "next" ? cursor.nextElementSibling : cursor.previousElementSibling;
+        if (!cursor) return null;
+        if (cursor.matches?.(".trace-paragraph")) return cursor;
+      }
+      return null;
+    }
+
+    function paragraphBoundaryNode(root, container, offset, direction) {
+      if (!container) return null;
+      if (container.nodeType === Node.ELEMENT_NODE && container.matches?.(".trace-paragraph") && root.contains(container)) {
+        const childCount = container.childNodes?.length || 0;
+        if (direction === "end" && offset <= 0) {
+          return adjacentParagraphNode(container, "previous") || container;
+        }
+        if (direction === "start" && offset >= childCount) {
+          return adjacentParagraphNode(container, "next") || container;
+        }
+        return container;
+      }
+      const nearest = nearestParagraphNode(container);
+      if (nearest && root.contains(nearest)) return nearest;
+      return resolveBoundaryNode(root, container, offset, ".trace-paragraph", direction);
+    }
+
+    function boundaryMatchWithin(node, selector, direction) {
+      if (!node || node.nodeType !== Node.ELEMENT_NODE) return null;
+      if (node.matches?.(selector)) return node;
+      const matches = node.querySelectorAll?.(selector) || [];
+      if (!matches.length) return null;
+      return direction === "start" ? matches[0] : matches[matches.length - 1];
+    }
+
+    function resolveBoundaryNode(root, container, offset, selector, direction) {
+      if (!container) return null;
+      const owner =
+        container.nodeType === Node.ELEMENT_NODE
+          ? container
+          : container.parentElement;
+      const ancestorMatch = owner?.closest?.(selector);
+      if (ancestorMatch && root.contains(ancestorMatch)) return ancestorMatch;
+      if (container.nodeType === Node.ELEMENT_NODE) {
+        const children = Array.from(container.childNodes || []);
+        if (direction === "start") {
+          for (let index = Math.max(0, offset); index < children.length; index += 1) {
+            const match = boundaryMatchWithin(children[index], selector, "start");
+            if (match && root.contains(match)) return match;
+          }
+        } else {
+          for (let index = Math.min(children.length - 1, offset - 1); index >= 0; index -= 1) {
+            const match = boundaryMatchWithin(children[index], selector, "end");
+            if (match && root.contains(match)) return match;
+          }
+        }
+      }
+      return null;
+    }
+
+    function offsetWithinSentence(sentence, container, offset) {
+      try {
+        const probe = document.createRange();
+        probe.selectNodeContents(sentence);
+        probe.setEnd(container, offset);
+        return probe.toString().length;
+      } catch (_error) {
+        return 0;
+      }
+    }
+
+    function readSelectionFromTrace(root) {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return null;
+      const range = selection.getRangeAt(0);
+      if (range.collapsed) return null;
+      if (!root.contains(range.startContainer) || !root.contains(range.endContainer)) return null;
+      const startSentence =
+        nearestSentenceNode(range.startContainer)
+        || resolveBoundaryNode(root, range.startContainer, range.startOffset, "[data-sentence-select]", "start");
+      const endSentence =
+        nearestSentenceNode(range.endContainer)
+        || resolveBoundaryNode(root, range.endContainer, range.endOffset, "[data-sentence-select]", "end");
+      const startParagraph =
+        paragraphBoundaryNode(root, range.startContainer, range.startOffset, "start");
+      const endParagraph =
+        paragraphBoundaryNode(root, range.endContainer, range.endOffset, "end");
+      const documentId = root.dataset.documentId || startSentence?.dataset?.documentId || "";
+      const document = atlasDocument(documentId);
+      if (!document?.text) return null;
+      let start = Number.NaN;
+      let end = Number.NaN;
+      if (startSentence) {
+        const startBase = Number(startSentence.dataset.sentenceStart || 0);
+        start = startBase + offsetWithinSentence(startSentence, range.startContainer, range.startOffset);
+      } else if (startParagraph) {
+        start = Number(startParagraph.dataset.bodyStart || Number.NaN);
+      }
+      if (endSentence) {
+        const endBase = Number(endSentence.dataset.sentenceStart || 0);
+        end = endBase + offsetWithinSentence(endSentence, range.endContainer, range.endOffset);
+      } else if (endParagraph) {
+        end = Number(endParagraph.dataset.bodyEnd || Number.NaN);
+      }
+      const quote = String(document.text || "").slice(start, end);
+      if (!quote.trim()) return null;
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
+      return {
+        documentId,
+        start,
+        end,
+        quote,
+        selectionMode: "freeform",
+      };
+    }
+
+    function openAnnotation(annotationId) {
+      if (commentSaveTimer) {
+        window.clearTimeout(commentSaveTimer);
+      }
+      setSidebarOpen(true);
+      STATE.activeAnnotationId = annotationId;
+      STATE.selection = null;
+      STATE.selectionAnchor = null;
+      const annotation = annotations().find((item) => item.id === annotationId);
+      if (annotation) {
+        STATE.selectedCategoryId = annotation.label_id || STATE.selectedCategoryId;
+        setSelectedCaseId(annotation.question_id || STATE.selectedCaseId);
+        STATE.draftComment = annotation.comment || "";
+        STATE.draftConfidence = normalizedConfidence(annotation.confidence, false);
+      }
+      render();
+      window.requestAnimationFrame(() => {
+        const mark = document.querySelector(`[data-annotation-id="${CSS.escape(annotationId)}"]`);
+        if (mark) {
+          mark.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      });
+    }
+
+    async function apiRequest(url, options = {}) {
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || `Request failed: ${response.status}`);
+      }
+      return payload;
+    }
+
+    async function bootstrap() {
+      const payload = await apiRequest("/api/bootstrap");
+      STATE.bootstrap = payload;
+      const atlas = payload.atlas || {};
+      const preferredSourceKey = atlas?.sources?.[STATE.sourceKey]
+        ? STATE.sourceKey
+        : (atlas.default_source_key || atlas.source_order?.[0] || Object.keys(atlas.sources || {})[0] || "gpt54_high");
+      setSourceKey(preferredSourceKey);
+      const source = atlas?.sources?.[preferredSourceKey] || {};
+      const preferredDatasetKey = source?.datasets?.[STATE.datasetKey]
+        ? STATE.datasetKey
+        : (source?.datasets?.v2 ? "v2" : Object.keys(source?.datasets || {})[0] || "v1");
+      setDatasetKey(preferredDatasetKey);
+      if (!STATE.selectedCategoryId) {
+        const firstCategory = (payload.store?.categories || [])[0];
+        STATE.selectedCategoryId = firstCategory?.id || "";
+      }
+      render();
+    }
+
+    async function refreshStoreOnly() {
+      const payload = await apiRequest("/api/bootstrap");
+      if (STATE.bootstrap) {
+        STATE.bootstrap.store = payload.store;
+      } else {
+        STATE.bootstrap = payload;
+      }
+    }
+
+    function upsertDocumentNoteInStore(note, documentId) {
+      if (!STATE.bootstrap?.store || !documentId) return;
+      const items = Array.isArray(STATE.bootstrap.store.document_notes)
+        ? STATE.bootstrap.store.document_notes
+        : [];
+      const nextItems = items.filter((item) => item.document_id !== documentId);
+      if (note) {
+        nextItems.push(note);
+        nextItems.sort((left, right) => {
+          const datasetDiff = String(left.dataset_key || "").localeCompare(String(right.dataset_key || ""));
+          if (datasetDiff) return datasetDiff;
+          const questionDiff = String(left.question_id || "").localeCompare(String(right.question_id || ""));
+          if (questionDiff) return questionDiff;
+          return String(left.document_id || "").localeCompare(String(right.document_id || ""));
+        });
+      }
+      STATE.bootstrap.store.document_notes = nextItems;
+    }
+
+    async function saveDocumentNote(overrides = {}) {
+      const documentId = overrides.documentId || STATE.draftDocumentNote?.documentId;
+      if (!documentId) return;
+      const savedNote = documentNoteForDocument(documentId);
+      const summaryInput = document.getElementById("traceSummaryInput");
+      const summary =
+        overrides.summary
+        ?? STATE.draftDocumentNote?.summary
+        ?? (summaryInput ? summaryInput.value : savedNote?.summary || "");
+      const labelId =
+        overrides.labelId
+        ?? STATE.draftDocumentNote?.labelId
+        ?? savedNote?.label_id
+        ?? "";
+      const confidence =
+        overrides.confidence
+        ?? STATE.draftDocumentNote?.confidence
+        ?? savedNote?.confidence
+        ?? (labelId ? "clear" : "");
+      const body = {
+        document_id: documentId,
+        summary,
+        label_id: labelId,
+        confidence,
+        author: STATE.author,
+        interface: "reasoning-annotation-studio",
+        labeler_type: "human",
+      };
+      try {
+        setDocumentNoteStatus(documentId, "Saving");
+        const payload = await apiRequest("/api/document-notes", {
+          method: "POST",
+          body: JSON.stringify(body),
+        });
+        upsertDocumentNoteInStore(payload.document_note || null, documentId);
+        clearDocumentNoteDraft(documentId);
+        STATE.draftDocumentNote = payload.document_note
+          ? {
+              documentId,
+              summary: payload.document_note.summary || "",
+              labelId: payload.document_note.label_id || "",
+              confidence: normalizedConfidence(payload.document_note.confidence, true),
+            }
+          : null;
+        setDocumentNoteStatus(documentId, "Saved");
+        if (overrides.render !== false) {
+          render();
+        }
+      } catch (error) {
+        setDocumentNoteStatus(documentId, "Saved locally");
+        throw error;
+      }
+    }
+
+    async function saveAnnotation(overrides = {}) {
+      const activeAnnotation = annotations().find((item) => item.id === STATE.activeAnnotationId) || null;
+      const matchedAnnotation = !activeAnnotation ? annotationForSelection(STATE.selection) : null;
+      const selection = activeAnnotation || matchedAnnotation || STATE.selection;
+      if (!selection) return;
+      if (commentSaveTimer) {
+        window.clearTimeout(commentSaveTimer);
+      }
+      const commentInput = document.getElementById("annotationCommentInput");
+      const flashAnchor = overrides.flashAnchor || STATE.selectionAnchor;
+      const keepActive = overrides.keepActive ?? Boolean(activeAnnotation);
+      const body = {
+        document_id: selection.document_id || selection.documentId,
+        start: selection.start,
+        end: selection.end,
+        quote: selection.quote || "",
+        label_id: overrides.labelId || STATE.selectedCategoryId,
+        confidence: overrides.confidence || STATE.draftConfidence || activeAnnotation?.confidence || matchedAnnotation?.confidence || "clear",
+        comment: overrides.comment ?? (commentInput ? commentInput.value : STATE.draftComment),
+        author: STATE.author,
+        selection_mode: selection.selectionMode || selection.selection_mode || "freeform",
+        interface: "reasoning-annotation-studio",
+        labeler_type: "human",
+      };
+      let payload;
+      if (activeAnnotation || matchedAnnotation) {
+        const annotationId = (activeAnnotation || matchedAnnotation).id;
+        payload = await apiRequest(`/api/annotations/${encodeURIComponent(annotationId)}`, {
+          method: "PATCH",
+          body: JSON.stringify(body),
+        });
+      } else {
+        payload = await apiRequest("/api/annotations", {
+          method: "POST",
+          body: JSON.stringify(body),
+        });
+      }
+      await refreshStoreOnly();
+      STATE.selection = null;
+      STATE.selectionAnchor = null;
+      STATE.activeAnnotationId = keepActive ? payload.annotation.id : "";
+      STATE.draftComment = payload.annotation.comment || "";
+      STATE.draftConfidence = normalizedConfidence(payload.annotation.confidence, false);
+      if (overrides.flash) {
+        setFlashNotice(body.label_id, payload.annotation.id, flashAnchor, overrides.flashMessage);
+      }
+      render();
+    }
+
+    function annotationPayloadForRange(annotation, start, end) {
+      const documentId = annotation.document_id || annotation.documentId;
+      const document = atlasDocument(documentId);
+      const quote = String(document?.text || "").slice(start, end);
+      return {
+        document_id: documentId,
+        start,
+        end,
+        quote,
+        label_id: annotation.label_id,
+        confidence: annotation.confidence || "clear",
+        comment: annotation.comment || "",
+        author: annotation.author || STATE.author,
+        status: annotation.status || "confirmed",
+        selection_mode: annotation?.provenance?.selection_mode || annotation.selection_mode || "freeform",
+        interface: "reasoning-annotation-studio",
+        labeler_type: annotation?.provenance?.labeler_type || "human",
+        source_text_hash: annotation.source_text_hash || document?.text_hash || "",
+      };
+    }
+
+    async function clearSelectionFromAnnotations(selection = STATE.selection) {
+      const overlaps = overlappingAnnotationsForSelection(selection);
+      if (!selection || !overlaps.length) {
+        clearTransientSelection();
+        STATE.activeAnnotationId = "";
+        STATE.draftComment = "";
+        STATE.draftConfidence = "clear";
+        refreshSelectionUi();
+        return;
+      }
+
+      const deletes = [];
+      const updates = [];
+      const creates = [];
+
+      overlaps.forEach((annotation) => {
+        const remainingSegments = annotationSegmentsAfterClear(annotation, selection);
+        if (!remainingSegments.length) {
+          deletes.push(annotation.id);
+          return;
+        }
+        updates.push({
+          annotationId: annotation.id,
+          body: annotationPayloadForRange(annotation, remainingSegments[0].start, remainingSegments[0].end),
+        });
+        remainingSegments.slice(1).forEach((segment) => {
+          creates.push(annotationPayloadForRange(annotation, segment.start, segment.end));
+        });
+      });
+
+      clearTransientSelection();
+      STATE.activeAnnotationId = "";
+      STATE.draftComment = "";
+      STATE.draftConfidence = "clear";
+
+      for (const annotationId of deletes) {
+        await apiRequest(`/api/annotations/${encodeURIComponent(annotationId)}`, {
+          method: "DELETE",
+        });
+      }
+      for (const update of updates) {
+        await apiRequest(`/api/annotations/${encodeURIComponent(update.annotationId)}`, {
+          method: "PATCH",
+          body: JSON.stringify(update.body),
+        });
+      }
+      for (const body of creates) {
+        await apiRequest("/api/annotations", {
+          method: "POST",
+          body: JSON.stringify(body),
+        });
+      }
+
+      await refreshStoreOnly();
+      render();
+    }
+
+    async function deleteAnnotations(annotationIds) {
+      const ids = [...new Set((annotationIds || []).filter(Boolean))];
+      if (!ids.length) return;
+      const previousStore = STATE.bootstrap?.store
+        ? JSON.parse(JSON.stringify(STATE.bootstrap.store))
+        : null;
+      clearTransientSelection();
+      STATE.activeAnnotationId = "";
+      STATE.draftComment = "";
+      STATE.draftConfidence = "clear";
+      if (STATE.bootstrap?.store?.annotations) {
+        STATE.bootstrap.store.annotations = STATE.bootstrap.store.annotations.filter((item) => !ids.includes(item.id));
+        render();
+      }
+      try {
+        await Promise.all(ids.map((annotationId) => apiRequest(`/api/annotations/${encodeURIComponent(annotationId)}`, {
+          method: "DELETE",
+        })));
+        await refreshStoreOnly();
+        render();
+      } catch (error) {
+        if (previousStore && STATE.bootstrap) {
+          STATE.bootstrap.store = previousStore;
+        }
+        render();
+        throw error;
+      }
+    }
+
+    async function deleteAnnotation(annotationId) {
+      await deleteAnnotations([annotationId]);
+    }
+
+    async function deleteActiveAnnotation() {
+      await deleteAnnotation(STATE.activeAnnotationId);
+    }
+
+    function openCategoryDialog(mode) {
+      const dialog = el.categoryDialog;
+      if (!dialog) return;
+      if (mode === "edit") {
+        const current = categories().find((item) => item.id === STATE.selectedCategoryId) || selectedCategory();
+        if (!current) return;
+        el.categoryDialogTitle.textContent = "Edit category";
+        el.categoryFormMode.value = "edit";
+        el.categoryFormId.value = current.id || "";
+        el.categoryNameInput.value = current.name || "";
+        el.categoryDescriptionInput.value = current.description || "";
+        el.categoryGuidanceInput.value = current.guidance || "";
+        el.categoryColorInput.value = current.color || "";
+        el.categoryTextColorInput.value = current.text_color || "";
+      } else {
+        el.categoryDialogTitle.textContent = "New category";
+        el.categoryFormMode.value = "create";
+        el.categoryFormId.value = "";
+        el.categoryNameInput.value = "";
+        el.categoryDescriptionInput.value = "";
+        el.categoryGuidanceInput.value = "";
+        el.categoryColorInput.value = "#2878c7";
+        el.categoryTextColorInput.value = "#ffffff";
+      }
+      dialog.showModal();
+    }
+
+    async function saveCategory(event) {
+      event.preventDefault();
+      const body = {
+        id: el.categoryFormId.value || undefined,
+        name: el.categoryNameInput.value,
+        description: el.categoryDescriptionInput.value,
+        guidance: el.categoryGuidanceInput.value,
+        color: el.categoryColorInput.value,
+        text_color: el.categoryTextColorInput.value,
+      };
+      let response;
+      if (el.categoryFormMode.value === "edit") {
+        response = await apiRequest(`/api/categories/${encodeURIComponent(el.categoryFormId.value)}`, {
+          method: "PATCH",
+          body: JSON.stringify(body),
+        });
+      } else {
+        response = await apiRequest("/api/categories", {
+          method: "POST",
+          body: JSON.stringify(body),
+        });
+      }
+      await refreshStoreOnly();
+      if (response?.category?.id) STATE.selectedCategoryId = response.category.id;
+      el.categoryDialog.close();
+      render();
+    }
+
+    async function importStore(file) {
+      const text = await file.text();
+      const payload = JSON.parse(text);
+      const result = await apiRequest("/api/import?mode=merge", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      STATE.bootstrap.store = result.store;
+      render();
+    }
+
+    function clearEditorState() {
+      STATE.activeAnnotationId = "";
+      STATE.selection = null;
+      STATE.selectionAnchor = null;
+      STATE.draftComment = "";
+      STATE.draftConfidence = "clear";
+    }
+
+    function openCaseForLabeling(questionId) {
+      if (!questionId) return;
+      setSelectedCaseId(questionId);
+      setViewMode("label");
+      STATE.compareOpen = false;
+      clearTransientSelection();
+      clearEditorState();
+      render();
+    }
+
+    function wireStaticControls() {
+      el.toggleSidebarBtn.addEventListener("click", () => {
+        setSidebarOpen(!STATE.sidebarOpen);
+        render();
+      });
+      el.viewSwitch.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-view-mode]");
+        if (!button) return;
+        const nextMode = button.getAttribute("data-view-mode") || "explorer";
+        setViewMode(nextMode);
+        if (nextMode !== "label") {
+          clearTransientSelection();
+          clearEditorState();
+        }
+        render();
+      });
+      el.searchInput.addEventListener("input", (event) => {
+        STATE.search = event.target.value;
+        render();
+      });
+      el.gradeFilterSelect.addEventListener("change", (event) => {
+        setGradeFilter(event.target.value || "all");
+        render();
+      });
+      el.annotationFilterSelect.addEventListener("change", (event) => {
+        setAnnotationFilter(event.target.value || "all");
+        render();
+      });
+      el.domainFilterList.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-domain-filter]");
+        if (!input) return;
+        const selected = new Set(selectedDomainsForCurrentDataset() || availableDomains());
+        const domain = input.getAttribute("data-domain-filter") || "";
+        if (input.checked) {
+          selected.add(domain);
+        } else {
+          selected.delete(domain);
+        }
+        setSelectedDomainsForCurrentDataset([...selected]);
+        render();
+      });
+      el.selectAllDomainsBtn.addEventListener("click", () => {
+        setSelectedDomainsForCurrentDataset(null);
+        render();
+      });
+      el.closeDomainFilterBtn.addEventListener("click", () => {
+        el.domainFilterDetails.open = false;
+      });
+      el.authorInput.addEventListener("input", (event) => {
+        STATE.author = event.target.value;
+        window.localStorage.setItem("reasoningLab.author", STATE.author);
+      });
+      el.resetFiltersBtn.addEventListener("click", () => {
+        STATE.search = "";
+        setGradeFilter("all");
+        setAnnotationFilter("all");
+        setCaseSort("recommended");
+        setSelectedDomainsForCurrentDataset(null);
+        render();
+      });
+      el.openNextUnlabeledBtn.addEventListener("click", () => {
+        const rows = sortCases(filteredCases());
+        const nextCase = nextCaseToLabel(rows);
+        if (!nextCase) return;
+        openCaseForLabeling(nextCase.question_id || "");
+      });
+      el.sourceSwitch.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-source-key]");
+        if (!button) return;
+        const key = button.getAttribute("data-source-key");
+        if (!currentAtlas()?.sources?.[key]) return;
+        const nextSource = currentAtlas().sources[key];
+        setSourceKey(key);
+        const nextDatasetKey = nextSource?.datasets?.[STATE.datasetKey]
+          ? STATE.datasetKey
+          : (nextSource?.datasets?.v2 ? "v2" : Object.keys(nextSource?.datasets || {})[0] || "v1");
+        setDatasetKey(nextDatasetKey);
+        clearEditorState();
+        render();
+      });
+      el.datasetSwitch.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-dataset-key]");
+        if (!button) return;
+        const key = button.getAttribute("data-dataset-key");
+        if (!currentSource()?.datasets?.[key]) return;
+        setDatasetKey(key);
+        clearEditorState();
+        render();
+      });
+      el.openExplorerBtn.addEventListener("click", () => {
+        clearTransientSelection();
+        clearEditorState();
+        setViewMode("explorer");
+        render();
+      });
+      el.caseList.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-question-id]");
+        if (!button) return;
+        setSelectedCaseId(button.getAttribute("data-question-id") || "");
+        clearEditorState();
+        render();
+      });
+      el.questionExplorerList.addEventListener("click", (event) => {
+        const openButton = event.target.closest("[data-open-labeling]");
+        if (!openButton) return;
+        openCaseForLabeling(openButton.getAttribute("data-open-labeling") || "");
+      });
+      el.questionExplorerHead.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-sort-column]");
+        if (!button) return;
+        setCaseSort(nextSortValueForColumn(button.getAttribute("data-sort-column") || ""));
+        render();
+      });
+      el.reasoningPanel.addEventListener("mouseup", () => {
+        if (selectionCaptureFrame) {
+          window.cancelAnimationFrame(selectionCaptureFrame);
+        }
+        selectionCaptureFrame = window.requestAnimationFrame(() => {
+          selectionCaptureFrame = 0;
+          const selection = window.getSelection();
+          if (!selection || selection.rangeCount === 0) return;
+          const range = selection.getRangeAt(0);
+          const target = range.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+            ? range.commonAncestorContainer.closest(".trace-document")
+            : range.commonAncestorContainer.parentElement?.closest(".trace-document");
+          if (!target) return;
+          const extracted = readSelectionFromTrace(target);
+          if (!extracted) return;
+          STATE.selection = extracted;
+          STATE.activeAnnotationId = "";
+          STATE.draftComment = "";
+          STATE.draftConfidence = "clear";
+          STATE.lastSelectionAt = Date.now();
+          STATE.selectionAnchor = anchorFromRect(range.getBoundingClientRect()) || anchorFromRect(target.getBoundingClientRect());
+          refreshSelectionUi();
+        });
+      });
+      el.reasoningPanel.addEventListener("click", (event) => {
+        const mark = event.target.closest("[data-annotation-id]");
+        if (mark) {
+          openAnnotation(mark.getAttribute("data-annotation-id") || "");
+          return;
+        }
+        const selection = window.getSelection?.();
+        if (
+          selection
+          && selection.isCollapsed
+          && STATE.selection
+          && !event.target.closest("#selectionToolbar")
+          && Date.now() - STATE.lastSelectionAt > 250
+        ) {
+          clearTransientSelection();
+          refreshSelectionUi();
+        }
+      });
+      el.responsePanel.addEventListener("click", (event) => {
+        if (!event.target.closest("[data-toggle-answer]")) return;
+        setAnswerCollapsed(!STATE.answerCollapsed);
+        render();
+      });
+      el.comparisonPanel.addEventListener("click", (event) => {
+        if (event.target.closest("[data-toggle-answer]")) {
+          setAnswerCollapsed(!STATE.answerCollapsed);
+          render();
+          return;
+        }
+        if (event.target.id === "hideCompareBtn") {
+          STATE.compareOpen = false;
+          render();
+        }
+      });
+      el.questionPanel.addEventListener("click", (event) => {
+        if (!event.target.closest("#toggleCompareBtn")) return;
+        STATE.compareOpen = !STATE.compareOpen;
+        render();
+      });
+      el.composerPanel.addEventListener("click", (event) => {
+        void runUiAction(async () => {
+          const documentNoteButton = event.target.closest("[data-document-note-label]");
+          if (documentNoteButton) {
+            const caseRow = currentCaseForUi();
+            const traceDocument = reasonDocument(caseRow);
+            if (!traceDocument) return;
+            const documentId = traceDocument.document_id;
+            const savedNote = documentNoteForDocument(documentId);
+            const draft = draftDocumentNoteFor(documentId);
+            const summaryInput = document.getElementById("traceSummaryInput");
+            const nextSummary = draft
+              ? draft.summary
+              : (summaryInput ? summaryInput.value : savedNote?.summary || "");
+            const clickedLabelId = documentNoteButton.getAttribute("data-document-note-label") || "";
+            const currentLabelId = draft ? draft.labelId : (savedNote?.label_id || "");
+            const nextLabelId = clickedLabelId === currentLabelId ? "" : clickedLabelId;
+            const nextConfidence = nextLabelId
+              ? normalizedConfidence(
+                  draft ? draft.confidence : (savedNote?.confidence || "clear"),
+                  false,
+                )
+              : "";
+            STATE.draftDocumentNote = {
+              documentId,
+              summary: nextSummary,
+              labelId: nextLabelId,
+              confidence: nextConfidence,
+            };
+            persistDocumentNoteDraft(documentId, STATE.draftDocumentNote);
+            await saveDocumentNote({
+              documentId,
+              summary: nextSummary,
+              labelId: nextLabelId,
+              confidence: nextConfidence,
+            });
+            return;
+          }
+          const documentNoteConfidenceButton = event.target.closest("[data-document-note-confidence]");
+          if (documentNoteConfidenceButton) {
+            const caseRow = currentCaseForUi();
+            const traceDocument = reasonDocument(caseRow);
+            if (!traceDocument) return;
+            const documentId = traceDocument.document_id;
+            const savedNote = documentNoteForDocument(documentId);
+            const draft = draftDocumentNoteFor(documentId);
+            const summaryInput = document.getElementById("traceSummaryInput");
+            const nextSummary = draft
+              ? draft.summary
+              : (summaryInput ? summaryInput.value : savedNote?.summary || "");
+            const nextLabelId = draft ? draft.labelId : (savedNote?.label_id || "");
+            if (!nextLabelId) return;
+            const nextConfidence = normalizedConfidence(
+              documentNoteConfidenceButton.getAttribute("data-document-note-confidence"),
+              false,
+            );
+            STATE.draftDocumentNote = {
+              documentId,
+              summary: nextSummary,
+              labelId: nextLabelId,
+              confidence: nextConfidence,
+            };
+            persistDocumentNoteDraft(documentId, STATE.draftDocumentNote);
+            await saveDocumentNote({
+              documentId,
+              summary: nextSummary,
+              labelId: nextLabelId,
+              confidence: nextConfidence,
+            });
+            return;
+          }
+          const categoryButton = event.target.closest("[data-category-select]");
+          if (categoryButton) {
+            const labelId = categoryButton.getAttribute("data-category-select") || STATE.selectedCategoryId;
+            STATE.selectedCategoryId = labelId;
+            if (STATE.selection || STATE.activeAnnotationId) {
+              await saveAnnotation({
+                labelId,
+                keepActive: Boolean(STATE.activeAnnotationId),
+                flash: Boolean(STATE.selection),
+                flashAnchor: STATE.selectionAnchor,
+              });
+            } else {
+              render();
+            }
+            return;
+          }
+          if (event.target.id === "clearSelectionBtn") {
+            const wasEditing = Boolean(STATE.activeAnnotationId);
+            clearTransientSelection();
+            STATE.activeAnnotationId = "";
+            STATE.draftComment = "";
+            STATE.draftConfidence = "clear";
+            if (wasEditing) {
+              render();
+            } else {
+              refreshSelectionUi();
+            }
+            return;
+          }
+          if (event.target.id === "newCategoryBtn") {
+            openCategoryDialog("create");
+            return;
+          }
+          if (event.target.id === "editCategoryBtn") {
+            openCategoryDialog("edit");
+            return;
+          }
+          if (event.target.id === "deleteAnnotationBtn") {
+            await deleteActiveAnnotation();
+            return;
+          }
+          if (event.target.id === "deleteSelectionOverlapBtn") {
+            await deleteAnnotations(overlappingAnnotationsForSelection().map((annotation) => annotation.id));
+          }
+        }, "Could not update the label panel.");
+      });
+      el.composerPanel.addEventListener("input", (event) => {
+        if (event.target.id === "traceSummaryInput") {
+          const caseRow = currentCaseForUi();
+          const traceDocument = reasonDocument(caseRow);
+          if (!traceDocument) return;
+          const documentId = traceDocument.document_id;
+          const savedNote = documentNoteForDocument(documentId);
+          const draft = draftDocumentNoteFor(documentId);
+          STATE.draftDocumentNote = {
+            documentId,
+            summary: event.target.value,
+            labelId: draft ? draft.labelId : (savedNote?.label_id || ""),
+            confidence: draft ? draft.confidence : normalizedConfidence(savedNote?.confidence, true),
+          };
+          persistDocumentNoteDraft(documentId, STATE.draftDocumentNote);
+          setDocumentNoteStatus(documentId, "Saved locally");
+          if (documentNoteSaveTimer) {
+            window.clearTimeout(documentNoteSaveTimer);
+          }
+          const scheduledSummary = event.target.value;
+          const scheduledLabelId = STATE.draftDocumentNote.labelId || "";
+          const scheduledConfidence = STATE.draftDocumentNote.confidence || "";
+          documentNoteSaveTimer = window.setTimeout(() => {
+            const currentSavedNote = documentNoteForDocument(documentId);
+            if (
+              (currentSavedNote?.summary || "") === scheduledSummary
+              && (currentSavedNote?.label_id || "") === scheduledLabelId
+              && normalizedConfidence(currentSavedNote?.confidence, true) === normalizedConfidence(scheduledConfidence, true)
+            ) {
+              return;
+            }
+            void runUiAction(
+              async () => {
+                await saveDocumentNote({
+                  documentId,
+                  summary: scheduledSummary,
+                  labelId: scheduledLabelId,
+                  confidence: scheduledConfidence,
+                  render: false,
+                });
+              },
+              "Could not save the trace note.",
+            ).catch(() => {
+              setDocumentNoteStatus(documentId, "Saved locally");
+            });
+          }, 500);
+          return;
+        }
+      });
+      el.composerPanel.addEventListener("focusout", (event) => {
+        if (event.target.id === "traceSummaryInput") {
+          if (documentNoteSaveTimer) {
+            window.clearTimeout(documentNoteSaveTimer);
+          }
+          const caseRow = currentCaseForUi();
+          const traceDocument = reasonDocument(caseRow);
+          if (!traceDocument) return;
+          const documentId = traceDocument.document_id;
+          const draft = draftDocumentNoteFor(documentId);
+          const savedNote = documentNoteForDocument(documentId);
+          const nextSummary = event.target.value;
+          const nextLabelId = draft ? draft.labelId : (savedNote?.label_id || "");
+          STATE.draftDocumentNote = {
+            documentId,
+            summary: nextSummary,
+            labelId: nextLabelId,
+            confidence: draft ? draft.confidence : normalizedConfidence(savedNote?.confidence, true),
+          };
+          persistDocumentNoteDraft(documentId, STATE.draftDocumentNote);
+          if (
+            (savedNote?.summary || "") === nextSummary
+            && (savedNote?.label_id || "") === nextLabelId
+            && normalizedConfidence(savedNote?.confidence, true) === normalizedConfidence(STATE.draftDocumentNote.confidence, true)
+          ) {
+            return;
+          }
+          void runUiAction(
+            async () => {
+              await saveDocumentNote({
+                documentId,
+                summary: nextSummary,
+                labelId: nextLabelId,
+                confidence: STATE.draftDocumentNote.confidence || "",
+              });
+            },
+            "Could not save the trace note.",
+          ).catch(() => {
+            setDocumentNoteStatus(documentId, "Saved locally");
+          });
+          return;
+        }
+      });
+      el.annotationPanel.addEventListener("click", (event) => {
+        void runUiAction(async () => {
+          const categoryButton = event.target.closest("[data-category-select]");
+          if (categoryButton) {
+            const labelId = categoryButton.getAttribute("data-category-select") || STATE.selectedCategoryId;
+            STATE.selectedCategoryId = labelId;
+            await saveAnnotation({
+              labelId,
+              keepActive: true,
+              flash: false,
+            });
+            return;
+          }
+          const confidenceButton = event.target.closest("[data-annotation-confidence]");
+          if (confidenceButton) {
+            const confidence = normalizedConfidence(
+              confidenceButton.getAttribute("data-annotation-confidence"),
+              false,
+            );
+            STATE.draftConfidence = confidence;
+            await saveAnnotation({
+              confidence,
+              keepActive: true,
+              flash: false,
+            });
+            return;
+          }
+          if (event.target.id === "deleteAnnotationBtn") {
+            await deleteActiveAnnotation();
+            return;
+          }
+          const button = event.target.closest("[data-annotation-open]");
+          if (!button) return;
+          openAnnotation(button.getAttribute("data-annotation-open") || "");
+        }, "Could not update the saved highlight.");
+      });
+      el.annotationPanel.addEventListener("input", (event) => {
+        if (event.target.id !== "annotationCommentInput") return;
+        STATE.draftComment = event.target.value;
+        if (commentSaveTimer) {
+          window.clearTimeout(commentSaveTimer);
+        }
+        const editingAnnotation = annotations().find((item) => item.id === STATE.activeAnnotationId);
+        if (!editingAnnotation) return;
+        const scheduledAnnotationId = editingAnnotation.id;
+        const scheduledComment = event.target.value;
+        commentSaveTimer = window.setTimeout(() => {
+          const currentEditingAnnotation = annotations().find((item) => item.id === STATE.activeAnnotationId);
+          if (currentEditingAnnotation?.id !== scheduledAnnotationId) return;
+          const nextComment = scheduledComment;
+          if ((currentEditingAnnotation?.comment || "") === nextComment) return;
+          void runUiAction(async () => {
+            await saveAnnotation({ comment: nextComment, keepActive: true });
+          }, "Could not save why this label.");
+        }, 500);
+      });
+      el.annotationPanel.addEventListener("focusout", (event) => {
+        if (event.target.id !== "annotationCommentInput") return;
+        if (commentSaveTimer) {
+          window.clearTimeout(commentSaveTimer);
+        }
+        const activeAnnotation = annotations().find((item) => item.id === STATE.activeAnnotationId);
+        if (!activeAnnotation) return;
+        const nextComment = event.target.value;
+        if ((activeAnnotation?.comment || "") === nextComment) return;
+        STATE.draftComment = nextComment;
+        void runUiAction(async () => {
+          await saveAnnotation({ comment: nextComment, keepActive: true });
+        }, "Could not save why this label.");
+      });
+      el.selectionToolbar.addEventListener("click", (event) => {
+        void runUiAction(async () => {
+          const categoryButton = event.target.closest("[data-toolbar-category]");
+          if (categoryButton) {
+            const labelId = categoryButton.getAttribute("data-toolbar-category") || STATE.selectedCategoryId;
+            STATE.selectedCategoryId = labelId;
+            await saveAnnotation({
+              labelId,
+              keepActive: false,
+              flash: true,
+              flashAnchor: STATE.selectionAnchor,
+            });
+            return;
+          }
+          if (event.target.id === "toolbarClearBtn") {
+            if (overlappingAnnotationsForSelection().length) {
+              await clearSelectionFromAnnotations();
+            } else {
+              clearTransientSelection();
+              STATE.activeAnnotationId = "";
+              STATE.draftComment = "";
+              STATE.draftConfidence = "clear";
+              refreshSelectionUi();
+            }
+          }
+        }, "Could not save that label.");
+      });
+      document.addEventListener("pointerdown", (event) => {
+        if (!STATE.selection && !STATE.flashNotice) return;
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (target.closest("#selectionToolbar, #composerPanel, dialog")) return;
+        clearTransientSelection();
+        refreshSelectionUi();
+      });
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (!el.domainFilterDetails?.open) return;
+        if (target.closest("#domainFilterDetails")) return;
+        el.domainFilterDetails.open = false;
+      });
+      document.addEventListener("keydown", (event) => {
+        const target = event.target;
+        if (event.key !== "Escape") return;
+        if (target instanceof HTMLElement && target.closest("input, textarea, select, dialog")) return;
+        if (STATE.compareOpen) {
+          STATE.compareOpen = false;
+          render();
+          return;
+        }
+        if (!STATE.selection && !STATE.activeAnnotationId && !STATE.flashNotice) return;
+        clearTransientSelection();
+        STATE.activeAnnotationId = "";
+        STATE.draftComment = "";
+        STATE.draftConfidence = "clear";
+        refreshSelectionUi();
+      });
+      el.exportBtn.addEventListener("click", () => {
+        window.location.href = "/api/export";
+      });
+      el.importBtn.addEventListener("click", () => {
+        el.importInput.click();
+      });
+      el.importInput.addEventListener("change", (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        void runUiAction(async () => {
+          await importStore(file);
+          setToast("Labels imported.", "neutral", 1800);
+        }, "Could not import that file.");
+        event.target.value = "";
+      });
+      el.categoryForm.addEventListener("submit", (event) => {
+        void runUiAction(async () => {
+          await saveCategory(event);
+          setToast("Label definition saved.", "neutral", 1800);
+        }, "Could not save that label definition.");
+      });
+      el.closeCategoryDialogBtn.addEventListener("click", () => {
+        el.categoryDialog.close();
+      });
+    }
+
+    async function init() {
+      Object.assign(el, {
+        filterPanel: document.getElementById("filterPanel"),
+        viewSwitch: document.getElementById("viewSwitch"),
+        explorerView: document.getElementById("explorerView"),
+        workspace: document.getElementById("workspace"),
+        sourceSwitch: document.getElementById("sourceSwitch"),
+        datasetSwitch: document.getElementById("datasetSwitch"),
+        toggleSidebarBtn: document.getElementById("toggleSidebarBtn"),
+        statusLine: document.getElementById("statusLine"),
+        searchInput: document.getElementById("searchInput"),
+        authorInput: document.getElementById("authorInput"),
+        gradeFilterSelect: document.getElementById("gradeFilterSelect"),
+        annotationFilterSelect: document.getElementById("annotationFilterSelect"),
+        domainFilterField: document.getElementById("domainFilterField"),
+        domainFilterDetails: document.getElementById("domainFilterDetails"),
+        domainFilterSummary: document.getElementById("domainFilterSummary"),
+        domainFilterList: document.getElementById("domainFilterList"),
+        selectAllDomainsBtn: document.getElementById("selectAllDomainsBtn"),
+        closeDomainFilterBtn: document.getElementById("closeDomainFilterBtn"),
+        resetFiltersBtn: document.getElementById("resetFiltersBtn"),
+        openNextUnlabeledBtn: document.getElementById("openNextUnlabeledBtn"),
+        filterMeta: document.getElementById("filterMeta"),
+        caseMeta: document.getElementById("caseMeta"),
+        explorerMeta: document.getElementById("explorerMeta"),
+        explorerSummary: document.getElementById("explorerSummary"),
+        questionExplorerHead: document.getElementById("questionExplorerHead"),
+        questionExplorerList: document.getElementById("questionExplorerList"),
+        openExplorerBtn: document.getElementById("openExplorerBtn"),
+        caseList: document.getElementById("caseList"),
+        questionPanel: document.getElementById("questionPanel"),
+        responsePanel: document.getElementById("responsePanel"),
+        reasoningPanel: document.getElementById("reasoningPanel"),
+        composerPanel: document.getElementById("composerPanel"),
+        annotationPanel: document.getElementById("annotationPanel"),
+        selectionToolbar: document.getElementById("selectionToolbar"),
+        appToast: document.getElementById("appToast"),
+        exportBtn: document.getElementById("exportBtn"),
+        importBtn: document.getElementById("importBtn"),
+        importInput: document.getElementById("importInput"),
+        categoryDialog: document.getElementById("categoryDialog"),
+        categoryForm: document.getElementById("categoryForm"),
+        categoryDialogTitle: document.getElementById("categoryDialogTitle"),
+        categoryFormMode: document.getElementById("categoryFormMode"),
+        categoryFormId: document.getElementById("categoryFormId"),
+        categoryNameInput: document.getElementById("categoryNameInput"),
+        categoryDescriptionInput: document.getElementById("categoryDescriptionInput"),
+        categoryGuidanceInput: document.getElementById("categoryGuidanceInput"),
+        categoryColorInput: document.getElementById("categoryColorInput"),
+        categoryTextColorInput: document.getElementById("categoryTextColorInput"),
+        closeCategoryDialogBtn: document.getElementById("closeCategoryDialogBtn"),
+        stageBody: document.getElementById("stageBody"),
+        comparisonPanel: document.getElementById("comparisonPanel"),
+      });
+      wireStaticControls();
+      try {
+        await bootstrap();
+      } catch (error) {
+        el.statusLine.textContent = error.message || "Failed to load the annotation studio.";
+        setToast(error.message || "Failed to load the annotation studio.", "error", 0);
+        const openedFromDisk = window.location.protocol === "file:";
+        el.questionPanel.innerHTML = `
+          <div class="empty-state">
+            <strong>${openedFromDisk ? "This page was opened from disk, so the data API is unavailable." : "Could not connect to the local annotation server."}</strong><br>
+            ${openedFromDisk
+              ? 'Open <code>http://127.0.0.1:8878/viewer/reasoning-annotation-studio.html</code> instead.'
+              : 'Start <code>reasoning-lab/scripts/reasoning_annotation_server.py</code> and reload this page.'}
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

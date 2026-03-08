@@ -1,0 +1,18 @@
+{
+  "generated_at_utc": "2026-03-07T20:50:34.531461Z",
+  "dataset_key": "smoke",
+  "special_run": true,
+  "sources": {
+    "run_dir": "runs/smoke/smoke_v1",
+    "grade_dir": "runs/smoke/smoke_v1/grades/smoke_v1__judge_google_gemini-3.1-pro-preview",
+    "aggregate_dir": "runs/smoke/smoke_v1/aggregates/smoke_v1__judge_google_gemini-3.1-pro-preview__aggregate",
+    "responses_file": "data/smoke/latest/responses.jsonl",
+    "grades_file": "data/smoke/latest/grades.jsonl",
+    "aggregate_rows_file": "data/smoke/latest/aggregate.jsonl"
+  },
+  "counts": {
+    "responses_rows": 2,
+    "grades_rows": 2,
+    "aggregate_rows": 2
+  }
+}

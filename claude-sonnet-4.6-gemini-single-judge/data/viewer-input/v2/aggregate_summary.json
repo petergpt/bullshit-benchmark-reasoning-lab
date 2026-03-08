@@ -1,0 +1,46 @@
+{
+  "consensus_method": "single_judge",
+  "num_judges": 1,
+  "leaderboard": [
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=high",
+      "count": 100,
+      "scored_count": 100,
+      "nonsense_count": 100,
+      "control_count": 0,
+      "score_0": 5,
+      "score_1": 2,
+      "score_2": 93,
+      "score_3": 0,
+      "avg_score": 1.88,
+      "detection_rate_score_2": 0.93,
+      "full_engagement_rate_score_0": 0.05,
+      "control_correct_rate_score_3": null,
+      "error_count": 0
+    },
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=none",
+      "count": 100,
+      "scored_count": 100,
+      "nonsense_count": 100,
+      "control_count": 0,
+      "score_0": 6,
+      "score_1": 3,
+      "score_2": 91,
+      "score_3": 0,
+      "avg_score": 1.85,
+      "detection_rate_score_2": 0.91,
+      "full_engagement_rate_score_0": 0.06,
+      "control_correct_rate_score_3": null,
+      "error_count": 0
+    }
+  ],
+  "reliability": {
+    "pairwise": [],
+    "average_pairwise_agreement": null,
+    "krippendorff_alpha_ordinal": null
+  },
+  "total_records": 200,
+  "total_error_records": 0,
+  "total_scored_records": 200
+}

@@ -1,0 +1,2341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GPT-5.4 Reasoning Atlas</title>
+  <link rel="icon" href="../assets/bsbench.png">
+  <style>
+    :root {
+      --bg: #f4efe5;
+      --bg-deep: #efe6d5;
+      --panel: rgba(255, 252, 247, 0.94);
+      --panel-strong: #fffdf8;
+      --ink: #1f2825;
+      --muted: #60716b;
+      --line: rgba(31, 40, 37, 0.11);
+      --teal: #175f56;
+      --teal-soft: #dff0ec;
+      --teal-deep: #0d423b;
+      --sand: #ead8b3;
+      --amber: #c57a12;
+      --red: #c14037;
+      --rose: #f8e3de;
+      --green: #1d8f56;
+      --green-soft: #def4e7;
+      --slate: #a8b3ae;
+      --shadow-lg: 0 28px 60px rgba(34, 44, 40, 0.12);
+      --shadow-md: 0 14px 32px rgba(34, 44, 40, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --transition: 160ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 640px at 8% 0%, rgba(227, 203, 145, 0.42), transparent 68%),
+        radial-gradient(1100px 840px at 100% 0%, rgba(118, 173, 160, 0.28), transparent 70%),
+        linear-gradient(180deg, #f6f1e7 0%, var(--bg) 100%);
+      font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(19, 36, 32, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(19, 36, 32, 0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0));
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1680px, 96vw);
+      margin: 28px auto 44px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(145deg, rgba(14, 61, 55, 0.96) 0%, rgba(24, 92, 83, 0.94) 52%, rgba(34, 118, 105, 0.92) 100%);
+      color: #f7fbfa;
+      box-shadow: var(--shadow-lg);
+      padding: 28px 28px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -140px;
+      top: -100px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 247, 214, 0.18) 0%, rgba(255, 247, 214, 0) 72%);
+      z-index: -1;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .eyebrow-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-logo {
+      width: 84px;
+      height: auto;
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e5f4f0;
+      padding: 8px 12px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 14ch;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      font-size: clamp(2rem, 4vw, 3.45rem);
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 68ch;
+      color: rgba(235, 246, 243, 0.9);
+      font-size: 1rem;
+      line-height: 1.58;
+    }
+
+    .hero-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .toolbar-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 5px;
+      min-height: 44px;
+    }
+
+    .toolbar-link,
+    .toolbar-button {
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: #f1fbf8;
+      padding: 9px 14px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+
+    .toolbar-button:hover,
+    .toolbar-link:hover,
+    .toolbar-button:focus-visible,
+    .toolbar-link:focus-visible {
+      background: rgba(255, 255, 255, 0.14);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .dataset-segment {
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(232, 245, 241, 0.84);
+      padding: 8px 14px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+
+    .dataset-segment.active {
+      background: #f9f7f0;
+      color: var(--teal-deep);
+      box-shadow: 0 8px 16px rgba(7, 30, 26, 0.16);
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: rgba(231, 244, 240, 0.86);
+      font-size: 0.82rem;
+    }
+
+    .hero-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 16px 18px;
+      min-width: 0;
+    }
+
+    .metric-label {
+      display: block;
+      color: rgba(224, 240, 236, 0.84);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      display: block;
+      font-size: clamp(1.4rem, 2.2vw, 2.2rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fffdf9;
+    }
+
+    .metric-hint {
+      margin-top: 6px;
+      color: rgba(221, 238, 234, 0.84);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .studio {
+      display: grid;
+      grid-template-columns: minmax(330px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .rail {
+      display: grid;
+      gap: 14px;
+      position: sticky;
+      top: 18px;
+      align-self: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 18px;
+      min-width: 0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      font-size: clamp(1.3rem, 1.8vw, 1.65rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-head p,
+    .panel-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+
+    .controls-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label.field {
+      display: grid;
+      gap: 5px;
+      color: #384641;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .field span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 18px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      border: 1px solid #c9d2cd;
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #4f8d80;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(31, 101, 89, 0.12);
+    }
+
+    .mini-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .mini-btn {
+      border: 1px solid rgba(25, 82, 74, 0.18);
+      background: #ffffff;
+      color: #23453e;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .mini-btn:hover,
+    .mini-btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(25, 82, 74, 0.36);
+      box-shadow: 0 10px 20px rgba(30, 54, 48, 0.08);
+      outline: none;
+    }
+
+    .results-panel {
+      display: grid;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .results-meta {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .results-list {
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 272px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .results-list::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .results-list::-webkit-scrollbar-thumb {
+      background: rgba(36, 70, 62, 0.16);
+      border-radius: 999px;
+    }
+
+    .result-card {
+      position: relative;
+      border: 1px solid rgba(24, 47, 42, 0.1);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(250, 248, 244, 0.9) 100%);
+      padding: 14px 14px 13px;
+      display: grid;
+      gap: 10px;
+      text-align: left;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .result-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      border-radius: 18px 0 0 18px;
+      background: var(--slate);
+    }
+
+    .result-card.score-green::before {
+      background: var(--green);
+    }
+
+    .result-card.score-amber::before {
+      background: var(--amber);
+    }
+
+    .result-card.score-red::before {
+      background: var(--red);
+    }
+
+    .result-card:hover,
+    .result-card:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 28px rgba(31, 48, 43, 0.08);
+      border-color: rgba(22, 72, 64, 0.22);
+      outline: none;
+    }
+
+    .result-card.selected {
+      border-color: rgba(17, 92, 80, 0.38);
+      box-shadow: 0 18px 34px rgba(21, 79, 69, 0.12);
+      background: linear-gradient(180deg, rgba(246, 252, 250, 0.98) 0%, rgba(238, 248, 244, 0.98) 100%);
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .question-id {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #29443d;
+    }
+
+    .result-card h3 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      font-size: 1.08rem;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+      color: #1b2824;
+    }
+
+    .result-excerpt {
+      color: #55655f;
+      font-size: 0.88rem;
+      line-height: 1.48;
+      margin: 0;
+    }
+
+    .tag-row,
+    .stat-row,
+    .judge-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tag,
+    .score-pill,
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .tag {
+      background: rgba(39, 69, 61, 0.08);
+      color: #39514a;
+    }
+
+    .stat-chip {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(31, 52, 46, 0.08);
+      color: #3b4d47;
+    }
+
+    .score-pill {
+      color: #fff;
+      background: var(--slate);
+    }
+
+    .score-pill.green {
+      background: var(--green);
+    }
+
+    .score-pill.amber {
+      background: var(--amber);
+    }
+
+    .score-pill.red {
+      background: var(--red);
+    }
+
+    .score-pill.slate {
+      background: #83918b;
+    }
+
+    .change-chip.up {
+      background: var(--green-soft);
+      color: #176746;
+    }
+
+    .change-chip.flat {
+      background: rgba(54, 77, 71, 0.08);
+      color: #52645e;
+    }
+
+    .change-chip.down {
+      background: var(--rose);
+      color: #8d332b;
+    }
+
+    .detail {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .question-panel {
+      padding: 24px;
+      background:
+        linear-gradient(180deg, rgba(255, 252, 246, 0.98) 0%, rgba(248, 243, 233, 0.94) 100%);
+    }
+
+    .question-panel .section-head {
+      margin-bottom: 18px;
+    }
+
+    .question-copy {
+      display: grid;
+      gap: 16px;
+    }
+
+    .question-text {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      font-size: clamp(1.45rem, 2.2vw, 2.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+      color: #15211d;
+    }
+
+    .question-context-card {
+      border: 1px solid rgba(23, 44, 39, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.84);
+      padding: 16px 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .context-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #204f45;
+      font-size: 0.77rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .context-text {
+      margin: 0;
+      color: #435550;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .nav-buttons {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav-button {
+      border: 1px solid rgba(19, 54, 47, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      color: #23443d;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+    }
+
+    .nav-button:disabled {
+      cursor: default;
+      opacity: 0.42;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .nav-button:not(:disabled):hover,
+    .nav-button:not(:disabled):focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(30, 53, 47, 0.08);
+      outline: none;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .variant-card {
+      display: grid;
+      gap: 14px;
+      border: 1px solid rgba(23, 47, 41, 0.08);
+      border-radius: 20px;
+      background: var(--panel-strong);
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .variant-card.xhigh {
+      background: linear-gradient(180deg, rgba(244, 252, 249, 0.96) 0%, rgba(235, 247, 243, 0.96) 100%);
+    }
+
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .variant-title {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.02rem;
+      line-height: 1.2;
+      font-weight: 800;
+      color: #17332d;
+    }
+
+    .variant-title small {
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .judge-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .judge-item {
+      border: 1px solid rgba(28, 46, 41, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .judge-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .judge-name {
+      color: #334842;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .judge-justification {
+      margin: 0;
+      color: #556862;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .rich-block {
+      border: 1px solid rgba(28, 46, 41, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.84);
+      padding: 16px 18px;
+    }
+
+    .rich-block h3 {
+      margin: 0 0 12px;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      font-size: 1.05rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #19332d;
+    }
+
+    .rich-text {
+      color: #25342f;
+      font-size: 0.96rem;
+      line-height: 1.68;
+    }
+
+    .rich-text > :first-child {
+      margin-top: 0;
+    }
+
+    .rich-text > :last-child {
+      margin-bottom: 0;
+    }
+
+    .rich-text h2,
+    .rich-text h3,
+    .rich-text h4 {
+      margin: 1.15em 0 0.55em;
+      font-family: "Iowan Old Style", "Palatino Linotype", serif;
+      color: #17312b;
+      letter-spacing: -0.02em;
+      line-height: 1.16;
+    }
+
+    .rich-text h2 {
+      font-size: 1.28rem;
+    }
+
+    .rich-text h3 {
+      font-size: 1.1rem;
+    }
+
+    .rich-text h4 {
+      font-size: 0.98rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #336257;
+    }
+
+    .rich-text p,
+    .rich-text ul,
+    .rich-text ol,
+    .rich-text pre,
+    .rich-text blockquote {
+      margin: 0.65em 0;
+    }
+
+    .rich-text ul,
+    .rich-text ol {
+      padding-left: 1.25rem;
+    }
+
+    .rich-text li + li {
+      margin-top: 0.34rem;
+    }
+
+    .rich-text blockquote {
+      border-left: 3px solid rgba(27, 98, 86, 0.2);
+      background: rgba(23, 95, 86, 0.05);
+      border-radius: 0 12px 12px 0;
+      padding: 10px 14px;
+      color: #335148;
+    }
+
+    .rich-text code {
+      font-family: "SFMono-Regular", "Consolas", "Menlo", monospace;
+      background: rgba(22, 55, 48, 0.08);
+      color: #18453b;
+      padding: 0.15em 0.4em;
+      border-radius: 6px;
+      font-size: 0.92em;
+    }
+
+    .rich-text pre {
+      overflow: auto;
+      border-radius: 14px;
+      background: #162722;
+      color: #f0f7f5;
+      padding: 12px 14px;
+    }
+
+    .rich-text pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .trace-panel {
+      padding: 20px;
+      background:
+        radial-gradient(900px 460px at 100% 0%, rgba(32, 115, 103, 0.08), transparent 70%),
+        linear-gradient(180deg, rgba(253, 251, 246, 0.98) 0%, rgba(245, 242, 235, 0.96) 100%);
+    }
+
+    .trace-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .trace-note {
+      margin: 6px 0 0;
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.52;
+    }
+
+    .trace-metrics {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .trace-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .trace-steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .trace-step {
+      position: relative;
+      border: 1px solid rgba(26, 51, 45, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 16px 18px 16px 58px;
+      min-width: 0;
+    }
+
+    .trace-step-number {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #1d8f7d 0%, #175f56 100%);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.76rem;
+      font-weight: 800;
+      box-shadow: 0 10px 18px rgba(23, 95, 86, 0.18);
+    }
+
+    .trace-step h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      line-height: 1.2;
+      color: #16342d;
+      letter-spacing: -0.01em;
+    }
+
+    .trace-step p {
+      margin: 0;
+      color: #4f635d;
+      font-size: 0.9rem;
+      line-height: 1.62;
+    }
+
+    details.raw-trace {
+      border: 1px solid rgba(24, 50, 44, 0.08);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.88);
+      overflow: hidden;
+    }
+
+    details.raw-trace summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #24463e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    details.raw-trace summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.raw-trace summary::after {
+      content: "+";
+      font-size: 1rem;
+      color: #335850;
+    }
+
+    details.raw-trace[open] summary::after {
+      content: "-";
+    }
+
+    .raw-trace-body {
+      border-top: 1px solid rgba(24, 50, 44, 0.08);
+      padding: 14px 16px 16px;
+    }
+
+    .raw-trace-body pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", "Consolas", "Menlo", monospace;
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: #29453f;
+    }
+
+    .empty-state {
+      border: 1px dashed rgba(34, 61, 55, 0.22);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.66);
+      padding: 28px;
+      text-align: center;
+      color: #536660;
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+
+    .empty-state strong {
+      color: #20433b;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1280px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-side {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-summary {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .studio {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        position: static;
+      }
+
+      .results-list {
+        max-height: 520px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero-summary,
+      .compare-grid,
+      .trace-layout,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        width: min(100%, 100vw);
+        margin: 14px auto 28px;
+      }
+
+      .hero {
+        border-radius: 0;
+        padding: 22px 16px 18px;
+      }
+
+      .panel,
+      .question-panel,
+      .trace-panel {
+        border-radius: 18px;
+        padding: 16px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        gap: 12px;
+      }
+
+      .hero h1 {
+        max-width: none;
+      }
+
+      .hero-logo {
+        width: 72px;
+      }
+
+      .hero-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .toolbar-link,
+      .toolbar-button,
+      .dataset-segment {
+        width: 100%;
+        text-align: center;
+      }
+
+      .results-list {
+        max-height: none;
+      }
+
+      .trace-step {
+        padding-left: 18px;
+      }
+
+      .trace-step-number {
+        position: static;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow-row">
+          <img class="hero-logo" src="../assets/bsbench.png" alt="BullshitBench logo">
+          <span class="eyebrow">GPT-5.4 Reasoning Atlas</span>
+        </div>
+        <h1>Reasoning traces, judge calls, and answer text in one place.</h1>
+        <p>
+          A standalone reader for BullshitBench&apos;s saved GPT-5.4 runs. Browse question groups, compare
+          <code>none</code> against <code>xhigh</code>, and inspect the provider-returned reasoning summaries that were
+          stored alongside the responses.
+        </p>
+        <div class="hero-toolbar">
+          <div class="toolbar-group" id="datasetSwitch" aria-label="Dataset switch"></div>
+          <button id="randomCaseBtn" class="toolbar-button" type="button">Random case</button>
+          <a class="toolbar-link" href="./index.v2.html">Main benchmark explorer</a>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="hero-meta">
+          <span id="datasetStamp">Loading dataset...</span>
+        </div>
+        <div class="hero-summary" id="heroSummary"></div>
+      </div>
+    </header>
+
+    <div class="studio">
+      <aside class="rail">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Navigator</h2>
+              <p class="panel-subtitle">Filter the question groups, tune the sort order, and move through the traces quickly.</p>
+            </div>
+          </div>
+
+          <div class="controls-grid">
+            <label class="field">
+              <span>Search</span>
+              <input id="searchInput" type="text" placeholder="Question id, domain, wording, reasoning...">
+            </label>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>Domain</span>
+                <select id="domainFilter"></select>
+              </label>
+              <label class="field">
+                <span>Technique</span>
+                <select id="techniqueFilter"></select>
+              </label>
+              <label class="field">
+                <span>XHigh verdict</span>
+                <select id="verdictFilter">
+                  <option value="all">All</option>
+                  <option value="2">Clear pushback</option>
+                  <option value="1">Partial challenge</option>
+                  <option value="0">Accepted nonsense</option>
+                  <option value="missing">Missing</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Change vs none</span>
+                <select id="changeFilter">
+                  <option value="all">All</option>
+                  <option value="improved">Improved</option>
+                  <option value="flat">Unchanged</option>
+                  <option value="worse">Worse</option>
+                  <option value="xhigh_only">Only xhigh present</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Trace weight</span>
+                <select id="traceFilter">
+                  <option value="all">All</option>
+                  <option value="with_trace">Has saved trace</option>
+                  <option value="heavy">Heavy trace (5k+ tokens)</option>
+                  <option value="medium">Medium trace (2k-5k)</option>
+                  <option value="light">Light trace (&lt;2k)</option>
+                  <option value="none">No trace</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Sort</span>
+                <select id="sortSelect">
+                  <option value="delta_desc">Change vs none</option>
+                  <option value="xhigh_desc">XHigh score</option>
+                  <option value="reasoning_desc">Reasoning tokens</option>
+                  <option value="question_asc">Question id</option>
+                  <option value="domain_asc">Domain</option>
+                  <option value="latency_desc">XHigh latency</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="mini-actions">
+              <button id="clearFiltersBtn" class="mini-btn" type="button">Reset filters</button>
+              <button id="jumpImprovedBtn" class="mini-btn" type="button">Jump to an improved case</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel results-panel">
+          <div class="section-head">
+            <div>
+              <h2>Question Groups</h2>
+              <p class="results-meta" id="resultsMeta"></p>
+            </div>
+          </div>
+          <div class="results-list" id="resultsList" aria-live="polite"></div>
+        </section>
+      </aside>
+
+      <main class="detail">
+        <section class="panel question-panel" id="questionPanel"></section>
+        <section class="panel" id="gradingPanel"></section>
+        <section class="panel" id="responsePanel"></section>
+        <section class="panel trace-panel" id="tracePanel"></section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../data/gpt54-reasoning-atlas.data.js"></script>
+  <script>
+    const APP_DATA = window.GPT54_REASONING_ATLAS_DATA || null;
+
+    const SCORE_META = {
+      2: { label: "Clear pushback", tone: "green", short: "2" },
+      1: { label: "Partial challenge", tone: "amber", short: "1" },
+      0: { label: "Accepted nonsense", tone: "red", short: "0" },
+      missing: { label: "Missing", tone: "slate", short: "-" },
+    };
+
+    const VARIANT_META = {
+      xhigh: {
+        label: "Reasoning enabled",
+        eyebrow: "xhigh",
+      },
+      none: {
+        label: "Baseline",
+        eyebrow: "none",
+      },
+    };
+
+    const STATE = {
+      datasetKey: "v2",
+      search: "",
+      domain: "all",
+      technique: "all",
+      verdict: "all",
+      change: "all",
+      trace: "all",
+      sort: "delta_desc",
+      selectedCaseId: "",
+    };
+
+    const el = {};
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatScore(value) {
+      return typeof value === "number" ? value.toFixed(1) : "-";
+    }
+
+    function formatMoney(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) return "-";
+      if (value < 0.01) return "$" + value.toFixed(4);
+      return "$" + value.toFixed(2);
+    }
+
+    function formatMs(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) return "-";
+      if (value >= 1000) return (value / 1000).toFixed(1) + "s";
+      return Math.round(value) + "ms";
+    }
+
+    function formatTokens(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) return "-";
+      return new Intl.NumberFormat("en-US").format(Math.round(value));
+    }
+
+    function formatDate(value) {
+      if (!value) return "Unknown update time";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short",
+      });
+    }
+
+    function clampText(text, limit) {
+      const source = String(text || "").trim();
+      if (!source) return "";
+      if (source.length <= limit) return source;
+      return source.slice(0, limit).trimEnd() + "...";
+    }
+
+    function slugCase(text) {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function inlineMarkdown(text) {
+      let output = escapeHtml(text);
+      output = output.replace(/`([^`]+)`/g, "<code>$1</code>");
+      output = output.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      output = output.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+      return output;
+    }
+
+    function markdownToHtml(text) {
+      const source = String(text || "").replace(/\r/g, "").trim();
+      if (!source) {
+        return '<p class="empty-state"><strong>No text was saved for this field.</strong></p>';
+      }
+
+      const lines = source.split("\n");
+      const blocks = [];
+      let paragraph = [];
+      let listType = null;
+      let listItems = [];
+
+      const flushParagraph = () => {
+        if (!paragraph.length) return;
+        const html = inlineMarkdown(paragraph.join("\n")).replace(/\n/g, "<br>");
+        blocks.push("<p>" + html + "</p>");
+        paragraph = [];
+      };
+
+      const flushList = () => {
+        if (!listItems.length || !listType) return;
+        const items = listItems.map((item) => "<li>" + inlineMarkdown(item) + "</li>").join("");
+        blocks.push("<" + listType + ">" + items + "</" + listType + ">");
+        listItems = [];
+        listType = null;
+      };
+
+      for (let index = 0; index < lines.length; index += 1) {
+        const rawLine = lines[index];
+        const trimmed = rawLine.trim();
+
+        if (!trimmed) {
+          flushParagraph();
+          flushList();
+          continue;
+        }
+
+        if (/^```/.test(trimmed)) {
+          flushParagraph();
+          flushList();
+          const codeLines = [];
+          index += 1;
+          while (index < lines.length && !/^```/.test(lines[index].trim())) {
+            codeLines.push(lines[index]);
+            index += 1;
+          }
+          blocks.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
+          continue;
+        }
+
+        const headingMatch = trimmed.match(/^(#{1,4})\s+(.*)$/);
+        if (headingMatch) {
+          flushParagraph();
+          flushList();
+          const level = Math.min(4, headingMatch[1].length + 1);
+          blocks.push("<h" + level + ">" + inlineMarkdown(headingMatch[2]) + "</h" + level + ">");
+          continue;
+        }
+
+        const orderedMatch = trimmed.match(/^\d+\.\s+(.*)$/);
+        if (orderedMatch) {
+          flushParagraph();
+          if (listType && listType !== "ol") flushList();
+          listType = "ol";
+          listItems.push(orderedMatch[1]);
+          continue;
+        }
+
+        const bulletMatch = trimmed.match(/^[-*]\s+(.*)$/);
+        if (bulletMatch) {
+          flushParagraph();
+          if (listType && listType !== "ul") flushList();
+          listType = "ul";
+          listItems.push(bulletMatch[1]);
+          continue;
+        }
+
+        const quoteMatch = trimmed.match(/^>\s?(.*)$/);
+        if (quoteMatch) {
+          flushParagraph();
+          flushList();
+          blocks.push("<blockquote>" + inlineMarkdown(quoteMatch[1]) + "</blockquote>");
+          continue;
+        }
+
+        paragraph.push(trimmed);
+      }
+
+      flushParagraph();
+      flushList();
+
+      return blocks.join("");
+    }
+
+    function currentDataset() {
+      return APP_DATA?.datasets?.[STATE.datasetKey] || null;
+    }
+
+    function scoreMeta(score) {
+      if (typeof score === "number") {
+        if (score >= 1.5) return SCORE_META[2];
+        if (score >= 0.5) return SCORE_META[1];
+        if (score >= 0) return SCORE_META[0];
+      }
+      return SCORE_META.missing;
+    }
+
+    function verdictTone(score) {
+      return scoreMeta(score).tone;
+    }
+
+    function verdictLabel(score) {
+      return scoreMeta(score).label;
+    }
+
+    function compareChange(caseRow) {
+      const xhighScore = caseRow?.variants?.xhigh?.consensus_score;
+      const noneScore = caseRow?.variants?.none?.consensus_score;
+      if (typeof xhighScore !== "number") return { key: "missing", label: "No xhigh grade", delta: null };
+      if (typeof noneScore !== "number") return { key: "xhigh_only", label: "Only xhigh present", delta: null };
+      const delta = xhighScore - noneScore;
+      if (delta > 0) return { key: "improved", label: "+" + delta.toFixed(1) + " vs none", delta };
+      if (delta < 0) return { key: "worse", label: delta.toFixed(1) + " vs none", delta };
+      return { key: "flat", label: "No score change", delta: 0 };
+    }
+
+    function traceWeight(caseRow) {
+      const tokens = caseRow?.variants?.xhigh?.response_reasoning_tokens;
+      if (typeof tokens !== "number" || Number.isNaN(tokens) || tokens <= 0) return "none";
+      if (tokens >= 5000) return "heavy";
+      if (tokens >= 2000) return "medium";
+      return "light";
+    }
+
+    function sortCases(rows) {
+      const sorted = [...rows];
+      sorted.sort((left, right) => {
+        switch (STATE.sort) {
+          case "xhigh_desc": {
+            const diff =
+              (right?.variants?.xhigh?.consensus_score ?? -Infinity) -
+              (left?.variants?.xhigh?.consensus_score ?? -Infinity);
+            if (diff) return diff;
+            return left.question_id.localeCompare(right.question_id);
+          }
+          case "reasoning_desc": {
+            const diff =
+              (right?.variants?.xhigh?.response_reasoning_tokens ?? -Infinity) -
+              (left?.variants?.xhigh?.response_reasoning_tokens ?? -Infinity);
+            if (diff) return diff;
+            return left.question_id.localeCompare(right.question_id);
+          }
+          case "latency_desc": {
+            const diff =
+              (right?.variants?.xhigh?.response_latency_ms ?? -Infinity) -
+              (left?.variants?.xhigh?.response_latency_ms ?? -Infinity);
+            if (diff) return diff;
+            return left.question_id.localeCompare(right.question_id);
+          }
+          case "domain_asc": {
+            const domainDiff = String(left.domain || "").localeCompare(String(right.domain || ""));
+            if (domainDiff) return domainDiff;
+            return left.question_id.localeCompare(right.question_id);
+          }
+          case "question_asc":
+            return left.question_id.localeCompare(right.question_id);
+          case "delta_desc":
+          default: {
+            const leftChange = compareChange(left);
+            const rightChange = compareChange(right);
+            const diff = (rightChange.delta ?? -Infinity) - (leftChange.delta ?? -Infinity);
+            if (diff) return diff;
+            const scoreDiff =
+              (right?.variants?.xhigh?.consensus_score ?? -Infinity) -
+              (left?.variants?.xhigh?.consensus_score ?? -Infinity);
+            if (scoreDiff) return scoreDiff;
+            return left.question_id.localeCompare(right.question_id);
+          }
+        }
+      });
+      return sorted;
+    }
+
+    function filteredCases() {
+      const dataset = currentDataset();
+      if (!dataset) return [];
+      const query = STATE.search.trim().toLowerCase();
+      return dataset.cases.filter((caseRow) => {
+        if (STATE.domain !== "all" && String(caseRow.domain || "") !== STATE.domain) return false;
+        if (STATE.technique !== "all" && String(caseRow.technique || "") !== STATE.technique) return false;
+
+        const xhighScore = caseRow?.variants?.xhigh?.consensus_score;
+        if (STATE.verdict !== "all") {
+          if (STATE.verdict === "missing") {
+            if (typeof xhighScore === "number") return false;
+          } else if (String(xhighScore) !== STATE.verdict) {
+            return false;
+          }
+        }
+
+        const change = compareChange(caseRow);
+        if (STATE.change !== "all" && change.key !== STATE.change) return false;
+
+        const traceBucket = traceWeight(caseRow);
+        if (STATE.trace !== "all") {
+          if (STATE.trace === "with_trace" && traceBucket === "none") return false;
+          if (STATE.trace !== "with_trace" && traceBucket !== STATE.trace) return false;
+        }
+
+        if (query) {
+          const haystack = [
+            caseRow.question_id,
+            caseRow.domain,
+            caseRow.technique,
+            caseRow.question,
+            caseRow.nonsensical_element,
+            caseRow?.variants?.xhigh?.response_text,
+            caseRow?.variants?.xhigh?.reasoning_summary,
+            caseRow?.variants?.none?.response_text,
+          ]
+            .join(" ")
+            .toLowerCase();
+          if (!haystack.includes(query)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function ensureSelection(rows) {
+      if (!rows.length) {
+        STATE.selectedCaseId = "";
+        return;
+      }
+      const match = rows.find((row) => row.question_id === STATE.selectedCaseId);
+      if (!match) {
+        STATE.selectedCaseId = rows[0].question_id;
+      }
+    }
+
+    function selectedCase(rows) {
+      return rows.find((row) => row.question_id === STATE.selectedCaseId) || null;
+    }
+
+    function uniqueValues(rows, key) {
+      return [...new Set(rows.map((row) => String(row[key] || "")).filter(Boolean))].sort((a, b) =>
+        a.localeCompare(b)
+      );
+    }
+
+    function buildSelectOptions(select, values, currentValue, labelFormatter) {
+      const current = values.includes(currentValue) ? currentValue : "all";
+      select.innerHTML =
+        '<option value="all">All</option>' +
+        values.map((value) => {
+          const label = labelFormatter ? labelFormatter(value) : value;
+          return '<option value="' + escapeHtml(value) + '">' + escapeHtml(label) + "</option>";
+        }).join("");
+      select.value = current;
+      return current;
+    }
+
+    function renderDatasetSwitch() {
+      const datasets = APP_DATA ? Object.values(APP_DATA.datasets || {}) : [];
+      el.datasetSwitch.innerHTML = datasets
+        .map((dataset) => {
+          const activeClass = dataset.key === STATE.datasetKey ? " active" : "";
+          return (
+            '<button class="dataset-segment' +
+            activeClass +
+            '" data-dataset-key="' +
+            escapeHtml(dataset.key) +
+            '" type="button">' +
+            escapeHtml(dataset.label) +
+            "</button>"
+          );
+        })
+        .join("");
+    }
+
+    function renderHeroSummary(rows) {
+      const dataset = currentDataset();
+      if (!dataset) return;
+      const xhighScores = rows
+        .map((row) => row?.variants?.xhigh?.consensus_score)
+        .filter((value) => typeof value === "number");
+      const avgScore = xhighScores.length
+        ? xhighScores.reduce((sum, value) => sum + value, 0) / xhighScores.length
+        : null;
+
+      const improvedCount = rows.filter((row) => compareChange(row).key === "improved").length;
+      const worseCount = rows.filter((row) => compareChange(row).key === "worse").length;
+      const totalTraceTokens = rows.reduce(
+        (sum, row) => sum + (row?.variants?.xhigh?.response_reasoning_tokens || 0),
+        0
+      );
+      const avgTraceTokens = rows.length ? totalTraceTokens / rows.length : 0;
+
+      el.datasetStamp.textContent =
+        dataset.label + " updated " + formatDate(dataset.generated_at_utc || APP_DATA.generated_at_utc);
+
+      const cards = [
+        {
+          label: "Question groups in view",
+          value: rows.length,
+          hint: dataset.case_count + " total in this dataset",
+        },
+        {
+          label: "Average xhigh score",
+          value: avgScore === null ? "-" : avgScore.toFixed(2),
+          hint: "Higher means more explicit pushback against nonsense",
+        },
+        {
+          label: "Improved vs none",
+          value: improvedCount,
+          hint: worseCount ? worseCount + " cases regressed" : "No regressions in the current filter",
+        },
+        {
+          label: "Average trace tokens",
+          value: formatTokens(avgTraceTokens),
+          hint: "Provider-returned reasoning summary token count",
+        },
+      ];
+
+      el.heroSummary.innerHTML = cards
+        .map((card) => {
+          return (
+            '<article class="metric-card">' +
+            '<span class="metric-label">' +
+            escapeHtml(card.label) +
+            "</span>" +
+            '<span class="metric-value">' +
+            escapeHtml(card.value) +
+            "</span>" +
+            '<div class="metric-hint">' +
+            escapeHtml(card.hint) +
+            "</div>" +
+            "</article>"
+          );
+        })
+        .join("");
+    }
+
+    function renderResults(rows) {
+      el.resultsMeta.textContent =
+        rows.length + " visible of " + (currentDataset()?.case_count ?? 0) + " question groups";
+
+      if (!rows.length) {
+        el.resultsList.innerHTML =
+          '<div class="empty-state"><strong>No question groups match the current filters.</strong><br>Try widening the verdict or trace filters.</div>';
+        return;
+      }
+
+      el.resultsList.innerHTML = rows
+        .map((caseRow) => {
+          const xhigh = caseRow.variants.xhigh || {};
+          const score = xhigh.consensus_score;
+          const scoreInfo = scoreMeta(score);
+          const change = compareChange(caseRow);
+          const traceTokens = xhigh.response_reasoning_tokens || 0;
+          const excerpt = clampText(caseRow.question, 138);
+          const cardClass =
+            "result-card score-" +
+            scoreInfo.tone +
+            (caseRow.question_id === STATE.selectedCaseId ? " selected" : "");
+          const changeTone =
+            change.key === "improved" ? "up" : change.key === "worse" ? "down" : "flat";
+
+          return (
+            '<button class="' +
+            cardClass +
+            '" type="button" data-question-id="' +
+            escapeHtml(caseRow.question_id) +
+            '">' +
+            '<div class="result-head">' +
+            '<div class="question-id">' +
+            escapeHtml(caseRow.question_id) +
+            "</div>" +
+            '<span class="score-pill ' +
+            scoreInfo.tone +
+            '">' +
+            escapeHtml(scoreInfo.label) +
+            "</span>" +
+            "</div>" +
+            "<h3>" +
+            escapeHtml(excerpt) +
+            "</h3>" +
+            '<div class="tag-row">' +
+            '<span class="tag">' +
+            escapeHtml(caseRow.domain || "Unknown domain") +
+            "</span>" +
+            '<span class="tag">' +
+            escapeHtml(caseRow.technique || "Unknown technique") +
+            "</span>" +
+            "</div>" +
+            '<p class="result-excerpt">' +
+            escapeHtml(clampText(caseRow.nonsensical_element, 128)) +
+            "</p>" +
+            '<div class="stat-row">' +
+            '<span class="stat-chip">xhigh ' +
+            escapeHtml(formatScore(score)) +
+            "</span>" +
+            '<span class="stat-chip change-chip ' +
+            changeTone +
+            '">' +
+            escapeHtml(change.label) +
+            "</span>" +
+            '<span class="stat-chip">' +
+            escapeHtml(formatTokens(traceTokens)) +
+            " trace tokens</span>" +
+            "</div>" +
+            "</button>"
+          );
+        })
+        .join("");
+    }
+
+    function renderQuestionPanel(caseRow, orderedRows) {
+      if (!caseRow) {
+        el.questionPanel.innerHTML =
+          '<div class="empty-state"><strong>Choose a question group to begin.</strong><br>The detail column will show the prompt, grades, responses, and reasoning trace.</div>';
+        return;
+      }
+
+      const index = orderedRows.findIndex((row) => row.question_id === caseRow.question_id);
+      const prev = index > 0 ? orderedRows[index - 1] : null;
+      const next = index >= 0 && index < orderedRows.length - 1 ? orderedRows[index + 1] : null;
+      const change = compareChange(caseRow);
+      const xhighTokens = caseRow?.variants?.xhigh?.response_reasoning_tokens || 0;
+
+      el.questionPanel.innerHTML =
+        '<div class="section-head">' +
+        '<div>' +
+        "<h2>Question</h2>" +
+        '<p class="panel-subtitle">The original benchmark item, plus the reason the premise was tagged as nonsense.</p>' +
+        "</div>" +
+        '<div class="nav-buttons">' +
+        '<button class="nav-button" id="prevCaseBtn" type="button"' +
+        (prev ? "" : " disabled") +
+        ">Previous</button>" +
+        '<button class="nav-button" id="nextCaseBtn" type="button"' +
+        (next ? "" : " disabled") +
+        ">Next</button>" +
+        "</div>" +
+        "</div>" +
+        '<div class="question-copy">' +
+        '<div class="tag-row">' +
+        '<span class="tag">' +
+        escapeHtml(caseRow.question_id) +
+        "</span>" +
+        '<span class="tag">' +
+        escapeHtml(caseRow.domain || "Unknown domain") +
+        "</span>" +
+        '<span class="tag">' +
+        escapeHtml(caseRow.technique || "Unknown technique") +
+        "</span>" +
+        '<span class="tag">' +
+        escapeHtml(change.label) +
+        "</span>" +
+        '<span class="tag">' +
+        escapeHtml(formatTokens(xhighTokens)) +
+        " trace tokens</span>" +
+        "</div>" +
+        '<p class="question-text">' +
+        escapeHtml(caseRow.question) +
+        "</p>" +
+        '<div class="question-context-card">' +
+        '<span class="context-label">Why the premise breaks</span>' +
+        '<p class="context-text">' +
+        escapeHtml(caseRow.nonsensical_element || "No explanation was saved.") +
+        "</p>" +
+        "</div>" +
+        "</div>";
+
+      const prevButton = document.getElementById("prevCaseBtn");
+      const nextButton = document.getElementById("nextCaseBtn");
+      if (prevButton && prev) {
+        prevButton.addEventListener("click", () => {
+          STATE.selectedCaseId = prev.question_id;
+          syncHash();
+          render();
+        });
+      }
+      if (nextButton && next) {
+        nextButton.addEventListener("click", () => {
+          STATE.selectedCaseId = next.question_id;
+          syncHash();
+          render();
+        });
+      }
+    }
+
+    function renderJudgeList(judges) {
+      if (!Array.isArray(judges) || !judges.length) {
+        return '<div class="empty-state"><strong>No judge detail was saved for this variant.</strong></div>';
+      }
+
+      return (
+        '<div class="judge-list">' +
+        judges
+          .map((judge) => {
+            const score = typeof judge.score === "number" ? judge.score : "missing";
+            const scoreInfo = scoreMeta(score);
+            return (
+              '<article class="judge-item">' +
+              '<div class="judge-head">' +
+              '<div class="judge-name">' +
+              escapeHtml(judge.model || "Unnamed judge") +
+              "</div>" +
+              '<span class="score-pill ' +
+              scoreInfo.tone +
+              '">' +
+              escapeHtml(scoreInfo.label) +
+              "</span>" +
+              "</div>" +
+              '<p class="judge-justification">' +
+              escapeHtml(judge.justification || judge.error || "No justification provided.") +
+              "</p>" +
+              "</article>"
+            );
+          })
+          .join("") +
+        "</div>"
+      );
+    }
+
+    function variantOverview(caseRow, variantKey) {
+      const variant = caseRow?.variants?.[variantKey];
+      if (!variant) {
+        return (
+          '<div class="variant-card">' +
+          '<div class="section-head"><div><h2>' +
+          escapeHtml(VARIANT_META[variantKey].label) +
+          "</h2></div></div>" +
+          '<div class="empty-state"><strong>No saved run for this variant.</strong></div>' +
+          "</div>"
+        );
+      }
+
+      const score = variant.consensus_score;
+      const scoreInfo = scoreMeta(score);
+      const judgeScores = (variant.judge_valid_scores || []).join(", ");
+
+      return (
+        '<article class="variant-card ' +
+        escapeHtml(variantKey) +
+        '">' +
+        '<div class="variant-header">' +
+        '<div>' +
+        '<h3 class="variant-title"><span>' +
+        escapeHtml(VARIANT_META[variantKey].label) +
+        '</span> <small>' +
+        escapeHtml(VARIANT_META[variantKey].eyebrow) +
+        "</small></h3>" +
+        '<div class="tag-row" style="margin-top:8px;">' +
+        '<span class="score-pill ' +
+        scoreInfo.tone +
+        '">' +
+        escapeHtml(verdictLabel(score)) +
+        "</span>" +
+        '<span class="stat-chip">Consensus ' +
+        escapeHtml(formatScore(score)) +
+        "</span>" +
+        '<span class="stat-chip">Judge scores ' +
+        escapeHtml(judgeScores || "-") +
+        "</span>" +
+        "</div>" +
+        "</div>" +
+        '<div class="stat-row">' +
+        '<span class="stat-chip">' +
+        escapeHtml(formatTokens(variant.response_completion_tokens)) +
+        " output tokens</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatMs(variant.response_latency_ms)) +
+        "</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatMoney(variant.response_cost_usd)) +
+        "</span>" +
+        "</div>" +
+        "</div>" +
+        renderJudgeList(variant.judges) +
+        "</article>"
+      );
+    }
+
+    function renderGradingPanel(caseRow) {
+      if (!caseRow) {
+        el.gradingPanel.innerHTML = "";
+        return;
+      }
+
+      el.gradingPanel.innerHTML =
+        '<div class="section-head">' +
+        '<div>' +
+        "<h2>How it was graded</h2>" +
+        '<p class="panel-subtitle">Consensus outcome plus the three judge justifications for each GPT-5.4 variant.</p>' +
+        "</div>" +
+        "</div>" +
+        '<div class="compare-grid">' +
+        variantOverview(caseRow, "xhigh") +
+        variantOverview(caseRow, "none") +
+        "</div>";
+    }
+
+    function renderResponseCard(caseRow, variantKey) {
+      const variant = caseRow?.variants?.[variantKey];
+      if (!variant) {
+        return (
+          '<article class="variant-card">' +
+          '<div class="variant-header"><h3 class="variant-title">' +
+          escapeHtml(VARIANT_META[variantKey].label) +
+          "</h3></div>" +
+          '<div class="empty-state"><strong>No response was saved for this variant.</strong></div>' +
+          "</article>"
+        );
+      }
+
+      const score = variant.consensus_score;
+      const scoreInfo = scoreMeta(score);
+
+      return (
+        '<article class="variant-card ' +
+        escapeHtml(variantKey) +
+        '">' +
+        '<div class="variant-header">' +
+        '<div>' +
+        '<h3 class="variant-title"><span>' +
+        escapeHtml(VARIANT_META[variantKey].label) +
+        '</span> <small>' +
+        escapeHtml(VARIANT_META[variantKey].eyebrow) +
+        "</small></h3>" +
+        '<div class="tag-row" style="margin-top:8px;">' +
+        '<span class="score-pill ' +
+        scoreInfo.tone +
+        '">' +
+        escapeHtml(scoreInfo.label) +
+        "</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatTokens(variant.response_char_count)) +
+        " chars</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatTokens(variant.response_total_tokens)) +
+        " total tokens</span>" +
+        (variantKey === "xhigh"
+          ? '<span class="stat-chip">' +
+            escapeHtml(formatTokens(variant.response_reasoning_tokens)) +
+            " reasoning tokens</span>"
+          : "") +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        '<div class="rich-block">' +
+        "<h3>Response</h3>" +
+        '<div class="rich-text">' +
+        markdownToHtml(variant.response_text) +
+        "</div>" +
+        "</div>" +
+        "</article>"
+      );
+    }
+
+    function renderResponsePanel(caseRow) {
+      if (!caseRow) {
+        el.responsePanel.innerHTML = "";
+        return;
+      }
+
+      el.responsePanel.innerHTML =
+        '<div class="section-head">' +
+        '<div>' +
+        "<h2>How GPT-5.4 responded</h2>" +
+        '<p class="panel-subtitle">The saved answer text for the baseline and reasoning-enabled variants.</p>' +
+        "</div>" +
+        "</div>" +
+        '<div class="compare-grid">' +
+        renderResponseCard(caseRow, "xhigh") +
+        renderResponseCard(caseRow, "none") +
+        "</div>";
+    }
+
+    function dedupeStrings(values) {
+      const seen = new Set();
+      return values.filter((value) => {
+        const text = String(value || "").trim();
+        if (!text || seen.has(text)) return false;
+        seen.add(text);
+        return true;
+      });
+    }
+
+    function splitReasoningSections(text) {
+      const source = String(text || "").replace(/\r/g, "").trim();
+      if (!source) return [];
+
+      const parts = source
+        .split(/(?=\*\*[^*\n]+\*\*)/g)
+        .map((chunk) => chunk.trim())
+        .filter(Boolean);
+
+      if (parts.length <= 1) {
+        return [
+          {
+            title: "Summary",
+            body: source,
+          },
+        ];
+      }
+
+      return parts.map((part) => {
+        const headingMatch = part.match(/^\*\*([^*]+)\*\*\s*([\s\S]*)$/);
+        if (headingMatch) {
+          return {
+            title: headingMatch[1].trim(),
+            body: headingMatch[2].trim(),
+          };
+        }
+        return {
+          title: "Reasoning note",
+          body: part,
+        };
+      });
+    }
+
+    function traceSections(variant) {
+      const textBlocks = dedupeStrings([
+        ...(variant?.reasoning_details || []),
+        variant?.reasoning_summary || "",
+      ]);
+
+      const sections = [];
+      textBlocks.forEach((block) => {
+        splitReasoningSections(block).forEach((section) => {
+          if (!section.body && !section.title) return;
+          sections.push({
+            title: section.title || "Reasoning note",
+            body: section.body || "",
+          });
+        });
+      });
+
+      return sections;
+    }
+
+    function renderTracePanel(caseRow) {
+      if (!caseRow) {
+        el.tracePanel.innerHTML = "";
+        return;
+      }
+
+      const variant = caseRow?.variants?.xhigh;
+      if (!variant) {
+        el.tracePanel.innerHTML =
+          '<div class="empty-state"><strong>No xhigh trace is available for this case.</strong></div>';
+        return;
+      }
+
+      const sections = traceSections(variant);
+      const rawSummary = variant.reasoning_summary || "";
+      const rawDetails = dedupeStrings(variant.reasoning_details || []);
+
+      el.tracePanel.innerHTML =
+        '<div class="trace-topline">' +
+        '<div>' +
+        "<h2>Reasoning studio</h2>" +
+        '<p class="trace-note">These are the provider-returned reasoning summaries saved with the run. They are not hidden chain-of-thought; they are the surfaced trace artifacts that were actually persisted.</p>' +
+        "</div>" +
+        '<div class="trace-metrics">' +
+        '<span class="stat-chip">Consensus ' +
+        escapeHtml(formatScore(variant.consensus_score)) +
+        "</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatTokens(variant.response_reasoning_tokens)) +
+        " reasoning tokens</span>" +
+        '<span class="stat-chip">' +
+        escapeHtml(formatMs(variant.response_latency_ms)) +
+        "</span>" +
+        "</div>" +
+        "</div>" +
+        '<div class="trace-layout">' +
+        '<div class="trace-steps">' +
+        '<div class="rich-block">' +
+        "<h3>Trace overview</h3>" +
+        '<div class="rich-text">' +
+        markdownToHtml(rawSummary || rawDetails[0] || "No reasoning summary was saved.") +
+        "</div>" +
+        "</div>" +
+        '<details class="raw-trace">' +
+        "<summary>Raw saved summary text</summary>" +
+        '<div class="raw-trace-body"><pre>' +
+        escapeHtml(rawSummary || rawDetails[0] || "No raw summary was saved.") +
+        "</pre></div>" +
+        "</details>" +
+        "</div>" +
+        '<div class="trace-steps">' +
+        (sections.length
+          ? sections
+              .map((section, index) => {
+                return (
+                  '<article class="trace-step">' +
+                  '<span class="trace-step-number">' +
+                  escapeHtml(index + 1) +
+                  "</span>" +
+                  "<h3>" +
+                  escapeHtml(section.title) +
+                  "</h3>" +
+                  "<p>" +
+                  escapeHtml(section.body || "No detail text saved for this section.") +
+                  "</p>" +
+                  "</article>"
+                );
+              })
+              .join("")
+          : '<div class="empty-state"><strong>No structured trace sections were detected.</strong><br>The viewer still exposes the raw saved summary above.</div>') +
+        "</div>" +
+        "</div>";
+    }
+
+    function syncHash() {
+      const datasetKey = STATE.datasetKey || "v2";
+      const questionId = STATE.selectedCaseId || "";
+      const nextHash = "#" + encodeURIComponent(datasetKey) + ":" + encodeURIComponent(questionId);
+      if (window.location.hash !== nextHash) {
+        window.history.replaceState(null, "", nextHash);
+      }
+    }
+
+    function applyHash() {
+      const rawHash = window.location.hash.replace(/^#/, "");
+      if (!rawHash) return;
+      const parts = rawHash.split(":");
+      if (parts.length < 2) return;
+      const datasetKey = decodeURIComponent(parts[0] || "");
+      const questionId = decodeURIComponent(parts.slice(1).join(":") || "");
+      if (APP_DATA?.datasets?.[datasetKey]) {
+        STATE.datasetKey = datasetKey;
+      }
+      STATE.selectedCaseId = questionId;
+    }
+
+    function wireControls() {
+      el.searchInput.addEventListener("input", (event) => {
+        STATE.search = event.target.value;
+        render();
+      });
+
+      el.domainFilter.addEventListener("change", (event) => {
+        STATE.domain = event.target.value;
+        render();
+      });
+
+      el.techniqueFilter.addEventListener("change", (event) => {
+        STATE.technique = event.target.value;
+        render();
+      });
+
+      el.verdictFilter.addEventListener("change", (event) => {
+        STATE.verdict = event.target.value;
+        render();
+      });
+
+      el.changeFilter.addEventListener("change", (event) => {
+        STATE.change = event.target.value;
+        render();
+      });
+
+      el.traceFilter.addEventListener("change", (event) => {
+        STATE.trace = event.target.value;
+        render();
+      });
+
+      el.sortSelect.addEventListener("change", (event) => {
+        STATE.sort = event.target.value;
+        render();
+      });
+
+      el.clearFiltersBtn.addEventListener("click", () => {
+        STATE.search = "";
+        STATE.domain = "all";
+        STATE.technique = "all";
+        STATE.verdict = "all";
+        STATE.change = "all";
+        STATE.trace = "all";
+        STATE.sort = "delta_desc";
+        render();
+      });
+
+      el.randomCaseBtn.addEventListener("click", () => {
+        const rows = sortCases(filteredCases());
+        if (!rows.length) return;
+        const next = rows[Math.floor(Math.random() * rows.length)];
+        STATE.selectedCaseId = next.question_id;
+        syncHash();
+        render();
+      });
+
+      el.jumpImprovedBtn.addEventListener("click", () => {
+        const improvedRows = sortCases(filteredCases()).filter((row) => compareChange(row).key === "improved");
+        if (!improvedRows.length) return;
+        const next = improvedRows[Math.floor(Math.random() * improvedRows.length)];
+        STATE.selectedCaseId = next.question_id;
+        syncHash();
+        render();
+      });
+
+      el.datasetSwitch.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-dataset-key]");
+        if (!button) return;
+        const nextDatasetKey = button.getAttribute("data-dataset-key");
+        if (!APP_DATA?.datasets?.[nextDatasetKey]) return;
+        STATE.datasetKey = nextDatasetKey;
+        render();
+      });
+
+      el.resultsList.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-question-id]");
+        if (!button) return;
+        const questionId = button.getAttribute("data-question-id");
+        if (!questionId) return;
+        STATE.selectedCaseId = questionId;
+        syncHash();
+        render();
+      });
+    }
+
+    function renderFilterOptions(dataset) {
+      if (!dataset) return;
+      const domains = uniqueValues(dataset.cases, "domain");
+      const techniques = uniqueValues(dataset.cases, "technique");
+      STATE.domain = buildSelectOptions(el.domainFilter, domains, STATE.domain);
+      STATE.technique = buildSelectOptions(el.techniqueFilter, techniques, STATE.technique);
+      el.searchInput.value = STATE.search;
+      el.verdictFilter.value = STATE.verdict;
+      el.changeFilter.value = STATE.change;
+      el.traceFilter.value = STATE.trace;
+      el.sortSelect.value = STATE.sort;
+    }
+
+    function render() {
+      const dataset = currentDataset();
+      if (!dataset) {
+        document.body.innerHTML =
+          '<div class="page"><div class="empty-state"><strong>Unable to load the GPT-5.4 reasoning atlas data.</strong><br>Run <code>python3 reasoning-lab/scripts/build_gpt54_reasoning_atlas.py</code> to regenerate the local data bundle.</div></div>';
+        return;
+      }
+
+      renderDatasetSwitch();
+      renderFilterOptions(dataset);
+
+      const rows = sortCases(filteredCases());
+      ensureSelection(rows);
+      renderHeroSummary(rows);
+      renderResults(rows);
+
+      const focus = selectedCase(rows);
+      renderQuestionPanel(focus, rows);
+      renderGradingPanel(focus);
+      renderResponsePanel(focus);
+      renderTracePanel(focus);
+      syncHash();
+    }
+
+    function init() {
+      el.datasetSwitch = document.getElementById("datasetSwitch");
+      el.datasetStamp = document.getElementById("datasetStamp");
+      el.heroSummary = document.getElementById("heroSummary");
+      el.searchInput = document.getElementById("searchInput");
+      el.domainFilter = document.getElementById("domainFilter");
+      el.techniqueFilter = document.getElementById("techniqueFilter");
+      el.verdictFilter = document.getElementById("verdictFilter");
+      el.changeFilter = document.getElementById("changeFilter");
+      el.traceFilter = document.getElementById("traceFilter");
+      el.sortSelect = document.getElementById("sortSelect");
+      el.clearFiltersBtn = document.getElementById("clearFiltersBtn");
+      el.randomCaseBtn = document.getElementById("randomCaseBtn");
+      el.jumpImprovedBtn = document.getElementById("jumpImprovedBtn");
+      el.resultsMeta = document.getElementById("resultsMeta");
+      el.resultsList = document.getElementById("resultsList");
+      el.questionPanel = document.getElementById("questionPanel");
+      el.gradingPanel = document.getElementById("gradingPanel");
+      el.responsePanel = document.getElementById("responsePanel");
+      el.tracePanel = document.getElementById("tracePanel");
+
+      if (!APP_DATA || !APP_DATA.datasets) {
+        render();
+        return;
+      }
+
+      applyHash();
+      wireControls();
+      render();
+      window.addEventListener("hashchange", () => {
+        applyHash();
+        render();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

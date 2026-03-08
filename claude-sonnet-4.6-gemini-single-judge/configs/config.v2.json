@@ -1,0 +1,46 @@
+{
+  "collect": {
+    "questions": "questions/questions.v2.json",
+    "models": [
+      "anthropic/claude-sonnet-4.6"
+    ],
+    "model_providers": {
+      "*": "openrouter"
+    },
+    "num_runs": 1,
+    "parallelism": 4,
+    "max_inflight_per_model": 2,
+    "techniques": "plausible_nonexistent_framework,misapplied_mechanism,authoritative_framing,false_granularity,wrong_unit_of_analysis,temporal_category_error,reified_metaphor,cross_domain_stitching,specificity_trap,fabricated_authority,sunk_cost_framing,confident_extrapolation,nested_nonsense",
+    "temperature": null,
+    "omit_response_system_prompt": true,
+    "response_reasoning_effort": "off",
+    "store_request_messages": false,
+    "store_response_raw": true,
+    "model_reasoning_efforts": {
+      "anthropic/claude-sonnet-4.6": [
+        "none",
+        "high"
+      ]
+    },
+    "shuffle_tasks": true,
+    "retries": 1,
+    "rate_limit_requeue": true,
+    "rate_limit_cooldown_seconds": 20.0,
+    "rate_limit_cooldown_max_seconds": 240.0,
+    "rate_limit_cooldown_jitter_seconds": 1.5,
+    "rate_limit_max_attempts": 20,
+    "checkpoint_fsync_every": 10
+  },
+  "grade": {
+    "judge_model": "google/gemini-3.1-pro-preview",
+    "model_providers": {
+      "*": "openrouter"
+    },
+    "parallelism": 8,
+    "judge_temperature": null,
+    "judge_reasoning_effort": "off",
+    "judge_max_tokens": 0,
+    "store_judge_response_raw": true,
+    "judge_no_hint": true
+  }
+}

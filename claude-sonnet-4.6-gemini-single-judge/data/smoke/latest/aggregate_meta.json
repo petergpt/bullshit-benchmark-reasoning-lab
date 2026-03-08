@@ -1,0 +1,15 @@
+{
+  "phase": "aggregate",
+  "aggregate_id": "smoke_v1__judge_google_gemini-3.1-pro-preview__aggregate",
+  "timestamp_utc": "2026-03-07T20:50:34.531461Z",
+  "grade_dirs": [
+    "/Users/peter/bullshit-benchmark/reasoning-lab/claude-sonnet-4.6-gemini-single-judge/runs/smoke/smoke_v1/grades/smoke_v1__judge_google_gemini-3.1-pro-preview"
+  ],
+  "consensus_method": "single_judge",
+  "num_judges": 1,
+  "judge_models": [
+    "google/gemini-3.1-pro-preview"
+  ],
+  "responses_file": "/Users/peter/bullshit-benchmark/reasoning-lab/claude-sonnet-4.6-gemini-single-judge/runs/smoke/smoke_v1/responses.jsonl",
+  "special_single_judge": true
+}

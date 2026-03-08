@@ -1,0 +1,11 @@
+[
+  {
+    "id": "cd_01",
+    "question": "What's the default risk profile of our content strategy given the current engagement yield curve?",
+    "nonsensical_element": "Content strategies don't have default risk profiles (a credit risk concept), and engagement metrics don't form yield curves with term structures like bonds do",
+    "domain": "finance × marketing",
+    "technique": "cross_domain_concept_stitching",
+    "technique_description": "Connects real concepts from different domains where no real connection exists",
+    "is_control": false
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "leaderboard": [
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=none",
+      "count": 55,
+      "scored_count": 55,
+      "nonsense_count": 55,
+      "control_count": 0,
+      "nonsense_score_0": 2,
+      "nonsense_score_1": 1,
+      "nonsense_score_2": 52,
+      "nonsense_score_3": 0,
+      "control_score_0": 0,
+      "control_score_1": 0,
+      "control_score_2": 0,
+      "control_score_3": 0,
+      "score_0": 2,
+      "score_1": 1,
+      "score_2": 52,
+      "score_3": 0,
+      "avg_score": 1.9091,
+      "detection_rate_score_2": 0.9455,
+      "full_engagement_rate_score_0": 0.0364,
+      "control_correct_rate_score_3": null,
+      "error_count": 0,
+      "technique_breakdown": {
+        "authoritative_framing_of_nothing": 2.0,
+        "causal_chimera": 2.0,
+        "cross_domain_concept_stitching": 1.8571,
+        "false_granularity": 2.0,
+        "inverted_nonexistent_dependency": 2.0,
+        "misapplied_mechanism": 2.0,
+        "plausible_nonexistent_framework": 1.3333,
+        "reified_metaphor": 2.0,
+        "temporal_category_error": 1.6,
+        "wrong_unit_of_analysis": 2.0
+      },
+      "run_average_scores": {
+        "1": 1.9091
+      },
+      "run_average_stddev": null
+    },
+    {
+      "model": "anthropic/claude-sonnet-4.6@reasoning=high",
+      "count": 55,
+      "scored_count": 55,
+      "nonsense_count": 55,
+      "control_count": 0,
+      "nonsense_score_0": 3,
+      "nonsense_score_1": 3,
+      "nonsense_score_2": 49,
+      "nonsense_score_3": 0,
+      "control_score_0": 0,
+      "control_score_1": 0,
+      "control_score_2": 0,
+      "control_score_3": 0,
+      "score_0": 3,
+      "score_1": 3,
+      "score_2": 49,
+      "score_3": 0,
+      "avg_score": 1.8364,
+      "detection_rate_score_2": 0.8909,
+      "full_engagement_rate_score_0": 0.0545,
+      "control_correct_rate_score_3": null,
+      "error_count": 0,
+      "technique_breakdown": {
+        "authoritative_framing_of_nothing": 2.0,
+        "causal_chimera": 2.0,
+        "cross_domain_concept_stitching": 1.7143,
+        "false_granularity": 2.0,
+        "inverted_nonexistent_dependency": 2.0,
+        "misapplied_mechanism": 2.0,
+        "plausible_nonexistent_framework": 1.3333,
+        "reified_metaphor": 1.8,
+        "temporal_category_error": 1.2,
+        "wrong_unit_of_analysis": 2.0
+      },
+      "run_average_scores": {
+        "1": 1.8364
+      },
+      "run_average_stddev": null
+    }
+  ],
+  "total_records": 110,
+  "total_scored_records": 110,
+  "total_error_records": 0,
+  "elapsed_seconds": 120.338,
+  "resumed": false,
+  "checkpoint_rows_at_start": 0,
+  "new_rows_processed": 110
+}

@@ -1,0 +1,94 @@
+{
+  "phase": "collect",
+  "run_id": "smoke_v1",
+  "timestamp_utc": "2026-03-07T20:50:16.710606+00:00",
+  "resumed": false,
+  "resumed_completed_rows": 0,
+  "questions_path": "/Users/peter/bullshit-benchmark/reasoning-lab/claude-sonnet-4.6-gemini-single-judge/questions/questions.v1.json",
+  "question_count": 1,
+  "models": [
+    "anthropic/claude-sonnet-4.6"
+  ],
+  "model_variants": [
+    {
+      "model_id": "anthropic/claude-sonnet-4.6",
+      "request_model_id": "anthropic/claude-sonnet-4.6",
+      "model_org": "anthropic",
+      "model_name": "claude-sonnet-4.6",
+      "model_reasoning_level": "none",
+      "model_row": "claude-sonnet-4.6@reasoning=none",
+      "model_label": "anthropic/claude-sonnet-4.6@reasoning=none",
+      "model_provider": "openrouter",
+      "response_reasoning_effort": "none",
+      "request_overrides": {
+        "reasoning": {
+          "effort": "none"
+        }
+      }
+    },
+    {
+      "model_id": "anthropic/claude-sonnet-4.6",
+      "request_model_id": "anthropic/claude-sonnet-4.6",
+      "model_org": "anthropic",
+      "model_name": "claude-sonnet-4.6",
+      "model_reasoning_level": "high",
+      "model_row": "claude-sonnet-4.6@reasoning=high",
+      "model_label": "anthropic/claude-sonnet-4.6@reasoning=high",
+      "model_provider": "openrouter",
+      "response_reasoning_effort": "high",
+      "request_overrides": {
+        "reasoning": {
+          "effort": "high"
+        }
+      }
+    }
+  ],
+  "num_runs": 1,
+  "task_count": 2,
+  "parallelism": 4,
+  "max_inflight_per_model": 2,
+  "temperature": null,
+  "max_tokens": 0,
+  "response_system_prompt": null,
+  "omit_response_system_prompt": true,
+  "response_reasoning_effort": null,
+  "model_reasoning_efforts": {
+    "anthropic/claude-sonnet-4.6": [
+      "none",
+      "high"
+    ]
+  },
+  "model_providers": {
+    "*": "openrouter"
+  },
+  "openai_project_header": null,
+  "openai_organization_header": null,
+  "store_request_messages": false,
+  "store_response_raw": true,
+  "retries": 3,
+  "timeout_seconds": 120,
+  "techniques_filter": [
+    "cross_domain_concept_stitching",
+    "inverted_nonexistent_dependency",
+    "false_granularity",
+    "misapplied_mechanism",
+    "reified_metaphor",
+    "plausible_nonexistent_framework",
+    "wrong_unit_of_analysis",
+    "temporal_category_error",
+    "causal_chimera",
+    "authoritative_framing_of_nothing"
+  ],
+  "shuffle_tasks": true,
+  "seed": 42,
+  "rate_limit_requeue": true,
+  "rate_limit_cooldown_seconds": 20.0,
+  "rate_limit_cooldown_max_seconds": 300.0,
+  "rate_limit_cooldown_jitter_seconds": 1.0,
+  "rate_limit_max_attempts": 12,
+  "checkpoint_fsync_every": 20,
+  "dry_run": false,
+  "stateless_request": true,
+  "fail_on_error": true,
+  "config_path": "/Users/peter/bullshit-benchmark/reasoning-lab/claude-sonnet-4.6-gemini-single-judge/configs/config.v1.json"
+}
