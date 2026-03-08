@@ -1,38 +1,44 @@
 # Reasoning Lab
 
-Reasoning Lab is the analysis and labeling workspace for BullshitBench
-reasoning traces.
+## Background
 
-The point of this repo is to let someone inspect full model traces, label how a
-model handles a nonsense prompt, compare GPT-5.4 with Sonnet 4.6, and export
-reviewed labels for improving AI-assisted labeling.
+- [BullshitBench](https://petergpt.github.io/bullshit-benchmark/viewer/index.v2.html)
+  is the main benchmark project for testing how models respond to nonsense
+  prompts.
+- One of the benchmark findings was that GPT models were not performing very
+  well.
+- To understand why, it was not enough to look only at final scores. We needed
+  to inspect the underlying reasoning traces.
 
-In practice, this repo is where you:
+## What This Repo Is
 
-- read the published reasoning traces in the browser
-- annotate important spans and overall trace behavior
-- keep the shared label store and review history
-- run AI-labeling and evaluation workflows on top of those human labels
-- rebuild the viewer bundles from the checked-in datasets
+Reasoning Lab is the separate workspace for viewing, comparing, and annotating
+those reasoning traces.
 
-The main BullshitBench repo is where benchmark runs are produced. This repo is
-the separate lab used to review, compare, and label those runs in a shareable
-way.
+It is meant for close qualitative review: reading full traces, marking where a
+model notices the bogus premise or goes along with it, comparing GPT-5.4 with
+Sonnet 4.6, and building a reviewed label set for later AI-assisted labeling.
 
-## What This Repo Is For
+## Key Features
 
-- `viewer/reasoning-annotation-studio.html`
-  Main annotation UI for reviewing reasoning traces and saving labels.
-- `viewer/gpt54-reasoning-atlas.html`
-  Read-only viewer for browsing the GPT-5.4 reasoning datasets.
-- `annotations/reasoning_lab.json`
-  Shared annotation store with labels, notes, review sessions, and history.
-- `data/` and `source-data/`
-  The checked-in datasets and generated browser bundles that make the lab
-  runnable without depending on the parent benchmark checkout.
-- `scripts/`
-  Builders, local server, AI-labeling utilities, and the Sonnet recapture
-  workflow.
+- Browser-based trace viewer and annotation UI.
+- Span-level labels plus overall document notes.
+- Side-by-side support for GPT-5.4 and Sonnet 4.6 trace sets.
+- Shared JSON annotation store with review history and AI-review sessions.
+- AI-labeling and evaluation scripts built on top of the human-reviewed labels.
+- Checked-in datasets and browser bundles so the lab can run independently of
+  the main BullshitBench repo.
+
+## How To Use It
+
+1. Start the local server.
+2. Open `viewer/reasoning-annotation-studio.html` to review traces and save
+   labels.
+3. Open `viewer/gpt54-reasoning-atlas.html` to browse the GPT-5.4 dataset in a
+   read-only way.
+4. Save annotations into `annotations/reasoning_lab.json`.
+5. Optionally run the AI-labeling and evaluation scripts to test or improve the
+   labeling workflow.
 
 ## Repo Layout
 
