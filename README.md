@@ -108,6 +108,18 @@ cd /Users/peter/bullshit-benchmark/reasoning-lab && ./scripts/run_reasoning_lab.
 `run_reasoning_lab.sh` rebuilds the checked-in browser data files first, then
 starts the annotation server.
 
+For repeated local restarts, you can skip the rebuild step:
+
+```bash
+./scripts/run_reasoning_lab.sh --skip-build
+```
+
+If you only want to refresh the derived browser files, use:
+
+```bash
+./scripts/build_reasoning_lab.sh
+```
+
 ## Environment Variables
 
 Optional local env file:
@@ -197,6 +209,7 @@ For the annotation-store schema and review-session model, see:
 
 ## Main Entry Points
 
+- `scripts/build_reasoning_lab.sh`
 - `scripts/run_reasoning_lab.sh`
 - `scripts/reasoning_annotation_server.py`
 - `scripts/build_gpt54_reasoning_atlas.py`
