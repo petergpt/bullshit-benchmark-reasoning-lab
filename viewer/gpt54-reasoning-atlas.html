@@ -702,6 +702,7 @@
       margin: 0;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
       font-size: 1.02rem;
       line-height: 1.2;
@@ -713,8 +714,8 @@
       color: var(--muted);
       font-size: 0.77rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-transform: none;
     }
 
     .judge-list {
@@ -1124,7 +1125,7 @@
         <h1>Reasoning traces, judge calls, and answer text in one place.</h1>
         <p>
           A standalone reader for BullshitBench&apos;s saved GPT-5.4 runs. Browse question groups, compare
-          <code>none</code> against <code>xhigh</code>, and inspect the provider-returned reasoning summaries that were
+          <code>none</code> against <code>xHigh</code>, and inspect the provider-returned reasoning summaries that were
           stored alongside the responses.
         </p>
         <div class="hero-toolbar">
@@ -1167,7 +1168,7 @@
                 <select id="techniqueFilter"></select>
               </label>
               <label class="field">
-                <span>XHigh verdict</span>
+                <span>xHigh verdict</span>
                 <select id="verdictFilter">
                   <option value="all">All</option>
                   <option value="2">Clear pushback</option>
@@ -1183,7 +1184,7 @@
                   <option value="improved">Improved</option>
                   <option value="flat">Unchanged</option>
                   <option value="worse">Worse</option>
-                  <option value="xhigh_only">Only xhigh present</option>
+                  <option value="xhigh_only">Only xHigh present</option>
                 </select>
               </label>
               <label class="field">
@@ -1201,11 +1202,11 @@
                 <span>Sort</span>
                 <select id="sortSelect">
                   <option value="delta_desc">Change vs none</option>
-                  <option value="xhigh_desc">XHigh score</option>
+                  <option value="xhigh_desc">xHigh score</option>
                   <option value="reasoning_desc">Reasoning tokens</option>
                   <option value="question_asc">Question id</option>
                   <option value="domain_asc">Domain</option>
-                  <option value="latency_desc">XHigh latency</option>
+                  <option value="latency_desc">xHigh latency</option>
                 </select>
               </label>
             </div>
@@ -1250,8 +1251,8 @@
 
     const VARIANT_META = {
       xhigh: {
-        label: "Reasoning enabled",
-        eyebrow: "xhigh",
+        label: "xHigh",
+        eyebrow: "xHigh",
       },
       none: {
         label: "Baseline",
@@ -1457,8 +1458,8 @@
     function compareChange(caseRow) {
       const xhighScore = caseRow?.variants?.xhigh?.consensus_score;
       const noneScore = caseRow?.variants?.none?.consensus_score;
-      if (typeof xhighScore !== "number") return { key: "missing", label: "No xhigh grade", delta: null };
-      if (typeof noneScore !== "number") return { key: "xhigh_only", label: "Only xhigh present", delta: null };
+      if (typeof xhighScore !== "number") return { key: "missing", label: "No xHigh grade", delta: null };
+      if (typeof noneScore !== "number") return { key: "xhigh_only", label: "Only xHigh present", delta: null };
       const delta = xhighScore - noneScore;
       if (delta > 0) return { key: "improved", label: "+" + delta.toFixed(1) + " vs none", delta };
       if (delta < 0) return { key: "worse", label: delta.toFixed(1) + " vs none", delta };
@@ -1647,7 +1648,7 @@
           hint: dataset.case_count + " total in this dataset",
         },
         {
-          label: "Average xhigh score",
+          label: "Average xHigh score",
           value: avgScore === null ? "-" : avgScore.toFixed(2),
           hint: "Higher means more explicit pushback against nonsense",
         },
@@ -1738,7 +1739,7 @@
             escapeHtml(clampText(caseRow.nonsensical_element, 128)) +
             "</p>" +
             '<div class="stat-row">' +
-            '<span class="stat-chip">xhigh ' +
+            '<span class="stat-chip">xHigh ' +
             escapeHtml(formatScore(score)) +
             "</span>" +
             '<span class="stat-chip change-chip ' +
@@ -2010,7 +2011,7 @@
         '<div class="section-head">' +
         '<div>' +
         "<h2>How GPT-5.4 responded</h2>" +
-        '<p class="panel-subtitle">The saved answer text for the baseline and reasoning-enabled variants.</p>' +
+        '<p class="panel-subtitle">The saved answer text for the baseline and xHigh variants.</p>' +
         "</div>" +
         "</div>" +
         '<div class="compare-grid">' +
@@ -2091,7 +2092,7 @@
       const variant = caseRow?.variants?.xhigh;
       if (!variant) {
         el.tracePanel.innerHTML =
-          '<div class="empty-state"><strong>No xhigh trace is available for this case.</strong></div>';
+          '<div class="empty-state"><strong>No xHigh trace is available for this case.</strong></div>';
         return;
       }
 

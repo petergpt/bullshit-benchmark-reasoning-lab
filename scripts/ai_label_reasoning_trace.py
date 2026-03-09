@@ -335,6 +335,10 @@ def response_format_for_categories(
 ) -> dict[str, Any]:
     max_annotations = max(0, int(max_annotations))
     min_annotations = max(0, min(int(min_annotations), max_annotations))
+    # Some OpenRouter providers reject array size constraints in strict JSON
+    # schema mode. Keep the stronger bounds in the prompt and in our local
+    # post-processing instead.
+    schema_min_annotations = min(min_annotations, 1)
     root_required = ["document_note", "annotations"]
     properties: dict[str, Any] = {
         "document_note": {
@@ -348,8 +352,7 @@ def response_format_for_categories(
         },
         "annotations": {
             "type": "array",
-            "minItems": min_annotations,
-            "maxItems": max_annotations,
+            "minItems": schema_min_annotations,
             "items": {
                 "type": "object",
                 "additionalProperties": False,

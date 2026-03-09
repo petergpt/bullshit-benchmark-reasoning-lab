@@ -13,7 +13,7 @@ from reasoning_lab_paths import LAB_ROOT, benchmark_dataset_dir
 SOURCES = {
     "gpt54_high": {
         "key": "gpt54_high",
-        "label": "GPT-5.4 High",
+        "label": "GPT-5.4 xHigh",
         "description": "GPT-5.4 reasoning traces from the main BullshitBench runs.",
         "model_id": "openai/gpt-5.4",
         "primary_variant_key": "xhigh",

@@ -286,6 +286,8 @@
     .switch-cluster.model-cluster {
       flex: 0 1 auto;
       min-width: 0;
+      flex-wrap: wrap;
+      row-gap: 4px;
     }
 
     .switch-cluster.benchmark-cluster {
@@ -456,6 +458,7 @@
     .dataset-switch {
       display: inline-flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
       min-height: 30px;
       padding: 0;
@@ -468,7 +471,8 @@
     .source-switch {
       display: inline-flex;
       align-items: center;
-      gap: 2px;
+      flex-wrap: wrap;
+      gap: 6px 14px;
       min-height: 30px;
       border-bottom: 1px solid var(--line);
       justify-content: flex-start;
@@ -523,11 +527,17 @@
       border: none;
       background: transparent;
       color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
       padding: 7px 1px 8px;
-      margin-right: 16px;
+      margin-right: 0;
       font-size: 0.78rem;
       font-weight: 500;
+      line-height: 1;
       border-bottom: 2px solid transparent;
+      text-align: left;
+      white-space: nowrap;
       transition: color var(--transition), border-color var(--transition);
     }
 
@@ -631,11 +641,7 @@
       min-width: 0;
     }
 
-    .panel[hidden] {
-      display: none !important;
-    }
-
-    .view-pane[hidden] {
+    [hidden] {
       display: none !important;
     }
 
@@ -1262,7 +1268,12 @@
     }
 
     .mini-stat.model-chip {
+      display: inline-flex;
+      align-items: center;
       font-weight: 700;
+      line-height: 1;
+      max-width: 100%;
+      white-space: nowrap;
     }
 
     .mini-stat.model-chip.gpt {
@@ -1357,53 +1368,54 @@
 
     .explorer-table {
       width: 100%;
+      min-width: 1360px;
       border-collapse: collapse;
       table-layout: fixed;
     }
 
     .explorer-table th:nth-child(1),
     .explorer-table td:nth-child(1) {
-      width: 22%;
+      width: 20%;
     }
 
     .explorer-table th:nth-child(2),
     .explorer-table td:nth-child(2) {
-      width: 8%;
+      width: 7%;
     }
 
     .explorer-table th:nth-child(3),
     .explorer-table td:nth-child(3) {
-      width: 8%;
+      width: 10%;
     }
 
     .explorer-table th:nth-child(4),
     .explorer-table td:nth-child(4) {
-      width: 8%;
+      width: 10%;
     }
 
     .explorer-table th:nth-child(5),
     .explorer-table td:nth-child(5) {
-      width: 12%;
+      width: 14%;
     }
 
     .explorer-table th:nth-child(6),
     .explorer-table td:nth-child(6) {
-      width: 8%;
+      width: 10%;
     }
 
     .explorer-table th:nth-child(7),
     .explorer-table td:nth-child(7) {
-      width: 8%;
+      width: 10%;
     }
 
     .explorer-table th:nth-child(8),
     .explorer-table td:nth-child(8) {
-      width: 12%;
+      width: 14%;
     }
 
     .explorer-table th:nth-child(9),
     .explorer-table td:nth-child(9) {
-      width: 8%;
+      width: 5%;
     }
 
     .explorer-table th,
@@ -1435,6 +1447,7 @@
       align-items: flex-start;
       gap: 6px;
       width: 100%;
+      min-width: 0;
       padding: 0;
       border: none;
       background: transparent;
@@ -1451,19 +1464,18 @@
       display: grid;
       gap: 3px;
       min-width: 0;
+      align-content: start;
     }
 
     .explorer-header-model {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      width: fit-content;
+      display: block;
       max-width: 100%;
-      font-size: 0.66rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.01em;
+      line-height: 1.18;
       color: var(--text-faint);
-      text-transform: uppercase;
+      text-transform: none;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1766,9 +1778,10 @@
 
     .stage-model-card {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 8px;
+      flex-wrap: wrap;
       min-height: 42px;
       padding: 8px 10px;
       border: 1px solid var(--line);
@@ -1784,6 +1797,14 @@
     }
 
     .stage-model-card .mini-stat {
+      white-space: normal;
+      line-height: 1.18;
+      text-wrap: pretty;
+    }
+
+    .stage-model-card .model-chip {
+      flex: 0 0 auto;
+      min-width: 0;
       white-space: nowrap;
     }
 
@@ -3523,6 +3544,12 @@
         gap: 12px;
       }
 
+      .switch-cluster.model-cluster,
+      .switch-cluster.benchmark-cluster,
+      .appbar-coverage {
+        flex: 1 1 100%;
+      }
+
       .toolbar {
         justify-content: flex-start;
         flex-wrap: wrap;
@@ -3606,6 +3633,12 @@
         width: 100%;
         overflow: visible;
         flex-wrap: wrap;
+      }
+
+      .switch-cluster.model-cluster,
+      .switch-cluster.benchmark-cluster,
+      .appbar-coverage {
+        flex: 1 1 100%;
       }
 
       .view-switch {
@@ -3912,6 +3945,12 @@
       return ["light", "dark"].includes(stored) ? stored : "system";
     }
 
+    function initialCompareOpen() {
+      const stored = window.localStorage.getItem("reasoningLab.compareOpen");
+      if (stored === null) return true;
+      return stored === "1";
+    }
+
     function resolvedThemePreference(preference = initialThemePreference()) {
       if (preference === "light" || preference === "dark") return preference;
       return systemThemeMedia?.matches ? "dark" : "light";
@@ -4031,7 +4070,7 @@
       flashNotice: null,
       justSavedAnnotationId: "",
       toast: null,
-      compareOpen: window.localStorage.getItem("reasoningLab.compareOpen") === "1",
+      compareOpen: initialCompareOpen(),
       aiLabelJobsByDocument: {},
     };
 
@@ -4469,13 +4508,14 @@
     function renderModelChip(source) {
       const tone = modelTone(source?.key);
       const className = tone ? `mini-stat model-chip ${tone}` : "mini-stat";
-      return `<span class="${className}">${escapeHtml(source?.label || "Model")}</span>`;
+      const label = compactSourceLabel(source);
+      return `<span class="${className}" title="${escapeAttribute(label)}">${escapeHtml(label)}</span>`;
     }
 
     function compactSourceLabel(source) {
       const label = String(source?.label || "").trim();
       if (!label) return "Model";
-      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4 High";
+      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4 xHigh";
       if (/sonnet\s*4\.6/i.test(label)) return "Sonnet 4.6";
       return label;
     }
@@ -6304,7 +6344,8 @@
           class="source-segment ${escapeHtml(modelTone(source.key))}${source.key === STATE.sourceKey ? " active" : ""}"
           data-source-key="${escapeHtml(source.key)}"
           type="button"
-        >${escapeHtml(source.label)}</button>
+          title="${escapeAttribute(compactSourceLabel(source))}"
+        >${escapeHtml(compactSourceLabel(source))}</button>
       `;
         })
         .join("");
@@ -6345,9 +6386,6 @@
       if (el.toggleSidebarBtn) {
         el.toggleSidebarBtn.hidden = STATE.viewMode !== "label";
         el.toggleSidebarBtn.textContent = STATE.sidebarOpen ? "Hide tools" : "Show tools";
-      }
-      if (el.sourceSwitch?.parentElement) {
-        el.sourceSwitch.parentElement.hidden = STATE.viewMode === "review";
       }
     }
 
@@ -6618,7 +6656,7 @@
       const tone = modelTone(column.source.key);
       const sourceClass = tone ? `explorer-header-model ${tone}` : "explorer-header-model";
       return `
-        <span class="explorer-header-label">
+        <span class="explorer-header-label" title="${escapeAttribute(compactSourceLabel(column.source))}">
           <span class="${escapeHtml(sourceClass)}">${escapeHtml(compactSourceLabel(column.source))}</span>
           ${metric}
         </span>
@@ -8087,7 +8125,7 @@
 
     function openCaseForLabeling(questionId, options = {}) {
       if (!questionId) return;
-      const { compare = false } = options;
+      const { compare = STATE.compareOpen } = options;
       setSelectedCaseId(questionId);
       setViewMode("label");
       setCompareOpen(compare && Boolean(alternateSourceKey(questionId, STATE.datasetKey)));

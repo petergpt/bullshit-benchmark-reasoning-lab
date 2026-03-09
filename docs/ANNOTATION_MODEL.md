@@ -132,7 +132,7 @@ that taxonomy travels with the exported annotations.
 ## Selection Rules
 
 - Selections are made against the source's primary reasoning document.
-- For GPT-5.4 High that primary document is `xhigh`; for Sonnet 4.6 it is `high`.
+- For GPT-5.4 xHigh that primary document is `xhigh`; for Sonnet 4.6 it is `high`.
 - Spans are non-overlapping within a document.
 
 The non-overlap rule is intentional. It keeps the first-pass labels clean enough
