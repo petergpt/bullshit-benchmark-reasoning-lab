@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import random
 import re
 import time
 import urllib.error
@@ -313,15 +314,29 @@ class OpenRouterClient:
                 return parsed
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="ignore")
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                retry_after_seconds = 0.0
+                if retry_after:
+                    try:
+                        retry_after_seconds = max(0.0, float(retry_after))
+                    except ValueError:
+                        retry_after_seconds = 0.0
                 last_error = RuntimeError(
                     f"OpenRouter HTTP {exc.code} on attempt {attempt}/{retries}: {detail}"
                 )
+                should_retry = exc.code in {408, 409, 429} or exc.code >= 500
             except Exception as exc:  # noqa: BLE001
                 last_error = RuntimeError(
                     f"OpenRouter request failed on attempt {attempt}/{retries}: {exc}"
                 )
-            if attempt < retries:
-                time.sleep(min(2**attempt, 8))
+                retry_after_seconds = 0.0
+                should_retry = True
+            if attempt < retries and should_retry:
+                base_delay = retry_after_seconds or min(2**attempt, 12)
+                time.sleep(base_delay + random.uniform(0.05, 0.65))
+                continue
+            if not should_retry:
+                break
         assert last_error is not None
         raise last_error
 

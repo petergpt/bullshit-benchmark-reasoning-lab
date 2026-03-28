@@ -99,6 +99,26 @@
         0 1px 0 rgba(255, 255, 255, 0.82) inset,
         0 2px 6px rgba(20, 25, 23, 0.12);
       --button-secondary-border-hover: color-mix(in srgb, #7f8d9a 30%, var(--line));
+      --workflow-validated-surface: #edf5f1;
+      --workflow-validated-line: #cfe0d8;
+      --workflow-validated-text: #295f4a;
+      --workflow-validated-fill-start: #4f8e78;
+      --workflow-validated-fill-end: #6aa88b;
+      --workflow-active-surface: #faf4e8;
+      --workflow-active-line: #e7d6ab;
+      --workflow-active-text: #7a5a13;
+      --workflow-active-fill-start: #c67b10;
+      --workflow-active-fill-end: #d79a33;
+      --workflow-review-surface: #eef3f7;
+      --workflow-review-line: #d0dbe5;
+      --workflow-review-text: #41596d;
+      --workflow-review-fill-start: #5c7f9d;
+      --workflow-review-fill-end: #7d9ab3;
+      --workflow-unreviewed-surface: #f3f4f3;
+      --workflow-unreviewed-line: #d6dbd8;
+      --workflow-unreviewed-text: #576762;
+      --workflow-unreviewed-fill-start: #7f8a85;
+      --workflow-unreviewed-fill-end: #9aa39f;
     }
 
     :root[data-theme="dark"] {
@@ -170,6 +190,26 @@
         0 1px 0 rgba(255, 255, 255, 0.08) inset,
         0 4px 10px rgba(4, 5, 7, 0.28);
       --button-secondary-border-hover: color-mix(in srgb, #7f8d9a 44%, var(--line));
+      --workflow-validated-surface: #183229;
+      --workflow-validated-line: #315447;
+      --workflow-validated-text: #9fd0b8;
+      --workflow-validated-fill-start: #5aa982;
+      --workflow-validated-fill-end: #79c59b;
+      --workflow-active-surface: #352816;
+      --workflow-active-line: #685029;
+      --workflow-active-text: #efc577;
+      --workflow-active-fill-start: #d39a45;
+      --workflow-active-fill-end: #e2b15f;
+      --workflow-review-surface: #172837;
+      --workflow-review-line: #35536f;
+      --workflow-review-text: #b8d7f8;
+      --workflow-review-fill-start: #6b8eac;
+      --workflow-review-fill-end: #89a7bf;
+      --workflow-unreviewed-surface: #1f2925;
+      --workflow-unreviewed-line: #3a4742;
+      --workflow-unreviewed-text: #c0cbc6;
+      --workflow-unreviewed-fill-start: #8b9590;
+      --workflow-unreviewed-fill-end: #a7b1ac;
     }
 
     * {
@@ -217,8 +257,8 @@
     .appbar {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
+      flex-wrap: nowrap;
+      gap: 14px;
       min-height: 44px;
       padding: 0 0 2px;
       border-bottom: 1px solid var(--border-soft);
@@ -227,10 +267,10 @@
     .appbar-left {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
+      flex-wrap: nowrap;
+      gap: 12px;
       min-width: 0;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
     }
 
     .appbar-brand {
@@ -259,20 +299,23 @@
     .appbar-actions {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 18px;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      gap: 12px;
       min-width: 0;
       flex: 1 1 auto;
+      margin-left: auto;
     }
 
     .appbar-right-group {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       justify-content: flex-start;
-      gap: 18px;
+      gap: 12px;
       min-width: 0;
       flex: 1 1 auto;
+      overflow: visible;
     }
 
     .switch-cluster {
@@ -286,8 +329,7 @@
     .switch-cluster.model-cluster {
       flex: 0 1 auto;
       min-width: 0;
-      flex-wrap: wrap;
-      row-gap: 4px;
+      flex-wrap: nowrap;
     }
 
     .switch-cluster.benchmark-cluster {
@@ -298,69 +340,291 @@
     .appbar-coverage {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
       min-width: 0;
-      padding-left: 14px;
+      padding-left: 12px;
       border-left: 1px solid var(--border-soft);
-      flex: 0 1 auto;
-      flex-wrap: wrap;
-    }
-
-    .coverage-meter {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      min-width: 0;
-      max-width: 100%;
-      height: 27px;
-      padding: 0 10px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--surface-subtle);
-      color: var(--text-subtle);
       flex: 0 0 auto;
     }
 
-    .coverage-meter-label {
-      font-size: 0.72rem;
+    .status-popover {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+
+    .status-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: none;
+      background: transparent;
+      padding: 3px 0;
+      min-height: 22px;
+      min-width: 0;
+      color: var(--text-subtle);
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .status-trigger:hover,
+    .status-trigger:focus-visible {
+      outline: none;
+    }
+
+    .status-trigger-label {
+      font-size: 0.71rem;
       font-weight: 700;
       line-height: 1;
       color: var(--text-muted);
+      letter-spacing: 0.01em;
       white-space: nowrap;
-      position: relative;
-      z-index: 1;
     }
 
-    .coverage-meter-value {
+    .status-trigger-caret {
+      width: 6px;
+      height: 6px;
+      border-right: 1.5px solid var(--text-faint);
+      border-bottom: 1.5px solid var(--text-faint);
+      transform: translateY(-1px) rotate(45deg);
+      flex: 0 0 auto;
+    }
+
+    .status-popover-panel {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 72;
+      width: min(292px, calc(100vw - 32px));
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface-elevated);
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      gap: 10px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+    }
+
+    .status-popover:hover .status-popover-panel,
+    .status-popover:focus-within .status-popover-panel {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .status-popover:hover .status-trigger-label,
+    .status-popover:focus-within .status-trigger-label {
+      color: var(--text-subtle);
+    }
+
+    .status-popover-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .status-popover-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .status-popover-kicker {
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+
+    .status-popover-title {
       font-size: 0.82rem;
-      font-weight: 800;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text-strong);
+    }
+
+    .status-popover-note {
+      font-size: 0.69rem;
+      line-height: 1.2;
+      color: var(--text-muted);
+    }
+
+    .status-donut {
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      padding: 9px;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, transparent);
+    }
+
+    .status-donut-hole {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--surface-elevated);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      text-align: center;
+    }
+
+    .status-donut-hole strong {
+      display: block;
+      font-size: 0.86rem;
       line-height: 1;
       color: var(--text-strong);
+    }
+
+    .status-donut-hole span {
+      display: block;
+      margin-top: 1px;
+      font-size: 0.58rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--text-faint);
       white-space: nowrap;
-      position: relative;
-      z-index: 1;
+    }
+
+    .status-summary-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .status-summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 9px;
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      background: var(--surface-soft);
+    }
+
+    .status-summary-row.is-empty {
+      opacity: 0.62;
+    }
+
+    .status-summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .status-summary-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-subtle);
+    }
+
+    .status-summary-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .status-summary-metric {
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-summary-row.validated .status-summary-swatch {
+      background: linear-gradient(90deg, var(--workflow-validated-fill-start) 0%, var(--workflow-validated-fill-end) 100%);
+    }
+
+    .status-summary-row.validated .status-summary-metric {
+      color: var(--workflow-validated-text);
+    }
+
+    .status-summary-row.in_progress .status-summary-swatch {
+      background: linear-gradient(90deg, var(--workflow-active-fill-start) 0%, var(--workflow-active-fill-end) 100%);
+    }
+
+    .status-summary-row.in_progress .status-summary-metric {
+      color: var(--workflow-active-text);
+    }
+
+    .status-summary-row.needs_review .status-summary-swatch {
+      background: linear-gradient(90deg, var(--workflow-review-fill-start) 0%, var(--workflow-review-fill-end) 100%);
+    }
+
+    .status-summary-row.needs_review .status-summary-metric {
+      color: var(--workflow-review-text);
+    }
+
+    .status-summary-row.unreviewed .status-summary-swatch {
+      background: linear-gradient(90deg, var(--workflow-unreviewed-fill-start) 0%, var(--workflow-unreviewed-fill-end) 100%);
+    }
+
+    .status-summary-row.unreviewed .status-summary-metric {
+      color: var(--workflow-unreviewed-text);
     }
 
     .coverage-meter-track {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 3px;
-      height: 4px;
+      position: relative;
+      width: clamp(78px, 6vw, 104px);
+      height: 5px;
       border-radius: 999px;
       background: var(--coverage-track);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 46%, transparent);
       overflow: hidden;
+      flex: 0 0 auto;
     }
 
     .coverage-meter-fill {
       position: absolute;
-      inset: 0 auto 0 0;
-      width: var(--coverage-progress, 0%);
-      min-width: 0;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--coverage-fill), var(--coverage-fill-edge));
+      top: 0;
+      bottom: 0;
+      border-radius: 0;
+    }
+
+    .coverage-meter-track .coverage-meter-fill:first-child {
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+    }
+
+    .coverage-meter-track .coverage-meter-fill:last-child {
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+    }
+
+    .coverage-meter-fill.is-validated {
+      background: linear-gradient(90deg, var(--workflow-validated-fill-start) 0%, var(--workflow-validated-fill-end) 100%);
+    }
+
+    .coverage-meter-fill.is-in_progress {
+      background: linear-gradient(90deg, var(--workflow-active-fill-start) 0%, var(--workflow-active-fill-end) 100%);
+    }
+
+    .coverage-meter-fill.is-needs_review {
+      background: linear-gradient(90deg, var(--workflow-review-fill-start) 0%, var(--workflow-review-fill-end) 100%);
+    }
+
+    .coverage-meter-fill.is-unreviewed {
+      background: linear-gradient(90deg, var(--workflow-unreviewed-fill-start) 0%, var(--workflow-unreviewed-fill-end) 100%);
     }
 
     .toolbar {
@@ -422,6 +686,7 @@
     .theme-switch {
       display: inline-flex;
       align-items: center;
+      flex-wrap: nowrap;
       gap: 2px;
       padding: 2px;
       border: 1px solid var(--line);
@@ -458,7 +723,7 @@
     .dataset-switch {
       display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
       min-height: 30px;
       padding: 0;
@@ -471,8 +736,8 @@
     .source-switch {
       display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 6px 14px;
+      flex-wrap: nowrap;
+      gap: 6px 10px;
       min-height: 30px;
       border-bottom: 1px solid var(--line);
       justify-content: flex-start;
@@ -716,7 +981,7 @@
     }
 
     .filter-panel {
-      padding: 10px 12px;
+      padding: 8px 12px;
       position: relative;
       z-index: 24;
       overflow: visible;
@@ -724,8 +989,8 @@
 
     .filter-grid {
       display: grid;
-      grid-template-columns: minmax(280px, 2.5fr) repeat(3, minmax(132px, 0.9fr)) minmax(170px, 1.1fr) auto;
-      gap: 8px;
+      grid-template-columns: minmax(180px, 440px) minmax(108px, 150px) minmax(96px, 140px) minmax(120px, 170px) auto;
+      gap: 5px;
       align-items: end;
       min-width: 0;
     }
@@ -741,16 +1006,64 @@
     .filter-actions {
       display: flex;
       justify-content: flex-end;
-      align-items: end;
-      gap: 8px;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+      justify-self: end;
+      min-width: 0;
+    }
+
+    .filter-actions .btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      min-height: 34px;
+      padding: 5px 9px;
+    }
+
+    .filter-actions #labelSelectedAiBtn {
+      min-width: 86px;
+    }
+
+    .ai-inline-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      align-self: center;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .ai-inline-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #5f8d79;
+      flex: 0 0 auto;
+    }
+
+    .ai-inline-status strong {
+      color: var(--text-subtle);
+      font-weight: 700;
+    }
+
+    .btn-icon-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-icon-label .ui-icon {
+      width: 13px;
+      height: 13px;
+      flex: 0 0 auto;
     }
 
     .filter-meta {
-      margin: 8px 0 0;
-      color: var(--text-faint);
-      font-size: 0.76rem;
-      line-height: 1.35;
+      display: none;
     }
 
     .panel-subtitle.compact {
@@ -776,10 +1089,6 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 7px;
       align-items: start;
-    }
-
-    .rail-filter-row.ai-hidden {
-      grid-template-columns: minmax(0, 1fr);
     }
 
     .rail-filter-row.with-domain {
@@ -840,10 +1149,10 @@
 
     label.field {
       display: grid;
-      gap: 5px;
+      gap: 4px;
       color: var(--text-subtle);
-      font-size: 0.82rem;
-      font-weight: 800;
+      font-size: 0.72rem;
+      font-weight: 700;
     }
 
     input[type="text"],
@@ -851,11 +1160,14 @@
     textarea {
       width: 100%;
       border: 1px solid var(--border-strong);
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      min-height: 34px;
+      padding: 5px 8px;
       background: var(--surface-input);
       color: var(--ink);
       outline: none;
+      box-sizing: border-box;
+      font-size: 0.8rem;
       transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
     }
 
@@ -880,10 +1192,13 @@
       list-style: none;
       width: 100%;
       border: 1px solid var(--border-strong);
-      border-radius: 10px;
-      padding: 8px 38px 8px 10px;
+      border-radius: 8px;
+      min-height: 34px;
+      padding: 5px 34px 5px 8px;
       background: var(--surface-input);
       color: var(--ink);
+      display: flex;
+      align-items: center;
       cursor: pointer;
       transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
     }
@@ -918,9 +1233,9 @@
     .multi-select-summary {
       display: block;
       color: var(--text-subtle);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
-      line-height: 1.3;
+      line-height: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1065,34 +1380,118 @@
       align-items: center;
     }
 
-    .explorer-summary {
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .status-pill.ai {
+      background: color-mix(in srgb, #8a97a6 10%, var(--mix-base));
+      border-color: color-mix(in srgb, #8a97a6 24%, var(--line));
+      color: #677482;
+    }
+
+    .status-pill.pending {
+      background: color-mix(in srgb, #d8a24d 13%, var(--mix-base));
+      border-color: color-mix(in srgb, #c58a2d 28%, var(--line));
+      color: #94641a;
+    }
+
+    .status-pill.reviewed {
+      background: color-mix(in srgb, #6d89aa 12%, var(--mix-base));
+      border-color: color-mix(in srgb, #5d7ea7 28%, var(--line));
+      color: #486789;
+    }
+
+    .status-pill.human {
+      background: color-mix(in srgb, #4f8e78 12%, var(--mix-base));
+      border-color: color-mix(in srgb, #3f806a 26%, var(--line));
+      color: #2f6a57;
+    }
+
+    .status-pill.loading {
+      background: color-mix(in srgb, #6b7cc9 10%, var(--mix-base));
+      border-color: color-mix(in srgb, #6b7cc9 24%, var(--line));
+      color: #5162a8;
+    }
+
+    .status-pill.queued {
+      background: color-mix(in srgb, #90a0af 10%, var(--mix-base));
+      border-color: color-mix(in srgb, #90a0af 24%, var(--line));
+      color: #657482;
+    }
+
+    .status-pill.saved {
+      background: color-mix(in srgb, #4f8e78 12%, var(--mix-base));
+      border-color: color-mix(in srgb, #3f806a 26%, var(--line));
+      color: #2f6a57;
+    }
+
+    .status-pill.failed {
+      background: color-mix(in srgb, #bb5664 10%, var(--mix-base));
+      border-color: color-mix(in srgb, #bb5664 22%, var(--line));
+      color: #9a4250;
+    }
+
+    .explorer-run-status .run-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.85;
+      flex: 0 0 auto;
+    }
+
+    .explorer-run-status.loading .run-status-dot {
+      animation: explorer-run-pulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes explorer-run-pulse {
+      0%, 100% {
+        opacity: 0.35;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .explorer-selection-cell {
+      width: 40px;
+      text-align: center;
+    }
+
+    .explorer-row-selector,
+    .explorer-head-selector {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .explorer-row-selector input,
+    .explorer-head-selector input {
+      width: 15px;
+      height: 15px;
+      accent-color: #5b7bd5;
+      cursor: pointer;
+    }
+
+    .review-case-stats {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
       flex-wrap: wrap;
-      color: var(--text-faint);
-      font-size: 0.76rem;
-      line-height: 1.4;
-    }
-
-    .explorer-stat {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 5px;
-      min-width: 0;
-    }
-
-    .explorer-stat strong {
-      font-size: 0.9rem;
-      line-height: 1;
-      color: var(--text-strong);
-      font-weight: 600;
-    }
-
-    .explorer-stat span {
-      color: var(--text-faint);
-      font-size: 0.76rem;
-      line-height: 1.25;
+      margin-top: 8px;
     }
 
     .btn.primary {
@@ -1294,12 +1693,28 @@
       background: var(--surface-muted);
     }
 
-    .pill.green { background: #edf5f1; border-color: #cfe0d8; color: #295f4a; }
-    .pill.amber { background: #faf4e8; border-color: #e7d6ab; color: #7a5a13; }
+    .pill.green {
+      background: var(--workflow-validated-surface);
+      border-color: var(--workflow-validated-line);
+      color: var(--workflow-validated-text);
+    }
+    .pill.amber {
+      background: var(--workflow-active-surface);
+      border-color: var(--workflow-active-line);
+      color: var(--workflow-active-text);
+    }
     .pill.red { background: #faeded; border-color: #e6c3c7; color: #8d404a; }
-    .pill.blue { background: #eef3f7; border-color: #d0dbe5; color: #41596d; }
-    .pill.violet { background: #f3eff7; border-color: #d9cfe6; color: #5d4e74; }
-    .pill.slate { background: #f3f4f3; border-color: #d6dbd8; color: #576762; }
+    .pill.blue,
+    .pill.violet {
+      background: var(--workflow-review-surface);
+      border-color: var(--workflow-review-line);
+      color: var(--workflow-review-text);
+    }
+    .pill.slate {
+      background: var(--workflow-unreviewed-surface);
+      border-color: var(--workflow-unreviewed-line);
+      color: var(--workflow-unreviewed-text);
+    }
 
     .case-judge-list {
       display: grid;
@@ -1375,17 +1790,17 @@
 
     .explorer-table th:nth-child(1),
     .explorer-table td:nth-child(1) {
-      width: 20%;
+      width: 48px;
     }
 
     .explorer-table th:nth-child(2),
     .explorer-table td:nth-child(2) {
-      width: 7%;
+      width: 20%;
     }
 
     .explorer-table th:nth-child(3),
     .explorer-table td:nth-child(3) {
-      width: 10%;
+      width: 7%;
     }
 
     .explorer-table th:nth-child(4),
@@ -1410,11 +1825,16 @@
 
     .explorer-table th:nth-child(8),
     .explorer-table td:nth-child(8) {
-      width: 14%;
+      width: 10%;
     }
 
     .explorer-table th:nth-child(9),
     .explorer-table td:nth-child(9) {
+      width: 14%;
+    }
+
+    .explorer-table th:nth-child(10),
+    .explorer-table td:nth-child(10) {
       width: 5%;
     }
 
@@ -1533,6 +1953,14 @@
       background: var(--surface-subtle-strong);
     }
 
+    .explorer-table tbody tr.is-ai-run:not(.is-current) {
+      background: color-mix(in srgb, #6b7cc9 4%, transparent);
+    }
+
+    .explorer-table tbody tr.is-ai-run:hover:not(.is-current) {
+      background: color-mix(in srgb, #6b7cc9 7%, var(--surface-soft));
+    }
+
     .explorer-table tbody tr:last-child td {
       border-bottom: none;
     }
@@ -1579,6 +2007,13 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 1;
       overflow: hidden;
+    }
+
+    .explorer-question-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .explorer-status-cell {
@@ -3463,16 +3898,11 @@
       color: #efb0ba;
     }
 
-    :root[data-theme="dark"] .pill.blue {
-      background: #172837;
-      border-color: #35536f;
-      color: #b8d7f8;
-    }
-
+    :root[data-theme="dark"] .pill.blue,
     :root[data-theme="dark"] .pill.violet {
-      background: #2a2138;
-      border-color: #564273;
-      color: #d8c7f4;
+      background: var(--workflow-review-surface);
+      border-color: var(--workflow-review-line);
+      color: var(--workflow-review-text);
     }
 
     :root[data-theme="dark"] .pill.slate {
@@ -3497,7 +3927,7 @@
 
       .filter-actions {
         grid-column: 1 / -1;
-        justify-content: flex-start;
+        justify-content: flex-end;
       }
     }
 
@@ -3722,18 +4152,9 @@
           <select id="annotationFilterSelect">
             <option value="all">All</option>
             <option value="unreviewed">Not labelled</option>
-            <option value="in_progress">Started</option>
-            <option value="one_labelled">One labelled</option>
-            <option value="both_labelled">Both labelled</option>
-          </select>
-        </label>
-        <label id="aiFilterField" class="field" hidden>
-          <span>AI labels</span>
-          <select id="aiFilterSelect">
-            <option value="all">All AI</option>
-            <option value="has_ai">AI labelled</option>
+            <option value="in_progress">In progress</option>
             <option value="needs_review">Needs review</option>
-            <option value="reviewed_ai">Reviewed AI</option>
+            <option value="validated">Validated</option>
           </select>
         </label>
         <label id="domainFilterField" class="field">
@@ -3752,8 +4173,8 @@
           </details>
         </label>
         <div class="filter-actions">
-          <button id="openNextUnlabeledBtn" class="btn" type="button">Open next not labelled</button>
-          <button id="resetFiltersBtn" class="btn ghost" type="button">Reset filters</button>
+          <div id="aiInlineStatus" class="ai-inline-status" aria-live="polite"></div>
+          <button id="labelSelectedAiBtn" class="btn small" type="button">AI Label</button>
         </div>
       </div>
       <p class="filter-meta" id="filterMeta"></p>
@@ -3761,13 +4182,6 @@
 
     <section class="explorer-view view-pane" id="explorerView">
       <section class="panel explorer-panel" id="explorerPanel">
-        <div class="section-head">
-          <div>
-            <h2 id="explorerTitle">Questions</h2>
-            <p class="panel-subtitle" id="explorerMeta"></p>
-          </div>
-        </div>
-        <div class="explorer-summary" id="explorerSummary"></div>
         <div class="explorer-table-wrap">
           <table class="explorer-table">
             <thead id="questionExplorerHead">
@@ -3782,20 +4196,53 @@
             <section class="panel">
               <div class="control-grid">
                 <div class="rail-filter-bar">
-                  <label class="field">
-                    <span>Search</span>
-                    <input id="reviewSearchInput" type="text" placeholder="Case id, note text, label...">
-                  </label>
-                  <label id="reviewDomainFilterField" class="field">
-                    <span>Domains</span>
-                    <select id="reviewDomainFilterSelect">
-                      <option value="">All domains</option>
-                    </select>
-                  </label>
+                  <div class="rail-filter-row">
+                    <label class="field">
+                      <span>Search</span>
+                      <input id="reviewSearchInput" type="text" placeholder="Case id, note text, label...">
+                    </label>
+                    <label class="field">
+                      <span>Grade</span>
+                      <select id="reviewGradeFilterSelect">
+                        <option value="all">All grades</option>
+                        <option value="accepted">Accepted nonsense</option>
+                        <option value="partial">Partial challenge</option>
+                        <option value="clear">Clear pushback</option>
+                        <option value="missing">Missing</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="rail-filter-row">
+                    <label class="field">
+                      <span>Labels</span>
+                      <select id="reviewAnnotationFilterSelect">
+                        <option value="all">All</option>
+                        <option value="unreviewed">Not labelled</option>
+                        <option value="in_progress">In progress</option>
+                        <option value="needs_review">Needs review</option>
+                        <option value="validated">Validated</option>
+                      </select>
+                    </label>
+                    <label id="reviewDomainFilterField" class="field">
+                      <span>Domains</span>
+                      <details id="reviewDomainFilterDetails" class="multi-select">
+                        <summary>
+                          <span id="reviewDomainFilterSummary" class="multi-select-summary">All domains</span>
+                        </summary>
+                        <div class="multi-select-panel">
+                          <div class="multi-select-actions">
+                            <button id="reviewSelectAllDomainsBtn" type="button">All domains</button>
+                            <button id="reviewCloseDomainFilterBtn" type="button">Done</button>
+                          </div>
+                          <div id="reviewDomainFilterList" class="multi-select-list"></div>
+                        </div>
+                      </details>
+                    </label>
+                  </div>
                 </div>
                 <div class="section-head">
                   <div>
-                    <h2>Labelled Traces</h2>
+                    <h2>Review Queue</h2>
                     <p class="panel-subtitle" id="reviewCaseMeta"></p>
                   </div>
                 </div>
@@ -3831,18 +4278,9 @@
                   <select id="railAnnotationFilterSelect">
                     <option value="all">All</option>
                     <option value="unreviewed">Not labelled</option>
-                    <option value="in_progress">Started</option>
-                    <option value="one_labelled">One labelled</option>
-                    <option value="both_labelled">Both labelled</option>
-                  </select>
-                </label>
-                <label id="railAiFilterField" class="field compact" hidden>
-                  <span>AI labels</span>
-                  <select id="railAiFilterSelect">
-                    <option value="all">All AI</option>
-                    <option value="has_ai">AI labelled</option>
+                    <option value="in_progress">In progress</option>
                     <option value="needs_review">Needs review</option>
-                    <option value="reviewed_ai">Reviewed AI</option>
+                    <option value="validated">Validated</option>
                   </select>
                 </label>
               </div>
@@ -3967,27 +4405,23 @@
 
     function initialAnnotationFilter() {
       const direct = window.localStorage.getItem("reasoningLab.annotationFilter");
-      if (["one_labelled", "both_labelled", "in_progress", "unreviewed", "all"].includes(direct)) return direct;
-      if (direct === "any_labelled") return "one_labelled";
-      if (direct === "reviewed" || direct === "labelled") return "one_labelled";
+      if (["validated", "needs_review", "in_progress", "unreviewed", "all"].includes(direct)) return direct;
+      if (direct === "ai_labelled") return "needs_review";
+      if (direct === "partially_reviewed") return "in_progress";
+      if (direct === "one_labelled") return "in_progress";
+      if (direct === "both_labelled") return "validated";
+      if (direct === "any_labelled") return "in_progress";
+      if (direct === "reviewed" || direct === "labelled") return "validated";
       if (direct === "started") return "in_progress";
       if (direct === "unlabelled") return "unreviewed";
       const legacyStatus = window.localStorage.getItem("reasoningLab.caseStatusFilter") || "";
       const legacyAnnotated = window.localStorage.getItem("reasoningLab.onlyAnnotated") === "1";
       if (legacyStatus === "unlabeled") return "unreviewed";
       if (legacyStatus === "in_progress") return "in_progress";
-      if (legacyAnnotated || ["reviewed", "any_labels"].includes(legacyStatus)) return "one_labelled";
+      if (legacyStatus === "needs_review") return "needs_review";
+      if (legacyAnnotated || legacyStatus === "any_labels") return "in_progress";
+      if (legacyStatus === "reviewed") return "validated";
       return "all";
-    }
-
-    function initialAiFilter() {
-      const direct = window.localStorage.getItem("reasoningLab.aiFilter");
-      if (["all", "has_ai", "needs_review", "reviewed_ai"].includes(direct)) return direct;
-      return {
-        ai_labelled: "has_ai",
-        pending_ai: "needs_review",
-        ai_reviewed: "reviewed_ai",
-      }[direct] || "all";
     }
 
     function normalizeCaseSortValue(value) {
@@ -4040,8 +4474,10 @@
       viewMode: window.localStorage.getItem("reasoningLab.viewMode") || "explorer",
       search: "",
       gradeFilter: window.localStorage.getItem("reasoningLab.gradeFilter") || "all",
-      annotationFilter: initialAnnotationFilter(),
-      aiFilter: initialAiFilter(),
+      annotationFilter: normalizeAnnotationFilterForView(
+        initialAnnotationFilter(),
+        window.localStorage.getItem("reasoningLab.viewMode") || "explorer",
+      ),
       caseSort: normalizeCaseSortValue(window.localStorage.getItem("reasoningLab.caseSort") || "recommended"),
       selectedDomainsByDataset: (() => {
         try {
@@ -4072,6 +4508,12 @@
       toast: null,
       compareOpen: initialCompareOpen(),
       aiLabelJobsByDocument: {},
+      selectedExplorerQuestionIdsByDataset: {},
+      lastExplorerSelectionQuestionIdByDataset: {},
+      pendingExplorerSelectionGesture: null,
+      activeAiRunId: "",
+      activeAiRunQuestionIdsByDataset: {},
+      activeAiRunQuestionOrderByDataset: {},
     };
 
     applyThemePreference(STATE.themePreference);
@@ -4098,6 +4540,7 @@
     const documentNoteSaveQueues = new Map();
     let selectionCaptureFrame = 0;
     let stageStickySyncFrame = 0;
+    let aiRunPollTimer = 0;
     function escapeHtml(value) {
       return String(value ?? "")
         .replace(/&/g, "&amp;")
@@ -4634,7 +5077,9 @@
 
     function setViewMode(mode) {
       STATE.viewMode = ["explorer", "review", "label"].includes(mode) ? mode : "explorer";
+      STATE.annotationFilter = normalizeAnnotationFilterForView(STATE.annotationFilter, STATE.viewMode);
       window.localStorage.setItem("reasoningLab.viewMode", STATE.viewMode);
+      window.localStorage.setItem("reasoningLab.annotationFilter", STATE.annotationFilter);
     }
 
     function setGradeFilter(value) {
@@ -4644,23 +5089,17 @@
 
     function setAnnotationFilter(value) {
       const normalized = {
-        labelled: "one_labelled",
-        any_labelled: "one_labelled",
+        labelled: "validated",
+        any_labelled: "in_progress",
         started: "in_progress",
         unlabelled: "unreviewed",
+        ai_labelled: "needs_review",
+        partially_reviewed: "in_progress",
+        one_labelled: "in_progress",
+        both_labelled: "validated",
       }[value] || value || "all";
-      STATE.annotationFilter = normalized;
+      STATE.annotationFilter = normalizeAnnotationFilterForView(normalized, STATE.viewMode);
       window.localStorage.setItem("reasoningLab.annotationFilter", STATE.annotationFilter);
-    }
-
-    function setAiFilter(value) {
-      const normalized = {
-        ai_labelled: "has_ai",
-        pending_ai: "needs_review",
-        ai_reviewed: "reviewed_ai",
-      }[value] || value || "all";
-      STATE.aiFilter = normalized;
-      window.localStorage.setItem("reasoningLab.aiFilter", STATE.aiFilter);
     }
 
     function setCaseSort(value) {
@@ -4765,7 +5204,7 @@
 
     function selectedDomainsForCurrentView() {
       const selected = selectedDomainsForCurrentDataset();
-      if (STATE.viewMode === "explorer") return selected;
+      if (STATE.viewMode === "explorer" || STATE.viewMode === "review") return selected;
       return Array.isArray(selected) && selected.length === 1 ? selected : null;
     }
 
@@ -4791,7 +5230,6 @@
       STATE.search = "";
       setGradeFilter("all");
       setAnnotationFilter("all");
-      setAiFilter("all");
       setCaseSort("recommended");
       setSelectedDomainsForCurrentDataset(null);
     }
@@ -4805,6 +5243,30 @@
       if (selected.length === 1) return selected[0];
       if (selected.length === 2) return selected.join(", ");
       return `${selected.length} domains`;
+    }
+
+    function populateDomainMultiSelect(summaryElement, listElement) {
+      if (!(summaryElement instanceof Element) || !(listElement instanceof Element)) return;
+      const available = availableDomains();
+      const selected = selectedDomainsForCurrentDataset();
+      const selectedSet = new Set(selected || []);
+      summaryElement.textContent = domainSummaryText();
+      listElement.innerHTML = available.length
+        ? available.map((domain) => `
+          <div class="multi-select-option">
+            <label class="multi-select-choice">
+              <input
+                type="checkbox"
+                data-domain-filter="${escapeAttribute(domain)}"
+                ${selected === null || selectedSet.has(domain) ? "checked" : ""}
+              >
+              <span>${escapeHtml(domain)}</span>
+            </label>
+            <button class="multi-select-only" type="button" data-domain-only="${escapeAttribute(domain)}">Only</button>
+          </div>
+        `).join("")
+        : `<div class="panel-subtitle">No domains available.</div>`;
+      bindOnlyDomainButtons(listElement);
     }
 
     function categories() {
@@ -4935,7 +5397,7 @@
         return {
           key: "ai_labelled",
           label: "AI labelled",
-          tone: "violet",
+          tone: "blue",
           rank: 1,
         };
       }
@@ -4964,21 +5426,30 @@
           hasAnyAi: false,
           hasPendingAiReview: false,
           hasReviewedAi: false,
+          aiCount: 0,
+          pendingCount: 0,
+          reviewedCount: 0,
+          humanAddedCount: 0,
         };
       }
-      const sourceKeys = sourceKeysForDataset(datasetKey);
-      const reviewStates = sourceKeys.map((sourceKey) => {
-        const source = sourceForKey(sourceKey);
-        const sourceCase = sourceKey === STATE.sourceKey
-          ? caseRow
-          : caseForKeys(sourceKey, datasetKey, questionId);
-        if (!source || !sourceCase) return null;
-        const documentId = caseDocumentId(sourceCase, source);
-        return documentId ? documentReviewState(documentId) : null;
-      }).filter(Boolean);
+      const reviewStates = orderedSourcesForDataset(datasetKey)
+        .slice(0, 2)
+        .map((source) => {
+          const sourceKey = String(source?.key || "");
+          const sourceCase = sourceKey === STATE.sourceKey
+            ? caseRow
+            : caseForKeys(sourceKey, datasetKey, questionId);
+          if (!source || !sourceCase) return null;
+          const documentId = caseDocumentId(sourceCase, source);
+          return documentId ? documentReviewState(documentId) : null;
+        }).filter(Boolean);
       const hasAnyAi = reviewStates.some((state) => state.hasAnyAi);
       const hasPendingAiReview = reviewStates.some((state) => state.hasPendingAiReview);
-      const hasReviewedAi = reviewStates.some((state) => state.hasAnyAi && !state.hasPendingAiReview && state.hasHumanReviewed);
+      const hasReviewedAi = reviewStates.some((state) => state.hasReviewedAi || state.humanAddedItems?.length);
+      const aiCount = reviewStates.reduce((sum, state) => sum + Number(state.aiItems?.length || 0), 0);
+      const pendingCount = reviewStates.reduce((sum, state) => sum + Number(state.pendingAiItems?.length || 0), 0);
+      const reviewedCount = reviewStates.reduce((sum, state) => sum + Number(state.reviewedAiItems?.length || 0), 0);
+      const humanAddedCount = reviewStates.reduce((sum, state) => sum + Number(state.humanAddedItems?.length || 0), 0);
       if (!hasAnyAi) {
         return {
           key: "none",
@@ -4986,6 +5457,23 @@
           hasAnyAi,
           hasPendingAiReview,
           hasReviewedAi,
+          aiCount,
+          pendingCount,
+          reviewedCount,
+          humanAddedCount,
+        };
+      }
+      if (hasPendingAiReview && (reviewedCount || humanAddedCount)) {
+        return {
+          key: "partially_reviewed",
+          label: "Partially reviewed",
+          hasAnyAi,
+          hasPendingAiReview,
+          hasReviewedAi,
+          aiCount,
+          pendingCount,
+          reviewedCount,
+          humanAddedCount,
         };
       }
       if (hasPendingAiReview) {
@@ -4995,6 +5483,10 @@
           hasAnyAi,
           hasPendingAiReview,
           hasReviewedAi,
+          aiCount,
+          pendingCount,
+          reviewedCount,
+          humanAddedCount,
         };
       }
       return {
@@ -5003,6 +5495,116 @@
         hasAnyAi,
         hasPendingAiReview,
         hasReviewedAi,
+        aiCount,
+        pendingCount,
+        reviewedCount,
+        humanAddedCount,
+      };
+    }
+
+    function caseWorkflowFilterMeta(caseRow, datasetKey = STATE.datasetKey) {
+      const progress = caseCombinedProgressMeta(caseRow, datasetKey);
+      const aiReview = caseAiReviewMeta(caseRow, datasetKey);
+      const isValidated = !aiReview.hasPendingAiReview && !["unreviewed", "in_progress"].includes(progress.key);
+
+      if (progress.key === "unreviewed") {
+        return {
+          key: "unreviewed",
+          label: "Not labelled",
+          tone: "slate",
+          rank: 0,
+        };
+      }
+
+      if (isValidated) {
+        return {
+          key: "validated",
+          label: "Validated",
+          tone: "green",
+          rank: 3,
+        };
+      }
+
+      if (aiReview.key === "partially_reviewed" || ["one_labelled", "in_progress"].includes(progress.key)) {
+        return {
+          key: "in_progress",
+          label: "In progress",
+          tone: "amber",
+          rank: 2,
+        };
+      }
+
+      if (aiReview.hasPendingAiReview) {
+        return {
+          key: "needs_review",
+          label: "Needs review",
+          tone: "blue",
+          rank: 1,
+        };
+      }
+
+      return {
+        key: "in_progress",
+        label: "In progress",
+        tone: "amber",
+        rank: 2,
+      };
+    }
+
+    function workflowFilterOptionLabel(key) {
+      return {
+        all: "All",
+        unreviewed: "Not labelled",
+        in_progress: "In progress",
+        needs_review: "Needs review",
+        validated: "Validated",
+      }[key] || "All";
+    }
+
+    function workflowFilterOptionKeysForView(viewMode = STATE.viewMode) {
+      return viewMode === "review"
+        ? ["all", "needs_review", "in_progress", "validated"]
+        : ["all", "unreviewed", "needs_review", "in_progress", "validated"];
+    }
+
+    function normalizeAnnotationFilterForView(value, viewMode = STATE.viewMode) {
+      const normalized = String(value || "all").trim() || "all";
+      return workflowFilterOptionKeysForView(viewMode).includes(normalized) ? normalized : "all";
+    }
+
+    function renderAnnotationFilterOptions(viewMode = STATE.viewMode) {
+      return workflowFilterOptionKeysForView(viewMode).map((key) => (
+        `<option value="${escapeAttribute(key)}">${escapeHtml(workflowFilterOptionLabel(key))}</option>`
+      )).join("");
+    }
+
+    function syncAnnotationFilterSelect(select, viewMode = STATE.viewMode) {
+      if (!select) return;
+      const normalized = normalizeAnnotationFilterForView(STATE.annotationFilter, viewMode);
+      select.innerHTML = renderAnnotationFilterOptions(viewMode);
+      select.value = normalized;
+    }
+
+    function datasetWorkflowStats(dataset = currentDataset()) {
+      const rows = dataset?.cases || [];
+      const total = Number(dataset?.case_count) || rows.length || 0;
+      const counts = {
+        unreviewed: 0,
+        needs_review: 0,
+        in_progress: 0,
+        validated: 0,
+      };
+      rows.forEach((caseRow) => {
+        const workflow = caseWorkflowFilterMeta(caseRow, dataset?.key || STATE.datasetKey);
+        counts[workflow.key] = (counts[workflow.key] || 0) + 1;
+      });
+      const percentFor = (key) => (
+        total ? Math.round(((counts[key] || 0) / total) * 100) : 0
+      );
+      return {
+        total,
+        counts,
+        percentFor,
       };
     }
 
@@ -5037,43 +5639,32 @@
       const dataset = currentDataset();
       if (!dataset) return [];
       const useSearchFilter = STATE.viewMode === "explorer" || STATE.viewMode === "review";
-      const useLabellingFilters = STATE.viewMode === "explorer" || STATE.viewMode === "label";
+      const useLabellingFilters = STATE.viewMode === "explorer" || STATE.viewMode === "label" || STATE.viewMode === "review";
       const query = useSearchFilter ? STATE.search.trim().toLowerCase() : "";
       const selectedDomainList = selectedDomainsForCurrentView();
       const selectedDomains = new Set(selectedDomainList || []);
-      const datasetHasAiCases = (dataset.cases || []).some(
-        (caseRow) => caseAiReviewMeta(caseRow, dataset.key || STATE.datasetKey).hasAnyAi,
-      );
+      const trackedAiRunQuestionIds = STATE.viewMode === "explorer" && hasActiveAiRunForDataset(dataset.key || STATE.datasetKey)
+        ? activeAiRunQuestionIdSetForDataset(dataset.key || STATE.datasetKey)
+        : new Set();
       return dataset.cases.filter((caseRow) => {
         const primary = primaryVariant(caseRow);
         const progress = caseCombinedProgressMeta(caseRow, dataset.key || STATE.datasetKey);
         const aiReview = caseAiReviewMeta(caseRow, dataset.key || STATE.datasetKey);
+        const workflow = caseWorkflowFilterMeta(caseRow, dataset.key || STATE.datasetKey);
         const reviewEntries = STATE.viewMode === "review"
           ? reviewEntriesForCase(caseRow, dataset.key || STATE.datasetKey)
           : [];
         if (STATE.viewMode === "review" && progress.key === "unreviewed") {
           return false;
         }
-        if (STATE.viewMode === "explorer" && STATE.gradeFilter !== "all") {
+        if ((STATE.viewMode === "explorer" || STATE.viewMode === "review") && STATE.gradeFilter !== "all") {
           const caseVerdict = verdictKey(primary?.consensus_score);
           if (caseVerdict !== STATE.gradeFilter) return false;
         }
-        if (useLabellingFilters && STATE.annotationFilter !== "all") {
-          if (STATE.annotationFilter === "one_labelled") {
-            if (progress.key !== "one_labelled") return false;
-          } else if (STATE.annotationFilter === "in_progress") {
-            if (!["in_progress", "ai_labelled"].includes(progress.key)) return false;
-          } else if (progress.key !== STATE.annotationFilter) {
+        const preserveActiveRunRow = trackedAiRunQuestionIds.has(String(caseRow?.question_id || ""));
+        if (useLabellingFilters && STATE.annotationFilter !== "all" && !preserveActiveRunRow) {
+          if (workflow.key !== STATE.annotationFilter) {
             return false;
-          }
-        }
-        if (useLabellingFilters && datasetHasAiCases && STATE.aiFilter !== "all") {
-          if (STATE.aiFilter === "has_ai") {
-            if (!aiReview.hasAnyAi) return false;
-          } else if (STATE.aiFilter === "needs_review") {
-            if (!aiReview.hasPendingAiReview) return false;
-          } else if (STATE.aiFilter === "reviewed_ai") {
-            if (!aiReview.hasReviewedAi) return false;
           }
         }
         if (selectedDomainList !== null && !selectedDomains.has(caseDomainLabel(caseRow))) return false;
@@ -5115,6 +5706,10 @@
 
     function sortReviewCases(rows) {
       return [...rows].sort((left, right) => {
+        const leftWorkflow = caseWorkflowFilterMeta(left);
+        const rightWorkflow = caseWorkflowFilterMeta(right);
+        const leftAiReview = caseAiReviewMeta(left);
+        const rightAiReview = caseAiReviewMeta(right);
         const leftEntries = reviewEntriesForCase(left);
         const rightEntries = reviewEntriesForCase(right);
         const leftLabelledCount = leftEntries.filter((item) => item.progress?.key !== "unreviewed").length;
@@ -5129,6 +5724,10 @@
         const rightGradeGap = rightEntries.length >= 2
           ? Math.abs(gradeRank(rightEntries[0].variant?.consensus_score) - gradeRank(rightEntries[1].variant?.consensus_score))
           : -1;
+        const workflowDiff = rightWorkflow.rank - leftWorkflow.rank;
+        if (workflowDiff) return workflowDiff;
+        const pendingDiff = (rightAiReview.pendingCount || 0) - (leftAiReview.pendingCount || 0);
+        if (pendingDiff) return pendingDiff;
         const labelledDiff = rightLabelledCount - leftLabelledCount;
         if (labelledDiff) return labelledDiff;
         const disagreementDiff = rightDisagreement - leftDisagreement;
@@ -5145,6 +5744,24 @@
       }
       const items = [...rows];
       const sortKey = normalizeCaseSortValue(STATE.caseSort);
+      const trackedOrder = sortKey === "recommended" && STATE.viewMode === "explorer" && hasActiveAiRunForDataset(STATE.datasetKey)
+        ? activeAiRunQuestionOrderForDataset(STATE.datasetKey)
+        : null;
+      if (trackedOrder && Object.keys(trackedOrder).length) {
+        items.sort((left, right) => {
+          const leftQuestionId = String(left?.question_id || "");
+          const rightQuestionId = String(right?.question_id || "");
+          const leftIndex = trackedOrder[leftQuestionId];
+          const rightIndex = trackedOrder[rightQuestionId];
+          const leftTracked = Number.isFinite(leftIndex);
+          const rightTracked = Number.isFinite(rightIndex);
+          if (leftTracked && rightTracked) return leftIndex - rightIndex;
+          if (leftTracked) return -1;
+          if (rightTracked) return 1;
+          return leftQuestionId.localeCompare(rightQuestionId);
+        });
+        return items;
+      }
       const primarySource = currentSource();
       const compareSourceKey = alternateSourceKeyForDataset(STATE.datasetKey);
       const compareSource = compareSourceKey ? sourceForKey(compareSourceKey) : null;
@@ -5432,6 +6049,145 @@
       };
     }
 
+    function selectedExplorerQuestionIdsForCurrentDataset() {
+      const stored = STATE.selectedExplorerQuestionIdsByDataset?.[STATE.datasetKey];
+      return Array.isArray(stored) ? stored : [];
+    }
+
+    function setSelectedExplorerQuestionIdsForCurrentDataset(questionIds) {
+      const normalized = [...new Set(
+        (questionIds || [])
+          .map((questionId) => String(questionId || "").trim())
+          .filter(Boolean),
+      )];
+      STATE.selectedExplorerQuestionIdsByDataset = {
+        ...(STATE.selectedExplorerQuestionIdsByDataset || {}),
+        [STATE.datasetKey]: normalized,
+      };
+    }
+
+    function selectedExplorerQuestionSetForCurrentDataset() {
+      return new Set(selectedExplorerQuestionIdsForCurrentDataset());
+    }
+
+    function clearSelectedExplorerQuestionsForCurrentDataset() {
+      setSelectedExplorerQuestionIdsForCurrentDataset([]);
+    }
+
+    function lastExplorerSelectionQuestionIdForCurrentDataset() {
+      return String(STATE.lastExplorerSelectionQuestionIdByDataset?.[STATE.datasetKey] || "").trim();
+    }
+
+    function setLastExplorerSelectionQuestionIdForCurrentDataset(questionId) {
+      const normalizedQuestionId = String(questionId || "").trim();
+      STATE.lastExplorerSelectionQuestionIdByDataset = {
+        ...(STATE.lastExplorerSelectionQuestionIdByDataset || {}),
+        [STATE.datasetKey]: normalizedQuestionId,
+      };
+    }
+
+    function setExplorerQuestionSelected(questionId, selected) {
+      const next = selectedExplorerQuestionSetForCurrentDataset();
+      const normalizedQuestionId = String(questionId || "").trim();
+      if (!normalizedQuestionId) return;
+      if (selected) {
+        next.add(normalizedQuestionId);
+      } else {
+        next.delete(normalizedQuestionId);
+      }
+      setSelectedExplorerQuestionIdsForCurrentDataset([...next]);
+    }
+
+    function setExplorerQuestionRangeSelected(startQuestionId, endQuestionId, selected, rows = sortCases(filteredCases())) {
+      const normalizedStart = String(startQuestionId || "").trim();
+      const normalizedEnd = String(endQuestionId || "").trim();
+      if (!normalizedStart || !normalizedEnd) return;
+      const visibleQuestionIds = (rows || [])
+        .map((caseRow) => String(caseRow?.question_id || "").trim())
+        .filter(Boolean);
+      const startIndex = visibleQuestionIds.indexOf(normalizedStart);
+      const endIndex = visibleQuestionIds.indexOf(normalizedEnd);
+      if (startIndex === -1 || endIndex === -1) {
+        setExplorerQuestionSelected(normalizedEnd, selected);
+        return;
+      }
+      const [rangeStart, rangeEnd] = startIndex <= endIndex
+        ? [startIndex, endIndex]
+        : [endIndex, startIndex];
+      const next = selectedExplorerQuestionSetForCurrentDataset();
+      visibleQuestionIds.slice(rangeStart, rangeEnd + 1).forEach((questionId) => {
+        if (selected) {
+          next.add(questionId);
+        } else {
+          next.delete(questionId);
+        }
+      });
+      setSelectedExplorerQuestionIdsForCurrentDataset([...next]);
+    }
+
+    function runTargetDocumentsForCase(caseRow, datasetKey = STATE.datasetKey) {
+      if (!caseRow?.question_id) return [];
+      return orderedSourcesForDataset(datasetKey)
+        .slice(0, 2)
+        .map((source) => {
+          const sourceCase = source?.key === STATE.sourceKey
+            ? caseRow
+            : caseForKeys(source?.key, datasetKey, caseRow.question_id);
+          const document = sourceCase ? reasonDocument(sourceCase, source) : null;
+          return document?.document_id ? {
+            documentId: String(document.document_id),
+            questionId: String(caseRow.question_id || ""),
+            sourceKey: String(source?.key || ""),
+          } : null;
+        })
+        .filter(Boolean);
+    }
+
+    function selectedRunTargets(rows = currentDataset()?.cases || []) {
+      const selectedQuestionIds = selectedExplorerQuestionSetForCurrentDataset();
+      if (!selectedQuestionIds.size) return [];
+      const targets = [];
+      rows.forEach((caseRow) => {
+        if (!selectedQuestionIds.has(String(caseRow?.question_id || ""))) return;
+        targets.push(...runTargetDocumentsForCase(caseRow, STATE.datasetKey));
+      });
+      const seenDocumentIds = new Set();
+      return targets.filter((target) => {
+        const documentId = String(target?.documentId || "");
+        if (!documentId || seenDocumentIds.has(documentId)) return false;
+        seenDocumentIds.add(documentId);
+        return true;
+      });
+    }
+
+    function selectedRunDocumentIds(rows = currentDataset()?.cases || []) {
+      return selectedRunTargets(rows).map((target) => target.documentId);
+    }
+
+    function recordIsHumanAdded(record) {
+      if (!record) return false;
+      return (
+        !recordIsAiLabelled(record)
+        && recordIsHumanReviewed(record)
+        && String(record.review_origin || "").trim() === "human_addition"
+        && Boolean(String(record.review_session_id || "").trim())
+      );
+    }
+
+    function renderStatusPill(label, tone) {
+      return `<span class="status-pill ${escapeHtml(tone || "")}">${escapeHtml(label || "")}</span>`;
+    }
+
+    function renderExplorerRunStatusPill(meta) {
+      if (!meta?.active || !meta?.label) return "";
+      return `
+        <span class="status-pill ${escapeHtml(meta.tone || "")} explorer-run-status" title="${escapeAttribute(meta.title || meta.label)}">
+          <span class="run-status-dot" aria-hidden="true"></span>
+          ${escapeHtml(meta.label)}
+        </span>
+      `;
+    }
+
     function renderUiIcon(name) {
       const icons = {
         sparkles: `
@@ -5547,19 +6303,21 @@
       const reviewEvents = reviewEventsForDocument(documentId, sessionIds);
       const aiItems = items.filter((item) => recordIsAiLabelled(item));
       const humanReviewedItems = items.filter((item) => recordIsHumanReviewed(item));
-      const hasHumanReviewActivity = humanReviewedItems.length > 0 || reviewEvents.length > 0;
-      const pendingAiItems = hasHumanReviewActivity
-        ? []
-        : aiItems.filter((item) => !recordIsHumanReviewed(item));
+      const reviewedAiItems = aiItems.filter((item) => recordIsHumanReviewed(item));
+      const humanAddedItems = items.filter((item) => recordIsHumanAdded(item));
+      const pendingAiItems = aiItems.filter((item) => !recordIsHumanReviewed(item));
       return {
         note,
         items,
         aiItems,
         humanReviewedItems,
+        reviewedAiItems,
+        humanAddedItems,
         reviewEvents,
         pendingAiItems,
         hasAnyAi: aiItems.length > 0,
-        hasHumanReviewed: hasHumanReviewActivity,
+        hasHumanReviewed: reviewedAiItems.length > 0 || humanAddedItems.length > 0 || reviewEvents.length > 0,
+        hasReviewedAi: reviewedAiItems.length > 0,
         hasPendingAiReview: pendingAiItems.length > 0,
       };
     }
@@ -5568,12 +6326,15 @@
       if (!record) return "";
       const badges = [];
       if (recordIsAiLabelled(record)) {
-        badges.push(renderIconBadge("ai", "AI labelled", "sparkles"));
-      }
-      if (recordIsHumanReviewed(record)) {
-        badges.push(renderIconBadge("reviewed", "Reviewed by human", "review"));
-      } else if (recordIsAiLabelled(record)) {
-        badges.push(renderIconBadge("pending", "Needs human review", "pending"));
+        badges.push(renderStatusPill("AI", "ai"));
+        badges.push(
+          renderStatusPill(
+            recordIsHumanReviewed(record) ? "Reviewed" : "Pending review",
+            recordIsHumanReviewed(record) ? "reviewed" : "pending",
+          ),
+        );
+      } else if (recordIsHumanAdded(record)) {
+        badges.push(renderStatusPill("Human added", "human"));
       }
       return badges.join("");
     }
@@ -5581,14 +6342,10 @@
     function renderDocumentStatusBadges(documentId) {
       const reviewState = documentReviewState(documentId);
       const badges = [];
-      if (reviewState.hasAnyAi) {
-        badges.push(renderIconBadge("ai", "AI labelled", "sparkles"));
-      }
-      if (reviewState.hasPendingAiReview) {
-        badges.push(renderIconBadge("pending", "Needs human review", "pending"));
-      } else if (reviewState.hasAnyAi && reviewState.hasHumanReviewed) {
-        badges.push(renderIconBadge("reviewed", "Reviewed by human", "review"));
-      }
+      if (reviewState.aiItems.length) badges.push(renderStatusPill(`AI ${reviewState.aiItems.length}`, "ai"));
+      if (reviewState.pendingAiItems.length) badges.push(renderStatusPill(`Pending ${reviewState.pendingAiItems.length}`, "pending"));
+      if (reviewState.reviewedAiItems.length) badges.push(renderStatusPill(`Reviewed ${reviewState.reviewedAiItems.length}`, "reviewed"));
+      if (reviewState.humanAddedItems.length) badges.push(renderStatusPill(`Added ${reviewState.humanAddedItems.length}`, "human"));
       return badges.join("");
     }
 
@@ -5751,7 +6508,7 @@
         return {
           key: "ai_labelled",
           label: "AI labelled",
-          tone: "violet",
+          tone: "blue",
           rank: 1,
           hasPendingAiReview: true,
           hasReviewWork: true,
@@ -6421,51 +7178,181 @@
       if (!dataset) return;
       const available = availableDomains();
       const selectedDomainList = selectedDomainsForCurrentDataset();
-      const selectedDomains = new Set(selectedDomainList || []);
       const allCases = dataset.cases || [];
-      const benchmarkCaseCount = Number(dataset.case_count) || allCases.length || 0;
-      const combinedStatuses = allCases.map((caseRow) => caseCombinedProgressMeta(caseRow, dataset.key || STATE.datasetKey));
-      const aiStatuses = allCases.map((caseRow) => caseAiReviewMeta(caseRow, dataset.key || STATE.datasetKey));
-      const startedCount = combinedStatuses.filter((item) => ["in_progress", "ai_labelled"].includes(item.key)).length;
-      const bothLabelledCount = combinedStatuses.filter((item) => item.key === "both_labelled").length;
-      const oneLabelledCount = combinedStatuses.filter((item) => item.key === "one_labelled").length;
-      const aiLabelledCount = aiStatuses.filter((item) => item.hasAnyAi).length;
-      const aiNeedsReviewCount = aiStatuses.filter((item) => item.hasPendingAiReview).length;
-      const aiReviewedCount = aiStatuses.filter((item) => item.hasReviewedAi).length;
-      const showAiFilters = aiLabelledCount > 0;
-      const labelledCount = oneLabelledCount + bothLabelledCount;
-      const startedCoverage = `${startedCount}/${benchmarkCaseCount}`;
-      const oneLabelledCoverage = `${oneLabelledCount}/${benchmarkCaseCount}`;
-      const bothLabelledCoverage = `${bothLabelledCount}/${benchmarkCaseCount}`;
-      const aiLabelledCoverage = `${aiLabelledCount}/${benchmarkCaseCount}`;
-      const aiNeedsReviewCoverage = `${aiNeedsReviewCount}/${benchmarkCaseCount}`;
-      const aiReviewedCoverage = `${aiReviewedCount}/${benchmarkCaseCount}`;
-      const labelledCoverage = `${labelledCount}/${benchmarkCaseCount}`;
-      const labelledProgress = benchmarkCaseCount
-        ? Math.max(0, Math.min(100, (labelledCount / benchmarkCaseCount) * 100))
-        : 0;
+      const selectedTargets = selectedRunTargets(rows);
+      const aiMeta = aiLabellingMeta();
+      const latestRun = currentOrLatestAiRun();
+      const activeRun = aiLabelRuns()
+        .filter((run) => ["queued", "running"].includes(String(run?.status || "")))
+        .sort((left, right) => {
+          const leftTime = Date.parse(String(left?.created_at_utc || "")) || 0;
+          const rightTime = Date.parse(String(right?.created_at_utc || "")) || 0;
+          return rightTime - leftTime;
+        })[0] || null;
+      const workflowStats = datasetWorkflowStats(dataset);
+      const benchmarkCaseCount = workflowStats.total;
+      const validatedCount = workflowStats.counts.validated;
+      const inProgressCount = workflowStats.counts.in_progress;
+      const needsReviewCount = workflowStats.counts.needs_review;
+      const notLabelledCount = workflowStats.counts.unreviewed;
+      const validatedPercent = workflowStats.percentFor("validated");
+      const inProgressPercent = workflowStats.percentFor("in_progress");
+      const needsReviewPercent = workflowStats.percentFor("needs_review");
+      const notLabelledPercent = workflowStats.percentFor("unreviewed");
+      const workflowSummary = [
+        [validatedCount, "validated"],
+        [inProgressCount, "in progress"],
+        [needsReviewCount, "need review"],
+        [notLabelledCount, "not labelled"],
+      ].filter(([count]) => count > 0 || benchmarkCaseCount === 0)
+        .map(([count, label]) => `${count} ${label}`);
       const isReviewMode = STATE.viewMode === "review";
       const searchField = el.searchInput?.closest("label.field");
       const gradeField = el.gradeFilterSelect?.closest("label.field");
       const annotationField = el.annotationFilterSelect?.closest("label.field");
-      const filterActions = el.resetFiltersBtn?.closest(".filter-actions");
+      const filterActions = el.labelSelectedAiBtn?.closest(".filter-actions");
       if (el.filterPanel) {
         el.filterPanel.classList.toggle("review-mode", isReviewMode);
       }
       if (searchField) searchField.hidden = isReviewMode;
       if (gradeField) gradeField.hidden = isReviewMode;
       if (annotationField) annotationField.hidden = isReviewMode;
-      if (el.aiFilterField) el.aiFilterField.hidden = isReviewMode || !showAiFilters;
-      if (el.resetFiltersBtn) el.resetFiltersBtn.hidden = isReviewMode;
       if (filterActions) filterActions.hidden = isReviewMode;
+      if (el.labelSelectedAiBtn) {
+        el.labelSelectedAiBtn.hidden = isReviewMode || !aiMeta.enabled;
+        el.labelSelectedAiBtn.disabled = !selectedTargets.length;
+        el.labelSelectedAiBtn.innerHTML = `
+          <span class="btn-icon-label">
+            ${renderUiIcon("sparkles")}
+            <span>AI Label</span>
+          </span>
+        `;
+        const hoverParts = selectedTargets.length
+          ? [`Run AI labelling for ${selectedTargets.length} selected trace${selectedTargets.length === 1 ? "" : "s"}.`]
+          : ["Select question rows in the table to run AI labelling. Use the header checkbox to select all visible rows."];
+        hoverParts.push(`Workflow: ${workflowSummary.join(", ")}.`);
+        if (latestRun) {
+          const runIsActive = ["queued", "running"].includes(String(latestRun.status || ""));
+          const latestRunRows = runRowsForAiRun(latestRun, allCases);
+          const latestRunPendingCount = latestRunRows.filter(
+            (caseRow) => ["needs_review", "in_progress"].includes(caseWorkflowFilterMeta(caseRow, dataset.key || STATE.datasetKey).key),
+          ).length;
+          if (runIsActive) {
+            hoverParts.push(`Current run: ${latestRun.applied_count || 0} applied, ${latestRun.failed_count || 0} failed, ${latestRun.queued_count || 0} queued.`);
+          } else if (latestRunPendingCount) {
+            hoverParts.push(`${latestRunPendingCount} case${latestRunPendingCount === 1 ? "" : "s"} from the latest run still need review.`);
+          }
+        }
+        el.labelSelectedAiBtn.title = hoverParts.join(" ");
+      }
+      if (el.aiInlineStatus) {
+        if (isReviewMode || !aiMeta.enabled || !activeRun) {
+          el.aiInlineStatus.hidden = true;
+          el.aiInlineStatus.innerHTML = "";
+        } else {
+          const activeRunTotal = Number(activeRun?.total_count || 0);
+          const activeRunApplied = Number(activeRun?.applied_count || 0);
+          const activeRunQueued = Number(activeRun?.queued_count || 0);
+          const activeRunFailed = Number(activeRun?.failed_count || 0);
+          const activeRunRunning = activeRun
+            ? Math.max(0, activeRunTotal - activeRunApplied - activeRunQueued - activeRunFailed)
+            : 0;
+          const activeRunSettled = activeRun
+            ? Math.max(0, activeRunApplied + activeRunFailed)
+            : 0;
+          const activeSummary = activeRunRunning
+            ? `${activeRunRunning} running`
+            : activeRunQueued
+              ? `${activeRunQueued} queued`
+              : activeRunSettled < activeRunTotal
+                ? `${Math.max(0, activeRunTotal - activeRunSettled)} working`
+                : "finishing";
+          const statusTitle = `AI run in progress: ${activeRunApplied} applied, ${activeRunRunning} running, ${activeRunQueued} queued, ${activeRunFailed} failed.`;
+          el.aiInlineStatus.hidden = false;
+          el.aiInlineStatus.title = statusTitle;
+          el.aiInlineStatus.innerHTML = `
+            <span class="ai-inline-status-dot" aria-hidden="true"></span>
+            <strong>${escapeHtml(activeSummary)}</strong>
+          `;
+        }
+      }
       if (el.appbarCoverage) {
+        const coverageTitle = `${workflowSummary.join(", ")}.`;
+        const workflowPalette = {
+          validated: "validated",
+          in_progress: "active",
+          needs_review: "review",
+          unreviewed: "unreviewed",
+        };
+        const statusEntries = [
+          ["validated", "Validated", validatedCount, validatedPercent],
+          ["in_progress", "In progress", inProgressCount, inProgressPercent],
+          ["needs_review", "Needs review", needsReviewCount, needsReviewPercent],
+          ["unreviewed", "Not labelled", notLabelledCount, notLabelledPercent],
+        ];
+        let segmentOffset = 0;
+        const coverageSegments = statusEntries
+          .filter(([, , count]) => count > 0)
+          .map(([key, , , percent]) => {
+            const left = segmentOffset;
+            segmentOffset += percent;
+            return `<span class="coverage-meter-fill is-${escapeAttribute(String(key))}" style="left:${escapeAttribute(left.toFixed(1))}%;width:${escapeAttribute(percent.toFixed(1))}%"></span>`;
+          }).join("");
+        let donutOffset = 0;
+        const donutStops = statusEntries
+          .filter(([, , count]) => count > 0)
+          .map(([key, , , percent]) => {
+            const start = donutOffset;
+            donutOffset += percent;
+            const paletteKey = workflowPalette[key] || "unreviewed";
+            return `var(--workflow-${paletteKey}-fill-start) ${start.toFixed(1)}% ${donutOffset.toFixed(1)}%`;
+          });
+        const donutGradient = donutStops.length
+          ? `conic-gradient(${donutStops.join(", ")})`
+          : "conic-gradient(var(--workflow-unreviewed-fill-start) 0% 100%)";
+        const statusRows = statusEntries
+          .filter(([, , count]) => count > 0)
+          .map(([key, label, count, percent]) => (
+          `<div class="status-summary-row ${escapeAttribute(String(key))}${count > 0 ? "" : " is-empty"}">
+            <div class="status-summary-top">
+              <span class="status-summary-label">
+                <span class="status-summary-swatch" aria-hidden="true"></span>
+                <span>${escapeHtml(label)}</span>
+              </span>
+              <strong class="status-summary-metric">${escapeHtml(String(percent))}%</strong>
+            </div>
+          </div>`
+        )).join("");
         el.appbarCoverage.innerHTML = `
-          <div class="coverage-meter" style="--coverage-progress:${escapeAttribute(labelledProgress.toFixed(1))}%">
-            <span class="coverage-meter-label">Labelled</span>
-            <strong class="coverage-meter-value">${escapeHtml(labelledCoverage)}</strong>
-            <span class="coverage-meter-track" aria-hidden="true">
-              <span class="coverage-meter-fill"></span>
-            </span>
+          <div class="status-popover">
+            <button
+              class="status-trigger"
+              type="button"
+              aria-label="${escapeAttribute(`Show status breakdown for ${dataset.label || dataset.key || "benchmark"}`)}"
+              title="${escapeAttribute(coverageTitle)}"
+            >
+              <span class="status-trigger-label">Status</span>
+              <span class="coverage-meter-track" aria-hidden="true">
+                ${coverageSegments}
+              </span>
+              <span class="status-trigger-caret" aria-hidden="true"></span>
+            </button>
+            <div class="status-popover-panel" role="tooltip">
+              <div class="status-popover-head">
+                <div class="status-popover-copy">
+                  <span class="status-popover-kicker">${escapeHtml(dataset.label || dataset.key || "Benchmark")}</span>
+                  <span class="status-popover-title">Status</span>
+                  <span class="status-popover-note">${escapeHtml(`${benchmarkCaseCount} cases`)}</span>
+                </div>
+                <div class="status-donut" aria-hidden="true" style="background:${escapeAttribute(donutGradient)}">
+                  <div class="status-donut-hole">
+                    <strong>${escapeHtml(String(benchmarkCaseCount))}</strong>
+                    <span>cases</span>
+                  </div>
+                </div>
+              </div>
+              <div class="status-summary-list">${statusRows}</div>
+            </div>
           </div>
         `;
       }
@@ -6480,75 +7367,23 @@
         el.reviewSearchInput.placeholder = "Case id, note text, label...";
       }
       el.gradeFilterSelect.value = STATE.gradeFilter;
-      el.annotationFilterSelect.value = STATE.annotationFilter;
-      el.railAnnotationFilterSelect.value = STATE.annotationFilter;
-      if (el.railAiFilterField) el.railAiFilterField.hidden = !showAiFilters;
-      if (el.railStatusFilterRow) {
-        el.railStatusFilterRow.classList.toggle("ai-hidden", !showAiFilters);
+      if (el.reviewGradeFilterSelect) {
+        el.reviewGradeFilterSelect.value = STATE.gradeFilter;
       }
-      if (el.aiFilterSelect) {
-        el.aiFilterSelect.value = showAiFilters ? STATE.aiFilter : "all";
+      syncAnnotationFilterSelect(el.annotationFilterSelect, "explorer");
+      syncAnnotationFilterSelect(el.railAnnotationFilterSelect, "label");
+      syncAnnotationFilterSelect(el.reviewAnnotationFilterSelect, "review");
+      if (el.filterMeta) {
+        el.filterMeta.hidden = true;
+        el.filterMeta.textContent = "";
       }
-      if (el.railAiFilterSelect) {
-        el.railAiFilterSelect.value = showAiFilters ? STATE.aiFilter : "all";
-      }
-      if (el.openNextUnlabeledBtn) {
-        el.openNextUnlabeledBtn.hidden = isReviewMode;
-      }
-      const filterMetaParts = isReviewMode
-        ? [`Showing ${rows.length} labelled pairs.`]
-        : [
-          `Showing ${rows.length} of ${benchmarkCaseCount} cases.`,
-          `Started: ${startedCoverage}.`,
-          `One labelled: ${oneLabelledCoverage}.`,
-          `Both labelled: ${bothLabelledCoverage}.`,
-        ];
-      if (!isReviewMode && showAiFilters) {
-        filterMetaParts.push(`AI labelled: ${aiLabelledCoverage}.`);
-        filterMetaParts.push(`Needs review: ${aiNeedsReviewCoverage}.`);
-        if (aiReviewedCount > 0) filterMetaParts.push(`Reviewed AI: ${aiReviewedCoverage}.`);
-      }
-      el.filterMeta.textContent = filterMetaParts.join(" ");
-      el.explorerSummary.innerHTML = isReviewMode ? "" : `
-        <div class="explorer-stat">
-          <strong>${escapeHtml(String(benchmarkCaseCount))}</strong>
-          <span>questions</span>
-        </div>
-        <div class="explorer-stat">
-          <strong>${escapeHtml(startedCoverage)}</strong>
-          <span>started</span>
-        </div>
-        <div class="explorer-stat">
-          <strong>${escapeHtml(oneLabelledCoverage)}</strong>
-          <span>one labelled</span>
-        </div>
-        <div class="explorer-stat">
-          <strong>${escapeHtml(bothLabelledCoverage)}</strong>
-          <span>both labelled</span>
-        </div>
-      `;
       el.domainFilterField.hidden = dataset.key !== "v2";
       el.railDomainFilterField.hidden = dataset.key !== "v2";
       if (el.reviewDomainFilterField) {
         el.reviewDomainFilterField.hidden = dataset.key !== "v2";
       }
-      el.domainFilterSummary.textContent = domainSummaryText();
-      el.domainFilterList.innerHTML = available.length
-        ? available.map((domain) => `
-          <div class="multi-select-option">
-            <label class="multi-select-choice">
-              <input
-                type="checkbox"
-                data-domain-filter="${escapeAttribute(domain)}"
-                ${selectedDomainList === null || selectedDomains.has(domain) ? "checked" : ""}
-              >
-              <span>${escapeHtml(domain)}</span>
-            </label>
-            <button class="multi-select-only" type="button" data-domain-only="${escapeAttribute(domain)}">Only</button>
-          </div>
-        `).join("")
-        : `<div class="panel-subtitle">No domains available.</div>`;
-      bindOnlyDomainButtons(el.domainFilterList);
+      populateDomainMultiSelect(el.domainFilterSummary, el.domainFilterList);
+      populateDomainMultiSelect(el.reviewDomainFilterSummary, el.reviewDomainFilterList);
       if (el.railDomainFilterSelect) {
         const railDomainValue = Array.isArray(selectedDomainList) && selectedDomainList.length === 1
           ? selectedDomainList[0]
@@ -6559,20 +7394,6 @@
         ].join("");
         el.railDomainFilterSelect.value = railDomainValue;
       }
-      if (el.reviewDomainFilterSelect) {
-        const reviewDomainValue = Array.isArray(selectedDomainList) && selectedDomainList.length === 1
-          ? selectedDomainList[0]
-          : "";
-        el.reviewDomainFilterSelect.innerHTML = [
-          `<option value="">All domains</option>`,
-          ...available.map((domain) => `<option value="${escapeAttribute(domain)}">${escapeHtml(domain)}</option>`),
-        ].join("");
-        el.reviewDomainFilterSelect.value = reviewDomainValue;
-      }
-      const nextCase = nextCaseToReview(rows);
-      el.openNextUnlabeledBtn.disabled = !nextCase;
-      el.openNextUnlabeledBtn.textContent = nextCase ? "Open next not labelled" : "Open next not labelled";
-      el.explorerMeta.textContent = `${rows.length} of ${benchmarkCaseCount} questions`;
     }
 
     function renderCaseRail(rows) {
@@ -6580,7 +7401,7 @@
       if (!dataset) return;
       el.caseMeta.textContent = `${rows.length} of ${dataset.case_count} cases`;
       el.caseList.innerHTML = rows.length ? rows.map((caseRow) => {
-        const progress = caseCombinedProgressMeta(caseRow, dataset.key || STATE.datasetKey);
+        const workflow = caseWorkflowFilterMeta(caseRow, dataset.key || STATE.datasetKey);
         return `
           <button class="case-card${caseRow.question_id === STATE.selectedCaseId ? " selected" : ""}" type="button" data-question-id="${escapeHtml(caseRow.question_id)}">
             <div class="case-top">
@@ -6589,7 +7410,7 @@
                   <span class="case-id">${escapeHtml(caseRow.question_id)}</span>
                   ${dataset.key === "v2" && caseDomainLabel(caseRow) ? `<span class="tag">${escapeHtml(caseDomainLabel(caseRow))}</span>` : ""}
                 </div>
-                <span class="pill ${escapeHtml(progress.tone)}">${escapeHtml(progress.label)}</span>
+                <span class="pill ${escapeHtml(workflow.tone)}">${escapeHtml(workflow.label)}</span>
               </div>
               ${renderCaseRailVerdictPills(caseRow, dataset.key)}
             </div>
@@ -6650,6 +7471,199 @@
       `;
     }
 
+    function aiLabelRuns() {
+      return currentStore()?.ai_label_runs || [];
+    }
+
+    function aiLabelRunItems() {
+      return currentStore()?.ai_label_run_items || [];
+    }
+
+    function activeAiRun() {
+      return aiLabelRuns()
+        .filter((run) => ["queued", "running"].includes(String(run?.status || "")))
+        .sort((left, right) => {
+          const leftTime = Date.parse(String(left?.created_at_utc || "")) || 0;
+          const rightTime = Date.parse(String(right?.created_at_utc || "")) || 0;
+          return rightTime - leftTime;
+        })[0] || null;
+    }
+
+    function activeAiRunQuestionIdsForDataset(datasetKey = STATE.datasetKey) {
+      return Array.isArray(STATE.activeAiRunQuestionIdsByDataset?.[datasetKey])
+        ? STATE.activeAiRunQuestionIdsByDataset[datasetKey]
+        : [];
+    }
+
+    function activeAiRunQuestionIdSetForDataset(datasetKey = STATE.datasetKey) {
+      return new Set(activeAiRunQuestionIdsForDataset(datasetKey));
+    }
+
+    function activeAiRunQuestionOrderForDataset(datasetKey = STATE.datasetKey) {
+      const order = STATE.activeAiRunQuestionOrderByDataset?.[datasetKey];
+      return order && typeof order === "object" ? order : null;
+    }
+
+    function hasActiveAiRunForDataset(datasetKey = STATE.datasetKey) {
+      const run = activeAiRun();
+      const normalizedDatasetKey = String(datasetKey || "").trim();
+      if (!run || !normalizedDatasetKey) return false;
+      const runId = String(run?.id || "").trim();
+      return aiLabelRunItems().some((item) => (
+        String(item?.run_id || "").trim() === runId
+        && String(item?.dataset_key || "").trim() === normalizedDatasetKey
+      ));
+    }
+
+    function setActiveAiRunExplorerSnapshot(datasetKey, questionIds = [], rows = []) {
+      const normalizedDatasetKey = String(datasetKey || "").trim();
+      if (!normalizedDatasetKey) return;
+      const normalizedQuestionIds = [...new Set(
+        (questionIds || []).map((value) => String(value || "").trim()).filter(Boolean),
+      )];
+      const order = {};
+      (rows || []).forEach((caseRow, index) => {
+        const questionId = String(caseRow?.question_id || "").trim();
+        if (!questionId) return;
+        order[questionId] = index;
+      });
+      STATE.activeAiRunQuestionIdsByDataset = {
+        ...(STATE.activeAiRunQuestionIdsByDataset || {}),
+        [normalizedDatasetKey]: normalizedQuestionIds,
+      };
+      STATE.activeAiRunQuestionOrderByDataset = {
+        ...(STATE.activeAiRunQuestionOrderByDataset || {}),
+        [normalizedDatasetKey]: order,
+      };
+    }
+
+    function clearActiveAiRunExplorerSnapshots() {
+      STATE.activeAiRunQuestionIdsByDataset = {};
+      STATE.activeAiRunQuestionOrderByDataset = {};
+    }
+
+    function syncActiveAiRunExplorerState() {
+      if (activeAiRunIds().length) return;
+      STATE.activeAiRunId = "";
+      clearActiveAiRunExplorerSnapshots();
+    }
+
+    function caseActiveAiRunMeta(caseRow, datasetKey = STATE.datasetKey) {
+      const run = activeAiRun();
+      const questionId = String(caseRow?.question_id || "").trim();
+      if (!run || !questionId) {
+        return { active: false, key: "none", label: "", title: "" };
+      }
+      const runId = String(run?.id || "").trim();
+      const runItems = aiLabelRunItems().filter((item) => (
+        String(item?.run_id || "").trim() === runId
+        && String(item?.dataset_key || "").trim() === String(datasetKey || "").trim()
+        && String(item?.question_id || "").trim() === questionId
+      ));
+      if (!runItems.length) {
+        return { active: false, key: "none", label: "", title: "" };
+      }
+      const counts = {
+        queued: runItems.filter((item) => String(item?.status || "").trim() === "queued").length,
+        running: runItems.filter((item) => String(item?.status || "").trim() === "running").length,
+        applied: runItems.filter((item) => String(item?.status || "").trim() === "applied").length,
+        failed: runItems.filter((item) => String(item?.status || "").trim() === "failed").length,
+      };
+      const total = runItems.length;
+      const title = `${counts.applied} applied, ${counts.running} running, ${counts.queued} queued, ${counts.failed} failed across ${total} trace${total === 1 ? "" : "s"}.`;
+      if (counts.running) {
+        return {
+          active: true,
+          key: "running",
+          tone: "loading",
+          label: counts.applied ? `AI ${counts.applied}/${total} running` : "AI running",
+          title,
+        };
+      }
+      if (counts.queued) {
+        return {
+          active: true,
+          key: "queued",
+          tone: "queued",
+          label: counts.applied ? `AI ${counts.applied}/${total} queued` : "AI queued",
+          title,
+        };
+      }
+      if (counts.failed && !counts.applied) {
+        return {
+          active: true,
+          key: "failed",
+          tone: "failed",
+          label: total > 1 ? `AI ${counts.failed}/${total} failed` : "AI failed",
+          title,
+        };
+      }
+      return {
+        active: true,
+        key: "applied",
+        tone: "saved",
+        label: total > 1 ? `AI ${counts.applied}/${total} saved` : "AI saved",
+        title,
+      };
+    }
+
+    function currentOrLatestAiRun() {
+      const pinnedRunId = String(STATE.activeAiRunId || "").trim();
+      if (pinnedRunId) {
+        const pinnedRun = aiLabelRuns().find((run) => String(run?.id || "").trim() === pinnedRunId);
+        if (pinnedRun) return pinnedRun;
+      }
+      const runs = [...aiLabelRuns()].sort((left, right) => {
+        const leftTime = Date.parse(String(left?.created_at_utc || "")) || 0;
+        const rightTime = Date.parse(String(right?.created_at_utc || "")) || 0;
+        return rightTime - leftTime;
+      });
+      return runs[0] || null;
+    }
+
+    function activeAiRunIds() {
+      return aiLabelRuns()
+        .filter((run) => ["queued", "running"].includes(String(run?.status || "")))
+        .map((run) => String(run?.id || "").trim())
+        .filter(Boolean);
+    }
+
+    function nextCaseNeedingAiReview(rows) {
+      return sortReviewCases(rows || []).find((caseRow) => caseAiReviewMeta(caseRow, STATE.datasetKey).hasPendingAiReview) || null;
+    }
+
+    function runRowsForAiRun(run, rows = currentDataset()?.cases || []) {
+      if (!run) return [];
+      const runId = String(run?.id || "").trim();
+      const runDocumentIds = new Set(
+        [
+          ...(Array.isArray(run?.document_ids) ? run.document_ids : []),
+          ...aiLabelRunItems()
+            .filter((item) => String(item?.run_id || "").trim() === runId)
+            .map((item) => String(item?.document_id || "").trim()),
+        ].filter(Boolean),
+      );
+      return (rows || []).filter((caseRow) =>
+        runTargetDocumentsForCase(caseRow, STATE.datasetKey).some((target) => runDocumentIds.has(String(target?.documentId || ""))),
+      );
+    }
+
+    function caseHasHumanReviewedWork(caseRow, datasetKey = STATE.datasetKey) {
+      const questionId = String(caseRow?.question_id || "");
+      if (!questionId) return false;
+      return orderedSourcesForDataset(datasetKey)
+        .slice(0, 2)
+        .some((source) => {
+          const sourceKey = String(source?.key || "");
+          const sourceCase = sourceKey === STATE.sourceKey
+            ? caseRow
+            : caseForKeys(sourceKey, datasetKey, questionId);
+          if (!source || !sourceCase) return false;
+          const documentId = caseDocumentId(sourceCase, source);
+          return documentId ? documentReviewState(documentId).humanReviewedItems.length > 0 : false;
+        });
+    }
+
     function renderExplorerHeaderLabel(column) {
       const metric = `<span class="explorer-header-metric">${escapeHtml(column.label)}</span>`;
       if (!column.source) return `<span class="explorer-header-label">${metric}</span>`;
@@ -6663,7 +7677,7 @@
       `;
     }
 
-    function renderExplorerHeader() {
+    function renderExplorerHeader(rows = []) {
       if (!el.questionExplorerHead) return;
       const dataset = currentDataset();
       const primarySource = currentSource();
@@ -6680,6 +7694,15 @@
       ];
       el.questionExplorerHead.innerHTML = `
         <tr>
+          <th scope="col" class="explorer-selection-cell">
+            <label class="explorer-head-selector" title="Select visible questions">
+              <input
+                type="checkbox"
+                data-select-visible-checkbox
+                ${rows.length && rows.every((caseRow) => selectedExplorerQuestionSetForCurrentDataset().has(String(caseRow.question_id || ""))) ? "checked" : ""}
+              >
+            </label>
+          </th>
           ${columns.map((column) => {
             const direction = sortDirectionForColumn(column.key);
             const indicator = direction === "ascending" ? "↑" : (direction === "descending" ? "↓" : "");
@@ -6704,10 +7727,7 @@
     function renderExplorerView(rows) {
       const dataset = currentDataset();
       if (!dataset) return;
-      if (el.explorerTitle) {
-        el.explorerTitle.textContent = "Questions";
-      }
-      renderExplorerHeader();
+      renderExplorerHeader(rows);
       const primarySource = currentSource();
       const compareSourceKey = alternateSourceKeyForDataset(dataset.key || STATE.datasetKey);
       const compareSource = sourceForKey(compareSourceKey);
@@ -6720,6 +7740,7 @@
         const primaryVerdict = scoreMeta(primary.consensus_score);
         const primaryHasStartedReview = caseHasStartedReview(caseRow, primarySource);
         const primaryOverallLabelMeta = documentNoteLabelMeta(caseDocumentNote(caseRow, primarySource));
+        const activeRunMeta = caseActiveAiRunMeta(caseRow, dataset.key || STATE.datasetKey);
         const compareCase = compareCaseMap.get(caseRow.question_id) || null;
         const hasCompareCase = Boolean(compareCase && compareSource);
         const compareVariant = compareCase ? (primaryVariant(compareCase, compareSource) || {}) : {};
@@ -6732,11 +7753,21 @@
           : null;
         const isCurrent = caseRow.question_id === STATE.selectedCaseId;
         const questionExcerpt = clampText(caseRow.question, 150);
+        const isSelectedForRun = selectedExplorerQuestionSetForCurrentDataset().has(String(caseRow.question_id || ""));
         return `
-          <tr class="${isCurrent ? "is-current" : ""}">
+          <tr class="${[
+            isCurrent ? "is-current" : "",
+            activeRunMeta.active ? "is-ai-run" : "",
+          ].filter(Boolean).join(" ")}">
+            <td class="explorer-selection-cell">
+              <label class="explorer-row-selector" title="Select this question for AI labelling">
+                <input type="checkbox" data-select-question="${escapeHtml(caseRow.question_id)}" ${isSelectedForRun ? "checked" : ""}>
+              </label>
+            </td>
             <td class="explorer-question-cell">
               <div class="explorer-question-button">
                 <p class="explorer-question-line">${escapeHtml(questionExcerpt || caseRow.question || "")}</p>
+                ${activeRunMeta.active ? `<div class="explorer-question-status">${renderExplorerRunStatusPill(activeRunMeta)}</div>` : ""}
               </div>
             </td>
             <td class="explorer-domain-cell">${escapeHtml(caseDomainLabel(caseRow) || "—")}</td>
@@ -6763,15 +7794,37 @@
             </td>
           </tr>
         `;
-      }).join("") : `<tr><td colspan="9"><div class="empty-state"><strong>No questions match the current filters.</strong><br>Reset filters to widen the explorer.</div></td></tr>`;
+      }).join("") : `<tr><td colspan="10"><div class="empty-state"><strong>No questions match the current filters.</strong><br>Reset filters to widen the explorer.</div></td></tr>`;
     }
 
     function renderReviewCaseList(rows) {
       const dataset = currentDataset();
       if (!dataset || !el.reviewCaseList || !el.reviewCaseMeta) return;
-      el.reviewCaseMeta.textContent = `${rows.length} labelled pairs`;
+      const workflowCounts = rows.reduce((counts, caseRow) => {
+        const workflowKey = caseWorkflowFilterMeta(caseRow, dataset.key || STATE.datasetKey).key;
+        counts[workflowKey] = (counts[workflowKey] || 0) + 1;
+        return counts;
+      }, {});
+      if (STATE.annotationFilter !== "all") {
+        const caseLabel = rows.length === 1 ? "case" : "cases";
+        el.reviewCaseMeta.textContent = {
+          needs_review: `${rows.length} ${caseLabel} need review`,
+          in_progress: `${rows.length} ${caseLabel} in progress`,
+          validated: `${rows.length} validated ${caseLabel}`,
+          unreviewed: `${rows.length} not labelled ${caseLabel}`,
+        }[STATE.annotationFilter] || `${rows.length} ${caseLabel}`;
+      } else {
+        const summaryParts = [`${rows.length} cases`];
+        if (workflowCounts.needs_review) summaryParts.push(`${workflowCounts.needs_review} need review`);
+        if (workflowCounts.in_progress) summaryParts.push(`${workflowCounts.in_progress} in progress`);
+        if (workflowCounts.validated) summaryParts.push(`${workflowCounts.validated} validated`);
+        el.reviewCaseMeta.textContent = summaryParts.join(" • ");
+      }
       el.reviewCaseList.innerHTML = rows.length ? rows.map((caseRow) => {
-        const progress = caseCombinedProgressMeta(caseRow, dataset.key || STATE.datasetKey);
+        const workflow = caseWorkflowFilterMeta(caseRow, dataset.key || STATE.datasetKey);
+        const aiReview = caseAiReviewMeta(caseRow, dataset.key || STATE.datasetKey);
+        const reviewLabel = workflow.label;
+        const reviewTone = workflow.tone;
         return `
           <button class="case-card${caseRow.question_id === STATE.selectedCaseId ? " selected" : ""}" type="button" data-review-question-id="${escapeHtml(caseRow.question_id)}">
             <div class="case-top">
@@ -6780,12 +7833,20 @@
                   <span class="case-id">${escapeHtml(caseRow.question_id)}</span>
                   ${dataset.key === "v2" && caseDomainLabel(caseRow) ? `<span class="tag">${escapeHtml(caseDomainLabel(caseRow))}</span>` : ""}
                 </div>
-                <span class="pill ${escapeHtml(progress.tone)}">${escapeHtml(progress.label)}</span>
+                <span class="pill ${escapeHtml(reviewTone)}">${escapeHtml(reviewLabel)}</span>
               </div>
               ${renderCaseRailVerdictPills(caseRow, dataset.key)}
             </div>
             <p class="case-question">${escapeHtml(clampText(caseRow.question, 145))}</p>
             <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 120))}</p>
+            ${aiReview.hasAnyAi ? `
+              <div class="review-case-stats">
+                ${aiReview.aiCount ? renderStatusPill(`AI ${aiReview.aiCount}`, "ai") : ""}
+                ${aiReview.pendingCount ? renderStatusPill(`Pending ${aiReview.pendingCount}`, "pending") : ""}
+                ${aiReview.reviewedCount ? renderStatusPill(`Reviewed ${aiReview.reviewedCount}`, "reviewed") : ""}
+                ${aiReview.humanAddedCount ? renderStatusPill(`Added ${aiReview.humanAddedCount}`, "human") : ""}
+              </div>
+            ` : ""}
           </button>
         `;
       }).join("") : `<div class="empty-state"><strong>No labelled pairs match the current domain filter.</strong></div>`;
@@ -6820,14 +7881,33 @@
       }
       const overallLabelMeta = documentNoteLabelMeta(item.note);
       const verdict = scoreMeta(item.variant?.consensus_score);
+      const answerText = String(item.variant?.response_text || "");
+      const answerPreview = clampText(answerText.replace(/\s+/g, " "), 220);
       return `
         <div class="review-model-panel">
           <div class="section-head">
             <div>${renderModelChip(item.source)}</div>
-            <div class="review-model-meta">
-              ${renderExplorerGradePill(verdict)}
-            </div>
           </div>
+          <section class="panel response-panel ${escapeHtml(modelPanelClass(item.source))} review-answer-card">
+            <div class="section-head">
+              <div><h3>Answer</h3></div>
+              <div class="panel-control-row answer-controls">
+                <span class="pill ${escapeHtml(verdict.tone)}">Grade: ${escapeHtml(verdict.label)}</span>
+                <button
+                  class="icon-action-btn answer-toggle"
+                  type="button"
+                  data-toggle-answer="1"
+                  aria-label="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+                  title="${escapeAttribute(STATE.answerCollapsed ? "Show answer" : "Hide answer")}"
+                >${renderUiIcon(STATE.answerCollapsed ? "plus" : "minus")}</button>
+              </div>
+            </div>
+            ${STATE.answerCollapsed
+              ? `<p class="answer-preview">${escapeHtml(answerPreview || "No answer saved.")}</p>`
+              : answerText
+                ? `<div class="markdown-body answer-body">${renderMarkdown(answerText)}</div>`
+                : `<div class="compare-empty">No answer saved.</div>`}
+          </section>
           <div class="review-overview-card">
             <div class="section-head">
               <div><h3>Overall note</h3></div>
@@ -7332,6 +8412,7 @@
     function render() {
       const dataset = currentDataset();
       if (!dataset) return;
+      syncActiveAiRunExplorerState();
       renderLayoutChrome();
       renderSourceSwitch();
       renderDatasetSwitch();
@@ -7577,6 +8658,11 @@
         const firstCategory = (payload.store?.categories || [])[0];
         STATE.selectedCategoryId = firstCategory?.id || "";
       }
+      if (activeAiRunIds().length) {
+        ensureAiRunPolling();
+      } else {
+        syncActiveAiRunExplorerState();
+      }
       render();
     }
 
@@ -7691,6 +8777,77 @@
       }
     }
 
+    function ensureAiRunPolling() {
+      if (aiRunPollTimer || !activeAiRunIds().length) return;
+      aiRunPollTimer = window.setInterval(async () => {
+        if (!activeAiRunIds().length) {
+          window.clearInterval(aiRunPollTimer);
+          aiRunPollTimer = 0;
+          return;
+        }
+        try {
+          await refreshStoreOnly();
+          render();
+          if (!activeAiRunIds().length && aiRunPollTimer) {
+            window.clearInterval(aiRunPollTimer);
+            aiRunPollTimer = 0;
+          }
+        } catch (error) {
+          console.warn("AI run poll failed.", error);
+        }
+      }, 2500);
+    }
+
+    async function startSelectedAiRun() {
+      const aiMeta = aiLabellingMeta();
+      const currentRows = sortCases(filteredCases());
+      const selectedTargets = selectedRunTargets(currentDataset()?.cases || []);
+      const documentIds = selectedTargets.map((target) => target.documentId);
+      if (!aiMeta.enabled || !aiMeta.default_config_id) {
+        throw new Error("AI labelling is not available on this server.");
+      }
+      if (!documentIds.length) {
+        throw new Error("Select at least one question before starting AI labelling.");
+      }
+      const payload = await apiRequest("/api/ai-label-runs", {
+        method: "POST",
+        body: JSON.stringify({
+          document_ids: documentIds,
+          config_id: aiMeta.default_config_id,
+        }),
+      });
+      await refreshStoreOnlyBestEffort();
+      const skippedCount = Array.isArray(payload?.skipped_document_ids) ? payload.skipped_document_ids.length : 0;
+      const queuedCount = Number(payload?.run?.total_count || 0);
+      if (queuedCount) {
+        STATE.activeAiRunId = String(payload?.run?.id || "");
+        const queuedDocumentIds = new Set(
+          (Array.isArray(payload?.run?.document_ids) ? payload.run.document_ids : [])
+            .map((value) => String(value || "").trim())
+            .filter(Boolean),
+        );
+        const trackedQuestionIds = [...new Set(
+          selectedTargets
+            .filter((target) => queuedDocumentIds.has(String(target?.documentId || "")))
+            .map((target) => String(target?.questionId || "").trim())
+            .filter(Boolean),
+        )];
+        setActiveAiRunExplorerSnapshot(STATE.datasetKey, trackedQuestionIds, currentRows);
+        clearSelectedExplorerQuestionsForCurrentDataset();
+        ensureAiRunPolling();
+      }
+      setToast(
+        !queuedCount && skippedCount
+          ? `All selected traces are already queued or running.`
+          : skippedCount
+            ? `Started AI labelling for ${queuedCount} traces. ${skippedCount} already-active trace${skippedCount === 1 ? " was" : "s were"} skipped.`
+          : `Started AI labelling for ${queuedCount} traces.`,
+        "neutral",
+        2800,
+      );
+      render();
+    }
+
     async function labelDocumentWithAi(documentId) {
       const aiMeta = aiLabellingMeta();
       const configId = aiMeta.default_config_id || "";
@@ -7698,20 +8855,9 @@
       if (!aiMeta.enabled || !configId) {
         throw new Error("AI labelling is not available on this server.");
       }
-      const reviewState = documentReviewState(documentId);
-      let mode = "replace";
-      if (reviewState.hasHumanReviewed) {
-        const confirmed = window.confirm(
-          reviewState.hasAnyAi
-            ? "Human-reviewed labels already exist for this reasoning trace.\n\nProceed in AI completion mode? Existing human-reviewed labels will be kept, and any unreviewed AI suggestions on this trace will be replaced."
-            : "Human-reviewed labels already exist for this reasoning trace.\n\nProceed in AI completion mode? Existing human-reviewed labels will be kept, and AI will only suggest complementary labels."
-        );
-        if (!confirmed) return;
-        mode = "complete_existing";
-      }
       await flushPendingDocumentNoteSave(documentId);
       await flushOpenAnnotationCommentSave(documentId);
-      setAiLabelJob(documentId, { pending: true, configId, action: mode === "complete_existing" ? "complete" : "label" });
+      setAiLabelJob(documentId, { pending: true, configId, action: "label" });
       STATE.selection = null;
       STATE.selectionAnchor = null;
       STATE.activeAnnotationId = "";
@@ -7724,14 +8870,15 @@
           body: JSON.stringify({
             document_id: documentId,
             config_id: configId,
-            mode,
           }),
         });
-        applyAiLabelResultInStore(documentId, payload, mode);
+        STATE.activeAiRunId = String(payload?.ai_label_run?.id || "");
+        const resolvedMode = String(payload?.ai_label_job?.label_mode || "replace");
+        applyAiLabelResultInStore(documentId, payload, resolvedMode);
         await refreshStoreOnlyBestEffort();
         const configLabel = payload?.ai_label_job?.config?.display_name || "the default config";
         setToast(
-          mode === "complete_existing"
+          resolvedMode === "complete_existing"
             ? `AI completion labels saved with ${configLabel}.`
             : `AI labels saved with ${configLabel}.`,
           "neutral",
@@ -8164,7 +9311,15 @@
         STATE.search = event.target.value;
         render();
       });
+      el.reviewAnnotationFilterSelect?.addEventListener("change", (event) => {
+        setAnnotationFilter(event.target.value || "all");
+        render();
+      });
       el.gradeFilterSelect.addEventListener("change", (event) => {
+        setGradeFilter(event.target.value || "all");
+        render();
+      });
+      el.reviewGradeFilterSelect?.addEventListener("change", (event) => {
         setGradeFilter(event.target.value || "all");
         render();
       });
@@ -8174,14 +9329,6 @@
       });
       el.railAnnotationFilterSelect.addEventListener("change", (event) => {
         setAnnotationFilter(event.target.value || "all");
-        render();
-      });
-      el.aiFilterSelect?.addEventListener("change", (event) => {
-        setAiFilter(event.target.value || "all");
-        render();
-      });
-      el.railAiFilterSelect?.addEventListener("change", (event) => {
-        setAiFilter(event.target.value || "all");
         render();
       });
       el.domainFilterList.addEventListener("change", (event) => {
@@ -8202,9 +9349,17 @@
         setSelectedDomainsForCurrentDataset(domain ? [domain] : null);
         render();
       });
-      el.reviewDomainFilterSelect?.addEventListener("change", (event) => {
-        const domain = event.target.value || "";
-        setSelectedDomainsForCurrentDataset(domain ? [domain] : null);
+      el.reviewDomainFilterList?.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-domain-filter]");
+        if (!input) return;
+        const selected = new Set(selectedDomainsForCurrentDataset() || availableDomains());
+        const domain = input.getAttribute("data-domain-filter") || "";
+        if (input.checked) {
+          selected.add(domain);
+        } else {
+          selected.delete(domain);
+        }
+        setSelectedDomainsForCurrentDataset([...selected]);
         render();
       });
       el.selectAllDomainsBtn.addEventListener("click", () => {
@@ -8214,15 +9369,14 @@
       el.closeDomainFilterBtn.addEventListener("click", () => {
         el.domainFilterDetails.open = false;
       });
-      el.resetFiltersBtn.addEventListener("click", () => {
-        resetSharedFilters();
+      el.reviewSelectAllDomainsBtn?.addEventListener("click", () => {
+        setSelectedDomainsForCurrentDataset(null);
         render();
       });
-      el.openNextUnlabeledBtn.addEventListener("click", () => {
-        const rows = sortCases(filteredCases());
-        const nextCase = nextCaseToReview(rows);
-        if (!nextCase) return;
-        openCaseForLabeling(nextCase.question_id || "", { compare: true });
+      el.reviewCloseDomainFilterBtn?.addEventListener("click", () => {
+        if (el.reviewDomainFilterDetails) {
+          el.reviewDomainFilterDetails.open = false;
+        }
       });
       el.sourceSwitch.addEventListener("click", (event) => {
         const button = event.target.closest("[data-source-key]");
@@ -8268,21 +9422,47 @@
       });
       [el.reviewPrimaryPanel, el.reviewComparePanel].forEach((panel) => {
         panel?.addEventListener("click", (event) => {
+          if (event.target.closest("[data-toggle-answer]")) {
+            setAnswerCollapsed(!STATE.answerCollapsed);
+            render();
+            return;
+          }
           const openButton = event.target.closest("[data-open-labeling]");
           if (!openButton) return;
           openCaseForLabeling(openButton.getAttribute("data-open-labeling") || "", { compare: true });
         });
       });
       el.questionExplorerList.addEventListener("click", (event) => {
-        const reviewRow = event.target.closest("[data-review-question-id]");
-        if (reviewRow) {
-          setSelectedCaseId(reviewRow.getAttribute("data-review-question-id") || "");
-          render();
+        const selectionInput = event.target.closest("[data-select-question]");
+        if (selectionInput) {
+          STATE.pendingExplorerSelectionGesture = {
+            questionId: selectionInput.getAttribute("data-select-question") || "",
+            checked: Boolean(selectionInput.checked),
+            shiftKey: Boolean(event.shiftKey),
+          };
           return;
         }
         const openButton = event.target.closest("[data-open-labeling]");
         if (!openButton) return;
         openCaseForLabeling(openButton.getAttribute("data-open-labeling") || "", { compare: true });
+      });
+      el.questionExplorerList.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-select-question]");
+        if (!input) return;
+        const questionId = input.getAttribute("data-select-question") || "";
+        const rows = sortCases(filteredCases());
+        const gesture = STATE.pendingExplorerSelectionGesture && String(STATE.pendingExplorerSelectionGesture.questionId || "") === String(questionId || "")
+          ? STATE.pendingExplorerSelectionGesture
+          : { shiftKey: Boolean(event.shiftKey), checked: Boolean(input.checked) };
+        const lastQuestionId = lastExplorerSelectionQuestionIdForCurrentDataset();
+        if (gesture.shiftKey && lastQuestionId && lastQuestionId !== questionId) {
+          setExplorerQuestionRangeSelected(lastQuestionId, questionId, Boolean(gesture.checked), rows);
+        } else {
+          setExplorerQuestionSelected(questionId, Boolean(input.checked));
+        }
+        setLastExplorerSelectionQuestionIdForCurrentDataset(questionId);
+        STATE.pendingExplorerSelectionGesture = null;
+        render();
       });
       el.questionExplorerHead.addEventListener("click", (event) => {
         if (STATE.viewMode === "review") return;
@@ -8290,6 +9470,22 @@
         if (!button) return;
         setCaseSort(nextSortValueForColumn(button.getAttribute("data-sort-column") || ""));
         render();
+      });
+      el.questionExplorerHead.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-select-visible-checkbox]");
+        if (!input) return;
+        const rows = sortCases(filteredCases());
+        if (input.checked) {
+          setSelectedExplorerQuestionIdsForCurrentDataset(rows.map((caseRow) => caseRow.question_id));
+        } else {
+          clearSelectedExplorerQuestionsForCurrentDataset();
+        }
+        render();
+      });
+      el.labelSelectedAiBtn?.addEventListener("click", () => {
+        void runUiAction(async () => {
+          await startSelectedAiRun();
+        }, "Could not start AI labelling.");
       });
       el.reasoningPanel.addEventListener("mouseup", () => {
         if (selectionCaptureFrame) {
@@ -8729,8 +9925,8 @@
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
-        const filterDetails = [el.domainFilterDetails, el.railDomainFilterDetails].filter(Boolean);
-        const isInsideOpenFilter = target.closest("#domainFilterDetails, #railDomainFilterDetails");
+        const filterDetails = [el.domainFilterDetails, el.railDomainFilterDetails, el.reviewDomainFilterDetails].filter(Boolean);
+        const isInsideOpenFilter = target.closest("#domainFilterDetails, #railDomainFilterDetails, #reviewDomainFilterDetails");
         if (isInsideOpenFilter) return;
         filterDetails.forEach((details) => {
           if (details.open) details.open = false;
@@ -8787,13 +9983,13 @@
     }
 
     async function init() {
+      window.localStorage.removeItem("reasoningLab.aiFilter");
       Object.assign(el, {
         filterPanel: document.getElementById("filterPanel"),
         viewSwitch: document.getElementById("viewSwitch"),
         themeSwitch: document.getElementById("themeSwitch"),
         explorerView: document.getElementById("explorerView"),
         explorerPanel: document.getElementById("explorerPanel"),
-        explorerTitle: document.getElementById("explorerTitle"),
         workspace: document.getElementById("workspace"),
         sourceSwitch: document.getElementById("sourceSwitch"),
         datasetSwitch: document.getElementById("datasetSwitch"),
@@ -8802,14 +9998,12 @@
         statusLine: document.getElementById("statusLine"),
         searchInput: document.getElementById("searchInput"),
         reviewSearchInput: document.getElementById("reviewSearchInput"),
+        reviewGradeFilterSelect: document.getElementById("reviewGradeFilterSelect"),
+        reviewAnnotationFilterSelect: document.getElementById("reviewAnnotationFilterSelect"),
         gradeFilterSelect: document.getElementById("gradeFilterSelect"),
         annotationFilterSelect: document.getElementById("annotationFilterSelect"),
-        aiFilterField: document.getElementById("aiFilterField"),
-        aiFilterSelect: document.getElementById("aiFilterSelect"),
         railAnnotationFilterSelect: document.getElementById("railAnnotationFilterSelect"),
         railStatusFilterRow: document.getElementById("railStatusFilterRow"),
-        railAiFilterField: document.getElementById("railAiFilterField"),
-        railAiFilterSelect: document.getElementById("railAiFilterSelect"),
         domainFilterField: document.getElementById("domainFilterField"),
         domainFilterDetails: document.getElementById("domainFilterDetails"),
         domainFilterSummary: document.getElementById("domainFilterSummary"),
@@ -8817,16 +10011,18 @@
         railDomainFilterField: document.getElementById("railDomainFilterField"),
         railDomainFilterSelect: document.getElementById("railDomainFilterSelect"),
         reviewDomainFilterField: document.getElementById("reviewDomainFilterField"),
-        reviewDomainFilterSelect: document.getElementById("reviewDomainFilterSelect"),
+        reviewDomainFilterDetails: document.getElementById("reviewDomainFilterDetails"),
+        reviewDomainFilterSummary: document.getElementById("reviewDomainFilterSummary"),
+        reviewDomainFilterList: document.getElementById("reviewDomainFilterList"),
         railDomainFilterDetails: document.getElementById("railDomainFilterDetails"),
         selectAllDomainsBtn: document.getElementById("selectAllDomainsBtn"),
         closeDomainFilterBtn: document.getElementById("closeDomainFilterBtn"),
-        resetFiltersBtn: document.getElementById("resetFiltersBtn"),
-        openNextUnlabeledBtn: document.getElementById("openNextUnlabeledBtn"),
+        reviewSelectAllDomainsBtn: document.getElementById("reviewSelectAllDomainsBtn"),
+        reviewCloseDomainFilterBtn: document.getElementById("reviewCloseDomainFilterBtn"),
+        labelSelectedAiBtn: document.getElementById("labelSelectedAiBtn"),
+        aiInlineStatus: document.getElementById("aiInlineStatus"),
         filterMeta: document.getElementById("filterMeta"),
         caseMeta: document.getElementById("caseMeta"),
-        explorerMeta: document.getElementById("explorerMeta"),
-        explorerSummary: document.getElementById("explorerSummary"),
         questionExplorerHead: document.getElementById("questionExplorerHead"),
         questionExplorerList: document.getElementById("questionExplorerList"),
         reviewStage: document.getElementById("reviewStage"),

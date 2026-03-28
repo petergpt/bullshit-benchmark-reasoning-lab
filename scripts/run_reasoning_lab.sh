@@ -45,4 +45,8 @@ if ((BUILD_ONLY)); then
   exit 0
 fi
 
-exec python3 "${ROOT_DIR}/scripts/reasoning_annotation_server.py" "${SERVER_ARGS[@]}"
+if ((${#SERVER_ARGS[@]})); then
+  exec python3 "${ROOT_DIR}/scripts/reasoning_annotation_server.py" "${SERVER_ARGS[@]}"
+fi
+
+exec python3 "${ROOT_DIR}/scripts/reasoning_annotation_server.py"

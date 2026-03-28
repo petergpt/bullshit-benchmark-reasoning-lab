@@ -11,8 +11,10 @@ import hashlib
 import json
 import os
 import threading
+import time
 import urllib.parse
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,7 +23,7 @@ from typing import Any
 from ai_label_reasoning_trace import (
     AI_LABEL_MODE_COMPLETE_EXISTING,
     AI_LABEL_MODE_REPLACE,
-    AI_LABEL_MODES,
+    AI_LABEL_WORKFLOW_VERSION,
     DEFAULT_AI_LABEL_CONFIG_ID,
     list_ai_label_configs,
     run_ai_labeling,
@@ -30,7 +32,33 @@ from reasoning_lab_data import LAB_ROOT as ROOT, build_payload, text_or_empty
 
 
 DEFAULT_STORE_PATH = ROOT / "annotations" / "reasoning_lab.json"
-STORE_SCHEMA_VERSION = 6
+STORE_SCHEMA_VERSION = 7
+AI_LABEL_RUN_STATUSES = {
+    "queued",
+    "running",
+    "completed",
+    "completed_with_errors",
+    "cancelled",
+}
+AI_LABEL_RUN_ITEM_STATUSES = {
+    "queued",
+    "running",
+    "applied",
+    "failed",
+    "cancelled",
+}
+AI_LABEL_RUN_TERMINAL_STATUSES = {
+    "completed",
+    "completed_with_errors",
+    "cancelled",
+}
+AI_LABEL_RUN_ITEM_TERMINAL_STATUSES = {
+    "applied",
+    "failed",
+    "cancelled",
+}
+DEFAULT_AI_LABEL_RUN_MAX_ATTEMPTS = 2
+DEFAULT_AI_LABEL_RUN_CONCURRENCY = 10
 REVIEW_SESSION_TYPE_AI_SUGGESTION = "ai_suggestion_review"
 REVIEW_SESSION_STATUSES = {
     "open",
@@ -237,6 +265,21 @@ def review_event_sort_key(item: dict[str, Any]) -> tuple[str, str, str, str, str
     )
 
 
+def ai_label_run_sort_key(item: dict[str, Any]) -> tuple[str, str]:
+    return (
+        text_or_empty(item.get("created_at_utc")),
+        text_or_empty(item.get("id")),
+    )
+
+
+def ai_label_run_item_sort_key(item: dict[str, Any]) -> tuple[str, int, str]:
+    return (
+        text_or_empty(item.get("run_id")),
+        int(item.get("queue_index") or 0),
+        text_or_empty(item.get("id")),
+    )
+
+
 def json_copy(value: Any) -> Any:
     return json.loads(json.dumps(value, ensure_ascii=False))
 
@@ -271,6 +314,8 @@ def make_store_skeleton() -> dict[str, Any]:
         "annotations": [],
         "review_sessions": [],
         "review_events": [],
+        "ai_label_runs": [],
+        "ai_label_run_items": [],
     }
 
 
@@ -1309,6 +1354,12 @@ class AnnotationStore:
         closed_at_utc = text_or_empty(payload.get("closed_at_utc")).strip()
         if status in {"open", "in_review"}:
             closed_at_utc = ""
+        ai_label_run_id = text_or_empty(payload.get("ai_label_run_id")).strip() or text_or_empty(
+            normalized_suggestion_provenance.get("ai_label_run_id")
+        ).strip()
+        ai_label_run_item_id = text_or_empty(payload.get("ai_label_run_item_id")).strip() or text_or_empty(
+            normalized_suggestion_provenance.get("ai_label_run_item_id")
+        ).strip()
         return {
             "id": session_id,
             **metadata,
@@ -1320,6 +1371,8 @@ class AnnotationStore:
             "closed_at_utc": closed_at_utc,
             "created_by": text_or_empty(payload.get("created_by")).strip(),
             "superseded_by_session_id": text_or_empty(payload.get("superseded_by_session_id")).strip(),
+            "ai_label_run_id": ai_label_run_id,
+            "ai_label_run_item_id": ai_label_run_item_id,
             "suggestion_provenance": normalized_suggestion_provenance,
             "resolution_warnings": resolution_warnings,
             "suggested_document_note": normalized_suggested_note,
@@ -1373,6 +1426,207 @@ class AnnotationStore:
             "inferred": normalize_bool(payload.get("inferred"), default=False),
             "inference_note": text_or_empty(payload.get("inference_note")).strip(),
         }
+
+    def _normalize_ai_label_run_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        status = text_or_empty(payload.get("status")).strip()
+        if status not in AI_LABEL_RUN_STATUSES:
+            status = "queued"
+        document_ids = [
+            text_or_empty(document_id).strip()
+            for document_id in (payload.get("document_ids") or [])
+            if text_or_empty(document_id).strip()
+        ]
+        unique_document_ids: list[str] = []
+        seen_document_ids: set[str] = set()
+        for document_id in document_ids:
+            try:
+                canonical_document_id = self._document_metadata(document_id)["document_id"]
+            except ValueError:
+                canonical_document_id = document_id
+            if canonical_document_id in seen_document_ids:
+                continue
+            seen_document_ids.add(canonical_document_id)
+            unique_document_ids.append(canonical_document_id)
+        skipped_document_ids = [
+            text_or_empty(document_id).strip()
+            for document_id in (payload.get("skipped_document_ids") or [])
+            if text_or_empty(document_id).strip()
+        ]
+        config = payload.get("config") if isinstance(payload.get("config"), dict) else {}
+        return {
+            "id": text_or_empty(payload.get("id")).strip() or str(uuid.uuid4()),
+            "status": status,
+            "created_at_utc": text_or_empty(payload.get("created_at_utc")).strip() or utc_now(),
+            "updated_at_utc": text_or_empty(payload.get("updated_at_utc")).strip()
+            or text_or_empty(payload.get("created_at_utc")).strip()
+            or utc_now(),
+            "started_at_utc": text_or_empty(payload.get("started_at_utc")).strip(),
+            "finished_at_utc": text_or_empty(payload.get("finished_at_utc")).strip(),
+            "created_by": text_or_empty(payload.get("created_by")).strip(),
+            "config_id": text_or_empty(payload.get("config_id")).strip(),
+            "config": json_copy(config),
+            "mode": text_or_empty(payload.get("mode")).strip() or "auto",
+            "document_ids": unique_document_ids,
+            "requested_document_count": int(
+                payload.get("requested_document_count") or len(unique_document_ids)
+            ),
+            "skipped_document_ids": skipped_document_ids,
+            "total_count": int(payload.get("total_count") or len(unique_document_ids)),
+            "queued_count": int(payload.get("queued_count") or 0),
+            "running_count": int(payload.get("running_count") or 0),
+            "applied_count": int(payload.get("applied_count") or 0),
+            "failed_count": int(payload.get("failed_count") or 0),
+            "cancelled_count": int(payload.get("cancelled_count") or 0),
+            "last_error": text_or_empty(payload.get("last_error")).strip(),
+        }
+
+    def _normalize_ai_label_run_item_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        document_id = text_or_empty(payload.get("document_id")).strip()
+        metadata = {}
+        if document_id:
+            try:
+                metadata = self._document_metadata(document_id)
+            except ValueError:
+                metadata = {
+                    "document_id": document_id,
+                    "source_key": text_or_empty(payload.get("source_key")).strip(),
+                    "source_label": text_or_empty(payload.get("source_label")).strip(),
+                    "dataset_key": text_or_empty(payload.get("dataset_key")).strip(),
+                    "question_id": text_or_empty(payload.get("question_id")).strip(),
+                    "variant_key": text_or_empty(payload.get("variant_key")).strip(),
+                    "surface": text_or_empty(payload.get("surface")).strip() or "reasoning",
+                }
+        status = text_or_empty(payload.get("status")).strip()
+        if status not in AI_LABEL_RUN_ITEM_STATUSES:
+            status = "queued"
+        resolution_warnings = [
+            text_or_empty(item).strip()
+            for item in (payload.get("resolution_warnings") or [])
+            if text_or_empty(item).strip()
+        ]
+        error = text_or_empty(payload.get("error")).strip()
+        return {
+            "id": text_or_empty(payload.get("id")).strip() or str(uuid.uuid4()),
+            "run_id": text_or_empty(payload.get("run_id")).strip(),
+            **metadata,
+            "queue_index": int(payload.get("queue_index") or 0),
+            "status": status,
+            "mode_requested": text_or_empty(payload.get("mode_requested")).strip() or "auto",
+            "label_mode": text_or_empty(payload.get("label_mode")).strip(),
+            "config_id": text_or_empty(payload.get("config_id")).strip(),
+            "attempt_count": int(payload.get("attempt_count") or 0),
+            "max_attempts": int(
+                payload.get("max_attempts") or DEFAULT_AI_LABEL_RUN_MAX_ATTEMPTS
+            ),
+            "started_at_utc": text_or_empty(payload.get("started_at_utc")).strip(),
+            "finished_at_utc": text_or_empty(payload.get("finished_at_utc")).strip(),
+            "review_session_id": text_or_empty(payload.get("review_session_id")).strip(),
+            "response_id": text_or_empty(payload.get("response_id")).strip(),
+            "resolution_warnings": resolution_warnings,
+            "error": error,
+            "last_error_at_utc": text_or_empty(payload.get("last_error_at_utc")).strip(),
+        }
+
+    def _find_ai_label_run(
+        self,
+        store: dict[str, Any],
+        run_id: str,
+    ) -> dict[str, Any] | None:
+        for run in store.get("ai_label_runs") or []:
+            if text_or_empty(run.get("id")).strip() == run_id:
+                return run
+        return None
+
+    def _find_ai_label_run_item(
+        self,
+        store: dict[str, Any],
+        item_id: str,
+    ) -> dict[str, Any] | None:
+        for item in store.get("ai_label_run_items") or []:
+            if text_or_empty(item.get("id")).strip() == item_id:
+                return item
+        return None
+
+    def _refresh_ai_label_run_status(
+        self,
+        store: dict[str, Any],
+        run_id: str,
+    ) -> None:
+        run = self._find_ai_label_run(store, run_id)
+        if not run:
+            return
+        items = [
+            item
+            for item in (store.get("ai_label_run_items") or [])
+            if text_or_empty(item.get("run_id")).strip() == run_id
+        ]
+        queued_count = sum(
+            1 for item in items if text_or_empty(item.get("status")).strip() == "queued"
+        )
+        running_count = sum(
+            1 for item in items if text_or_empty(item.get("status")).strip() == "running"
+        )
+        applied_count = sum(
+            1 for item in items if text_or_empty(item.get("status")).strip() == "applied"
+        )
+        failed_count = sum(
+            1 for item in items if text_or_empty(item.get("status")).strip() == "failed"
+        )
+        cancelled_count = sum(
+            1 for item in items if text_or_empty(item.get("status")).strip() == "cancelled"
+        )
+        run["total_count"] = len(items)
+        run["queued_count"] = queued_count
+        run["running_count"] = running_count
+        run["applied_count"] = applied_count
+        run["failed_count"] = failed_count
+        run["cancelled_count"] = cancelled_count
+        if running_count or queued_count:
+            run["status"] = "running" if run.get("started_at_utc") else "queued"
+        elif failed_count:
+            run["status"] = "completed_with_errors"
+        elif cancelled_count and not applied_count:
+            run["status"] = "cancelled"
+        else:
+            run["status"] = "completed"
+        if (applied_count or failed_count or cancelled_count) and not text_or_empty(
+            run.get("started_at_utc")
+        ).strip():
+            first_started = min(
+                (
+                    text_or_empty(item.get("started_at_utc")).strip()
+                    for item in items
+                    if text_or_empty(item.get("started_at_utc")).strip()
+                ),
+                default="",
+            )
+            run["started_at_utc"] = first_started
+        if run["status"] in AI_LABEL_RUN_TERMINAL_STATUSES:
+            run["finished_at_utc"] = text_or_empty(run.get("finished_at_utc")).strip() or utc_now()
+        else:
+            run["finished_at_utc"] = ""
+        if failed_count:
+            latest_failed = max(
+                (
+                    item
+                    for item in items
+                    if text_or_empty(item.get("status")).strip() == "failed"
+                ),
+                key=lambda item: text_or_empty(item.get("last_error_at_utc")).strip()
+                or text_or_empty(item.get("finished_at_utc")).strip()
+                or "",
+                default=None,
+            )
+            run["last_error"] = text_or_empty((latest_failed or {}).get("error")).strip()
+        elif run["status"] != "completed_with_errors":
+            run["last_error"] = ""
+        run["updated_at_utc"] = utc_now()
+
+    def _refresh_ai_label_runs(self, store: dict[str, Any]) -> None:
+        for run in store.get("ai_label_runs") or []:
+            run_id = text_or_empty(run.get("id")).strip()
+            if run_id:
+                self._refresh_ai_label_run_status(store, run_id)
 
     def add_category(self, payload: dict[str, Any]) -> dict[str, Any]:
         with self._locked_store():
@@ -2125,10 +2379,21 @@ class AnnotationStore:
         }
 
         normalized_note = None
+        run_provenance = {
+            "ai_label_run_id": text_or_empty((suggestion_provenance or {}).get("ai_label_run_id")).strip(),
+            "ai_label_run_item_id": text_or_empty((suggestion_provenance or {}).get("ai_label_run_item_id")).strip(),
+        }
         if document_note is not None:
+            note_provenance = (
+                json_copy(document_note.get("provenance"))
+                if isinstance(document_note.get("provenance"), dict)
+                else {}
+            )
+            note_provenance.update({key: value for key, value in run_provenance.items() if value})
             normalized_note = self._normalize_document_note_payload(
                 payload={
                     **dict(document_note),
+                    "provenance": note_provenance,
                     "review_session_id": session_id,
                     "review_origin": "ai_suggestion",
                 },
@@ -2141,9 +2406,16 @@ class AnnotationStore:
 
         normalized_annotations: list[dict[str, Any]] = []
         for annotation in annotations:
+            annotation_provenance = (
+                json_copy(annotation.get("provenance"))
+                if isinstance(annotation.get("provenance"), dict)
+                else {}
+            )
+            annotation_provenance.update({key: value for key, value in run_provenance.items() if value})
             normalized_annotation = self._normalize_annotation_payload(
                 payload={
                     **dict(annotation),
+                    "provenance": annotation_provenance,
                     "review_session_id": session_id,
                     "review_origin": "ai_suggestion",
                 },
@@ -2166,6 +2438,8 @@ class AnnotationStore:
                 "updated_at_utc": created_at,
                 "closed_at_utc": "" if has_suggestions else created_at,
                 "created_by": created_by,
+                "ai_label_run_id": run_provenance["ai_label_run_id"],
+                "ai_label_run_item_id": run_provenance["ai_label_run_item_id"],
                 "suggestion_provenance": suggestion_provenance or {},
                 "resolution_warnings": resolution_warnings or [],
                 "suggested_document_note": normalized_note,
@@ -2418,6 +2692,243 @@ class AnnotationStore:
             self._assert_document_ai_label_writeable(store, canonical_document_id)
             return canonical_document_id
 
+    def suggest_ai_label_mode(self, document_id: str) -> str:
+        with self._locked_store():
+            store = self._read()
+            document = self.atlas_index.get_document(document_id)
+            if not document:
+                raise ValueError(f"Unknown document_id: {document_id}")
+            canonical_document_id = text_or_empty(document.get("document_id")).strip()
+            related_annotations = [
+                item
+                for item in (store.get("annotations") or [])
+                if text_or_empty(item.get("document_id")).strip() == canonical_document_id
+            ]
+            related_note = next(
+                (
+                    item
+                    for item in (store.get("document_notes") or [])
+                    if text_or_empty(item.get("document_id")).strip() == canonical_document_id
+                ),
+                None,
+            )
+            related_items = [*related_annotations, *([related_note] if related_note else [])]
+            has_locked_human_state = any(
+                record_is_human_reviewed(item) or not record_is_ai_labelled(item)
+                for item in related_items
+            )
+            return (
+                AI_LABEL_MODE_COMPLETE_EXISTING
+                if has_locked_human_state
+                else AI_LABEL_MODE_REPLACE
+            )
+
+    def list_ai_label_runs(self, limit: int = 8) -> list[dict[str, Any]]:
+        with self._locked_store():
+            store = self._read()
+            runs = sorted(
+                (store.get("ai_label_runs") or []),
+                key=ai_label_run_sort_key,
+                reverse=True,
+            )
+            return json_copy(runs[: max(0, int(limit))])
+
+    def create_ai_label_run(
+        self,
+        *,
+        document_ids: list[str],
+        config_id: str,
+        created_by: str = "reasoning-annotation-studio",
+    ) -> dict[str, Any]:
+        with self._locked_store():
+            store = self._read()
+            requested_document_ids: list[str] = []
+            seen_document_ids: set[str] = set()
+            for document_id in document_ids:
+                metadata = self._document_metadata(document_id)
+                canonical_document_id = text_or_empty(metadata.get("document_id")).strip()
+                if not canonical_document_id or canonical_document_id in seen_document_ids:
+                    continue
+                seen_document_ids.add(canonical_document_id)
+                requested_document_ids.append(canonical_document_id)
+            if not requested_document_ids:
+                raise ValueError("At least one reasoning trace is required.")
+
+            active_document_ids = {
+                text_or_empty(item.get("document_id")).strip()
+                for item in (store.get("ai_label_run_items") or [])
+                if text_or_empty(item.get("status")).strip() in {"queued", "running"}
+            }
+            eligible_document_ids = [
+                document_id
+                for document_id in requested_document_ids
+                if document_id not in active_document_ids
+            ]
+            skipped_document_ids = [
+                document_id
+                for document_id in requested_document_ids
+                if document_id in active_document_ids
+            ]
+
+            run_id = str(uuid.uuid4())
+            run_config = next(
+                (
+                    config
+                    for config in list_ai_label_configs()
+                    if text_or_empty(config.get("id")).strip() == config_id
+                ),
+                None,
+            )
+            if run_config is None:
+                raise ValueError(f"Unknown AI label config: {config_id}")
+            run = self._normalize_ai_label_run_payload(
+                {
+                    "id": run_id,
+                    "status": "queued" if eligible_document_ids else "completed",
+                    "created_at_utc": utc_now(),
+                    "updated_at_utc": utc_now(),
+                    "created_by": created_by,
+                    "config_id": config_id,
+                    "config": run_config,
+                    "mode": "auto",
+                    "document_ids": eligible_document_ids,
+                    "requested_document_count": len(requested_document_ids),
+                    "skipped_document_ids": skipped_document_ids,
+                    "total_count": len(eligible_document_ids),
+                    "queued_count": len(eligible_document_ids),
+                }
+            )
+            items: list[dict[str, Any]] = []
+            for index, document_id in enumerate(eligible_document_ids, start=1):
+                items.append(
+                    self._normalize_ai_label_run_item_payload(
+                        {
+                            "id": str(uuid.uuid4()),
+                            "run_id": run_id,
+                            "document_id": document_id,
+                            "queue_index": index,
+                            "status": "queued",
+                            "mode_requested": "auto",
+                            "config_id": config_id,
+                            "attempt_count": 0,
+                            "max_attempts": DEFAULT_AI_LABEL_RUN_MAX_ATTEMPTS,
+                        }
+                    )
+                )
+            store.setdefault("ai_label_runs", []).append(run)
+            store.setdefault("ai_label_run_items", []).extend(items)
+            store["ai_label_runs"] = sorted(store["ai_label_runs"], key=ai_label_run_sort_key)
+            store["ai_label_run_items"] = sorted(
+                store["ai_label_run_items"],
+                key=ai_label_run_item_sort_key,
+            )
+            self._refresh_ai_label_run_status(store, run_id)
+            self._write(store)
+            return {
+                "run": run,
+                "items": items,
+                "skipped_document_ids": skipped_document_ids,
+            }
+
+    def mark_ai_label_run_item_running(
+        self,
+        *,
+        run_id: str,
+        item_id: str,
+        attempt_count: int,
+        label_mode: str,
+    ) -> dict[str, Any]:
+        with self._locked_store():
+            store = self._read()
+            run = self._find_ai_label_run(store, run_id)
+            item = self._find_ai_label_run_item(store, item_id)
+            if not run or not item:
+                raise ValueError("AI label run item could not be found.")
+            now = utc_now()
+            item["status"] = "running"
+            item["attempt_count"] = max(int(item.get("attempt_count") or 0), int(attempt_count))
+            item["label_mode"] = label_mode
+            item["started_at_utc"] = text_or_empty(item.get("started_at_utc")).strip() or now
+            item["finished_at_utc"] = ""
+            item["error"] = ""
+            item["last_error_at_utc"] = ""
+            if not text_or_empty(run.get("started_at_utc")).strip():
+                run["started_at_utc"] = now
+            self._refresh_ai_label_run_status(store, run_id)
+            self._write(store)
+            return json_copy(item)
+
+    def mark_ai_label_run_item_applied(
+        self,
+        *,
+        run_id: str,
+        item_id: str,
+        label_mode: str,
+        review_session_id: str,
+        response_id: str,
+        resolution_warnings: list[str] | None = None,
+    ) -> dict[str, Any]:
+        with self._locked_store():
+            store = self._read()
+            item = self._find_ai_label_run_item(store, item_id)
+            if not item:
+                raise ValueError("AI label run item could not be found.")
+            item["status"] = "applied"
+            item["label_mode"] = label_mode
+            item["review_session_id"] = review_session_id
+            item["response_id"] = response_id
+            item["resolution_warnings"] = [
+                text_or_empty(entry).strip()
+                for entry in (resolution_warnings or [])
+                if text_or_empty(entry).strip()
+            ]
+            item["finished_at_utc"] = utc_now()
+            item["error"] = ""
+            item["last_error_at_utc"] = ""
+            self._refresh_ai_label_run_status(store, run_id)
+            self._write(store)
+            return json_copy(item)
+
+    def mark_ai_label_run_item_failed(
+        self,
+        *,
+        run_id: str,
+        item_id: str,
+        label_mode: str,
+        error: str,
+    ) -> dict[str, Any]:
+        with self._locked_store():
+            store = self._read()
+            item = self._find_ai_label_run_item(store, item_id)
+            if not item:
+                raise ValueError("AI label run item could not be found.")
+            item["status"] = "failed"
+            item["label_mode"] = label_mode
+            item["error"] = text_or_empty(error).strip()
+            item["last_error_at_utc"] = utc_now()
+            item["finished_at_utc"] = text_or_empty(item.get("finished_at_utc")).strip() or utc_now()
+            self._refresh_ai_label_run_status(store, run_id)
+            self._write(store)
+            return json_copy(item)
+
+    def mark_incomplete_ai_label_runs_interrupted(self) -> None:
+        with self._locked_store():
+            store = self._read()
+            changed = False
+            interruption_note = "Interrupted because the local annotation server restarted."
+            for item in store.get("ai_label_run_items") or []:
+                if text_or_empty(item.get("status")).strip() not in {"queued", "running"}:
+                    continue
+                item["status"] = "failed"
+                item["error"] = interruption_note
+                item["last_error_at_utc"] = utc_now()
+                item["finished_at_utc"] = text_or_empty(item.get("finished_at_utc")).strip() or utc_now()
+                changed = True
+            if not changed:
+                return
+            self._refresh_ai_label_runs(store)
+            self._write(store)
+
     def import_store(self, incoming: dict[str, Any], mode: str) -> dict[str, Any]:
         if mode not in {"merge", "replace"}:
             raise ValueError("Import mode must be merge or replace.")
@@ -2427,6 +2938,10 @@ class AnnotationStore:
                 replacement["categories"] = []
                 replacement["document_notes"] = []
                 replacement["annotations"] = []
+                replacement["review_sessions"] = []
+                replacement["review_events"] = []
+                replacement["ai_label_runs"] = []
+                replacement["ai_label_run_items"] = []
             else:
                 replacement = self._read()
 
@@ -2554,8 +3069,54 @@ class AnnotationStore:
                 existing_events.values(),
                 key=review_event_sort_key,
             )
+            existing_runs = {
+                text_or_empty(item.get("id")).strip(): item
+                for item in (replacement.get("ai_label_runs") or [])
+                if text_or_empty(item.get("id")).strip()
+            }
+            for run in incoming.get("ai_label_runs") or []:
+                if not isinstance(run, dict):
+                    continue
+                candidate = self._normalize_ai_label_run_payload(run)
+                existing_run = existing_runs.get(candidate["id"])
+                if (
+                    mode == "merge"
+                    and existing_run is not None
+                    and canonical_json(existing_run) != canonical_json(candidate)
+                ):
+                    raise ValueError(f"Import conflict for ai_label_run {candidate['id']}.")
+                existing_runs[candidate["id"]] = candidate
+            replacement["ai_label_runs"] = sorted(
+                existing_runs.values(),
+                key=ai_label_run_sort_key,
+            )
+
+            existing_run_items = {
+                text_or_empty(item.get("id")).strip(): item
+                for item in (replacement.get("ai_label_run_items") or [])
+                if text_or_empty(item.get("id")).strip()
+            }
+            for run_item in incoming.get("ai_label_run_items") or []:
+                if not isinstance(run_item, dict):
+                    continue
+                candidate = self._normalize_ai_label_run_item_payload(run_item)
+                existing_run_item = existing_run_items.get(candidate["id"])
+                if (
+                    mode == "merge"
+                    and existing_run_item is not None
+                    and canonical_json(existing_run_item) != canonical_json(candidate)
+                ):
+                    raise ValueError(
+                        f"Import conflict for ai_label_run_item {candidate['id']}."
+                    )
+                existing_run_items[candidate["id"]] = candidate
+            replacement["ai_label_run_items"] = sorted(
+                existing_run_items.values(),
+                key=ai_label_run_item_sort_key,
+            )
             self._backfill_review_sessions(replacement)
             self._backfill_review_events(replacement)
+            self._refresh_ai_label_runs(replacement)
 
             self._write(replacement)
             return replacement
@@ -2573,6 +3134,8 @@ class AnnotationStore:
             "annotation_defaults": dict(DEFAULT_ANNOTATION_DEFAULTS),
             "review_sessions": [],
             "review_events": [],
+            "ai_label_runs": [],
+            "ai_label_run_items": [],
         }
         raw_guidance = store.get("guidance") if isinstance(store.get("guidance"), dict) else {}
         for key in DEFAULT_GUIDANCE:
@@ -2692,8 +3255,43 @@ class AnnotationStore:
             seen_event_ids.add(event_id)
             review_events.append(normalized_event)
         normalized["review_events"] = sorted(review_events, key=review_event_sort_key)
+        ai_label_runs: list[dict[str, Any]] = []
+        seen_run_ids: set[str] = set()
+        for run in store.get("ai_label_runs") or []:
+            if not isinstance(run, dict):
+                continue
+            normalized_run = self._normalize_ai_label_run_payload(run)
+            run_id = text_or_empty(normalized_run.get("id")).strip()
+            if not run_id:
+                continue
+            if run_id in seen_run_ids:
+                raise ValueError(f"Duplicate ai_label_run id in store: {run_id}")
+            seen_run_ids.add(run_id)
+            ai_label_runs.append(normalized_run)
+        normalized["ai_label_runs"] = sorted(ai_label_runs, key=ai_label_run_sort_key)
+
+        ai_label_run_items: list[dict[str, Any]] = []
+        seen_run_item_ids: set[str] = set()
+        for run_item in store.get("ai_label_run_items") or []:
+            if not isinstance(run_item, dict):
+                continue
+            normalized_run_item = self._normalize_ai_label_run_item_payload(run_item)
+            run_item_id = text_or_empty(normalized_run_item.get("id")).strip()
+            if not run_item_id:
+                continue
+            if run_item_id in seen_run_item_ids:
+                raise ValueError(
+                    f"Duplicate ai_label_run_item id in store: {run_item_id}"
+                )
+            seen_run_item_ids.add(run_item_id)
+            ai_label_run_items.append(normalized_run_item)
+        normalized["ai_label_run_items"] = sorted(
+            ai_label_run_items,
+            key=ai_label_run_item_sort_key,
+        )
         self._backfill_review_sessions(normalized)
         self._backfill_review_events(normalized)
+        self._refresh_ai_label_runs(normalized)
         return normalized
 
     def _normalize_category(self, payload: dict[str, Any], fallback_order: int = 999) -> dict[str, Any]:
@@ -2725,7 +3323,6 @@ class AnnotationStore:
             "color": text_or_empty(category.get("color")).strip() or "#4b9b8c",
             "text_color": text_or_empty(category.get("text_color")).strip() or "#ffffff",
         }
-
     def _normalize_provenance(
         self,
         payload: dict[str, Any],
@@ -3030,6 +3627,253 @@ class AnnotationStore:
         }
 
 
+class AiLabelRunManager:
+    def __init__(
+        self,
+        *,
+        store: AnnotationStore,
+        payload: dict[str, Any],
+        max_workers: int = DEFAULT_AI_LABEL_RUN_CONCURRENCY,
+    ) -> None:
+        self.store = store
+        self.payload = payload
+        self.max_workers = max(1, int(max_workers))
+        self.executor = ThreadPoolExecutor(
+            max_workers=self.max_workers,
+            thread_name_prefix="ai-label-run",
+        )
+
+    def start_run(
+        self,
+        *,
+        document_ids: list[str],
+        config_id: str,
+        created_by: str = "reasoning-annotation-studio",
+    ) -> dict[str, Any]:
+        created = self.store.create_ai_label_run(
+            document_ids=document_ids,
+            config_id=config_id,
+            created_by=created_by,
+        )
+        run = created.get("run") or {}
+        items = list(created.get("items") or [])
+        run_id = text_or_empty(run.get("id")).strip()
+        for item in items:
+            item_id = text_or_empty(item.get("id")).strip()
+            document_id = text_or_empty(item.get("document_id")).strip()
+            if not run_id or not item_id or not document_id:
+                continue
+            self.executor.submit(
+                self._process_item,
+                run_id,
+                item_id,
+                document_id,
+                text_or_empty(run.get("config_id")).strip(),
+            )
+        return created
+
+    def run_document_sync(
+        self,
+        *,
+        document_id: str,
+        config_id: str,
+        created_by: str = "reasoning-annotation-studio",
+    ) -> dict[str, Any]:
+        created = self.store.create_ai_label_run(
+            document_ids=[document_id],
+            config_id=config_id,
+            created_by=created_by,
+        )
+        run = created.get("run") or {}
+        item = next(iter(created.get("items") or []), None)
+        if not item:
+            raise ValueError("AI labelling is already queued or running for this reasoning trace.")
+        run_id = text_or_empty(run.get("id")).strip()
+        item_id = text_or_empty(item.get("id")).strip()
+        canonical_document_id = text_or_empty(item.get("document_id")).strip()
+        if not run_id or not item_id or not canonical_document_id:
+            raise ValueError("AI label run could not be initialized.")
+        self._process_item(
+            run_id,
+            item_id,
+            canonical_document_id,
+            text_or_empty(run.get("config_id")).strip(),
+        )
+        snapshot = self.store.snapshot()
+        refreshed_run = next(
+            (
+                candidate
+                for candidate in (snapshot.get("ai_label_runs") or [])
+                if text_or_empty(candidate.get("id")).strip() == run_id
+            ),
+            None,
+        )
+        refreshed_item = next(
+            (
+                candidate
+                for candidate in (snapshot.get("ai_label_run_items") or [])
+                if text_or_empty(candidate.get("id")).strip() == item_id
+            ),
+            None,
+        )
+        if not refreshed_run or not refreshed_item:
+            raise ValueError("AI label run state could not be reloaded.")
+        if text_or_empty(refreshed_item.get("status")).strip() != "applied":
+            raise ValueError(
+                text_or_empty(refreshed_item.get("error")).strip()
+                or "AI labelling did not complete successfully."
+            )
+        review_session_id = text_or_empty(refreshed_item.get("review_session_id")).strip()
+        review_session = next(
+            (
+                session
+                for session in (snapshot.get("review_sessions") or [])
+                if text_or_empty(session.get("id")).strip() == review_session_id
+            ),
+            None,
+        )
+        annotations = [
+            record
+            for record in (snapshot.get("annotations") or [])
+            if text_or_empty(record.get("review_session_id")).strip() == review_session_id
+        ]
+        document_note = next(
+            (
+                note
+                for note in (snapshot.get("document_notes") or [])
+                if text_or_empty(note.get("review_session_id")).strip() == review_session_id
+            ),
+            None,
+        )
+        return {
+            "run": json_copy(refreshed_run),
+            "item": json_copy(refreshed_item),
+            "review_session": json_copy(review_session) if review_session else None,
+            "annotations": json_copy(annotations),
+            "document_note": json_copy(document_note) if document_note else None,
+        }
+
+    def _retry_delay_seconds(self, attempt_count: int, error_text: str) -> float:
+        normalized_error = text_or_empty(error_text).lower()
+        if "429" in normalized_error:
+            return min(12.0, 2.0 * attempt_count)
+        if "408" in normalized_error or "timed out" in normalized_error:
+            return min(8.0, 1.5 * attempt_count)
+        if "5" in normalized_error and "http" in normalized_error:
+            return min(10.0, 2.0 * attempt_count)
+        return min(4.0, float(attempt_count))
+
+    def _should_retry(
+        self,
+        *,
+        attempt_count: int,
+        max_attempts: int,
+        error_text: str,
+    ) -> bool:
+        if attempt_count >= max_attempts:
+            return False
+        normalized_error = text_or_empty(error_text).lower()
+        if "resolution error:" in normalized_error:
+            return attempt_count < max_attempts
+        retryable_markers = (
+            "http 408",
+            "http 409",
+            "http 429",
+            "http 500",
+            "http 502",
+            "http 503",
+            "http 504",
+            "request failed",
+            "timed out",
+            "temporarily unavailable",
+        )
+        return any(marker in normalized_error for marker in retryable_markers)
+
+    def _process_item(
+        self,
+        run_id: str,
+        item_id: str,
+        document_id: str,
+        config_id: str,
+    ) -> None:
+        max_attempts = DEFAULT_AI_LABEL_RUN_MAX_ATTEMPTS
+        attempt_count = 0
+        while attempt_count < max_attempts:
+            attempt_count += 1
+            label_mode = self.store.suggest_ai_label_mode(document_id)
+            self.store.mark_ai_label_run_item_running(
+                run_id=run_id,
+                item_id=item_id,
+                attempt_count=attempt_count,
+                label_mode=label_mode,
+            )
+            try:
+                store_snapshot = self.store.snapshot()
+                job = run_ai_labeling(
+                    document_id=document_id,
+                    store=store_snapshot,
+                    payload=self.payload,
+                    config_id=config_id or None,
+                    persist_artifact=False,
+                    label_mode=label_mode,
+                )
+                resolution_error = text_or_empty(job.get("resolution_error")).strip()
+                if resolution_error:
+                    raise RuntimeError(f"Resolution error: {resolution_error}")
+                apply_method = (
+                    self.store.complete_document_ai_labels
+                    if label_mode == AI_LABEL_MODE_COMPLETE_EXISTING
+                    else self.store.replace_document_ai_labels
+                )
+                applied = apply_method(
+                    document_id=document_id,
+                    document_note=job.get("resolved_document_note"),
+                    annotations=list(job.get("resolved_annotations") or []),
+                    suggestion_provenance={
+                        "workflow": text_or_empty(job.get("workflow")).strip(),
+                        "workflow_version": text_or_empty(job.get("workflow_version")).strip(),
+                        "label_mode": text_or_empty(job.get("label_mode")).strip() or label_mode,
+                        "config_id": text_or_empty(job.get("config_id")).strip(),
+                        "config": job.get("config") or {},
+                        "prompt_version": text_or_empty(job.get("prompt_version")).strip(),
+                        "response_id": text_or_empty(job.get("response_id")).strip(),
+                        "response_created": text_or_empty(job.get("response_created")).strip(),
+                        "target_existing_human_labels": job.get("target_existing_human_labels") or {},
+                        "ai_label_run_id": run_id,
+                        "ai_label_run_item_id": item_id,
+                    },
+                    created_by=text_or_empty((job.get("config") or {}).get("model")).strip(),
+                    resolution_warnings=list(job.get("resolution_warnings") or []),
+                )
+                self.store.mark_ai_label_run_item_applied(
+                    run_id=run_id,
+                    item_id=item_id,
+                    label_mode=label_mode,
+                    review_session_id=text_or_empty(
+                        (applied.get("review_session") or {}).get("id")
+                    ).strip(),
+                    response_id=text_or_empty(job.get("response_id")).strip(),
+                    resolution_warnings=list(job.get("resolution_warnings") or []),
+                )
+                return
+            except Exception as exc:  # noqa: BLE001
+                error_text = str(exc)
+                if self._should_retry(
+                    attempt_count=attempt_count,
+                    max_attempts=max_attempts,
+                    error_text=error_text,
+                ):
+                    time.sleep(self._retry_delay_seconds(attempt_count, error_text))
+                    continue
+                self.store.mark_ai_label_run_item_failed(
+                    run_id=run_id,
+                    item_id=item_id,
+                    label_mode=label_mode,
+                    error=error_text,
+                )
+                return
+
+
 class AnnotationRequestHandler(SimpleHTTPRequestHandler):
     server_version = "ReasoningAnnotationServer/1.0"
 
@@ -3066,6 +3910,7 @@ class AnnotationRequestHandler(SimpleHTTPRequestHandler):
                                 "enabled": self.app.ai_labeling_enabled,
                                 "default_config_id": self.app.ai_labeling_default_config_id,
                                 "configs": self.app.ai_labeling_configs,
+                                "max_concurrency": self.app.ai_labeling_max_concurrency,
                             },
                         },
                         "atlas": self.app.payload,
@@ -3143,67 +3988,58 @@ class AnnotationRequestHandler(SimpleHTTPRequestHandler):
                 document_id = text_or_empty(payload.get("document_id")).strip()
                 if not document_id:
                     raise ValueError("document_id is required.")
-                label_mode = text_or_empty(payload.get("mode")).strip() or AI_LABEL_MODE_REPLACE
-                if label_mode not in AI_LABEL_MODES:
-                    raise ValueError(f"Unknown AI label mode: {label_mode}")
                 config_id = (
                     text_or_empty(payload.get("config_id")).strip()
                     or self.app.ai_labeling_default_config_id
                 )
-                if label_mode == AI_LABEL_MODE_REPLACE:
-                    self.app.store.assert_document_ai_label_writeable(document_id)
-                job = run_ai_labeling(
+                applied = self.app.ai_label_run_manager.run_document_sync(
                     document_id=document_id,
-                    store=self.app.store.snapshot(),
-                    payload=self.app.payload,
                     config_id=config_id,
-                    persist_artifact=False,
-                    label_mode=label_mode,
+                    created_by="reasoning-annotation-studio",
                 )
-                resolution_error = text_or_empty(job.get("resolution_error")).strip()
-                if resolution_error:
-                    raise ValueError(f"AI labelling could not be resolved: {resolution_error}")
-                apply_method = (
-                    self.app.store.complete_document_ai_labels
-                    if label_mode == AI_LABEL_MODE_COMPLETE_EXISTING
-                    else self.app.store.replace_document_ai_labels
-                )
-                applied = apply_method(
-                    document_id=document_id,
-                    document_note=job.get("resolved_document_note"),
-                    annotations=list(job.get("resolved_annotations") or []),
-                    suggestion_provenance={
-                        "workflow": text_or_empty(job.get("workflow")).strip(),
-                        "workflow_version": text_or_empty(job.get("workflow_version")).strip(),
-                        "label_mode": text_or_empty(job.get("label_mode")).strip() or label_mode,
-                        "config_id": text_or_empty(job.get("config_id")).strip(),
-                        "config": job.get("config") or {},
-                        "prompt_version": text_or_empty(job.get("prompt_version")).strip(),
-                        "response_id": text_or_empty(job.get("response_id")).strip(),
-                        "response_created": text_or_empty(job.get("response_created")).strip(),
-                        "target_existing_human_labels": job.get("target_existing_human_labels") or {},
-                    },
-                    created_by=text_or_empty((job.get("config") or {}).get("model")).strip(),
-                    resolution_warnings=list(job.get("resolution_warnings") or []),
-                )
+                run = applied.get("run") or {}
+                item = applied.get("item") or {}
                 self._send_json(
                     {
                         "ok": True,
                         "document_note": applied.get("document_note"),
                         "annotations": applied.get("annotations") or [],
                         "review_session": applied.get("review_session"),
+                        "ai_label_run": run,
+                        "ai_label_run_item": item,
                         "ai_label_job": {
                             "document_id": document_id,
-                            "label_mode": label_mode,
-                            "config_id": text_or_empty(job.get("config_id")),
-                            "config": job.get("config") or {},
-                            "workflow": text_or_empty(job.get("workflow")),
-                            "workflow_version": text_or_empty(job.get("workflow_version")),
-                            "resolution_warnings": job.get("resolution_warnings") or [],
+                            "label_mode": text_or_empty(item.get("label_mode")).strip(),
+                            "config_id": text_or_empty(run.get("config_id")).strip(),
+                            "config": run.get("config") or {},
+                            "workflow": "reasoning_trace_ai_labelling",
+                            "workflow_version": AI_LABEL_WORKFLOW_VERSION,
+                            "resolution_warnings": item.get("resolution_warnings") or [],
                         },
                     },
                     status=HTTPStatus.CREATED,
                 )
+                return
+            if parsed.path == "/api/ai-label-runs":
+                if not self.app.ai_labeling_enabled:
+                    raise ValueError("AI labelling is not configured on this server.")
+                document_ids = [
+                    text_or_empty(item).strip()
+                    for item in (payload.get("document_ids") or [])
+                    if text_or_empty(item).strip()
+                ]
+                if not document_ids:
+                    raise ValueError("document_ids is required.")
+                config_id = (
+                    text_or_empty(payload.get("config_id")).strip()
+                    or self.app.ai_labeling_default_config_id
+                )
+                created = self.app.ai_label_run_manager.start_run(
+                    document_ids=document_ids,
+                    config_id=config_id,
+                    created_by="reasoning-annotation-studio",
+                )
+                self._send_json({"ok": True, **created}, status=HTTPStatus.CREATED)
                 return
         except Exception as exc:  # noqa: BLE001
             self._send_error_payload(exc)
@@ -3300,6 +4136,13 @@ class AnnotationHTTPServer(ThreadingHTTPServer):
         self.ai_labeling_enabled = bool(os.getenv("OPENROUTER_API_KEY", "").strip())
         self.ai_labeling_default_config_id = DEFAULT_AI_LABEL_CONFIG_ID
         self.ai_labeling_configs = list_ai_label_configs()
+        self.ai_labeling_max_concurrency = DEFAULT_AI_LABEL_RUN_CONCURRENCY
+        self.store.mark_incomplete_ai_label_runs_interrupted()
+        self.ai_label_run_manager = AiLabelRunManager(
+            store=self.store,
+            payload=self.payload,
+            max_workers=self.ai_labeling_max_concurrency,
+        )
 
 
 def parse_args() -> argparse.Namespace:
