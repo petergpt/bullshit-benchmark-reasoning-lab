@@ -3904,6 +3904,8 @@ class AnnotationRequestHandler(SimpleHTTPRequestHandler):
                     {
                         "app": {
                             "name": "BullshitBench Reasoning Lab",
+                            "mode": "local",
+                            "read_only": False,
                             "store_path": store_path,
                             "generated_at_utc": self.app.payload.get("generated_at_utc"),
                             "ai_labeling": {

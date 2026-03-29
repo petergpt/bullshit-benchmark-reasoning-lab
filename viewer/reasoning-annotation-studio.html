@@ -4722,6 +4722,18 @@
     ];
 
     const systemThemeMedia = window.matchMedia?.("(prefers-color-scheme: dark)") || null;
+    const RUNTIME = (() => {
+      const configured = window.REASONING_LAB_RUNTIME && typeof window.REASONING_LAB_RUNTIME === "object"
+        ? window.REASONING_LAB_RUNTIME
+        : {};
+      const mode = configured.mode === "static" ? "static" : "local";
+      const staticBootstrapUrl = String(configured.staticBootstrapUrl || "").trim();
+      return {
+        mode,
+        staticBootstrapUrl,
+        readOnly: configured.readOnly === true || mode === "static",
+      };
+    })();
 
     function initialThemePreference() {
       const stored = window.localStorage.getItem("reasoningLab.theme");
@@ -4813,6 +4825,8 @@
 
     const STATE = {
       bootstrap: null,
+      runtimeMode: RUNTIME.mode,
+      readOnly: RUNTIME.readOnly,
       themePreference: initialThemePreference(),
       sourceKey: window.localStorage.getItem("reasoningLab.sourceKey") || "gpt54_high",
       datasetKey: window.localStorage.getItem("reasoningLab.datasetKey") || "v2",
@@ -5276,6 +5290,23 @@
 
     function currentLabData() {
       return STATE.bootstrap?.lab || null;
+    }
+
+    function currentAppMeta() {
+      return STATE.bootstrap?.app || null;
+    }
+
+    function isStaticMode() {
+      return STATE.runtimeMode === "static";
+    }
+
+    function isReadOnlyMode() {
+      return Boolean(currentAppMeta()?.read_only ?? STATE.readOnly);
+    }
+
+    function readOnlyMessage() {
+      const configured = String(currentAppMeta()?.read_only_message || "").trim();
+      return configured || "Read-only snapshot. Run the local server to edit labels.";
     }
 
     function currentSource() {
@@ -6881,8 +6912,9 @@
     }
 
     function renderReasoningHeader(documentId, source, spanCount) {
-      const aiButton = aiLabelButtonMeta(documentId);
-      const clearButton = aiClearButtonMeta(documentId);
+      const readOnly = isReadOnlyMode();
+      const aiButton = readOnly ? null : aiLabelButtonMeta(documentId);
+      const clearButton = readOnly ? null : aiClearButtonMeta(documentId);
       const statusBadges = documentId ? renderDocumentStatusBadges(documentId) : "";
       return `
         <div class="reasoning-topline">
@@ -6895,36 +6927,38 @@
                 ${renderModelChip(source)}
                 ${renderMetricChip(spanCount)}
                 ${statusBadges}
-                <div class="reasoning-actions">
-                  <button
-                    class="icon-action-btn ai-action-btn${aiButton.loading ? " is-loading" : ""} tooltip-anchor${aiButton.title ? "" : " no-tip"}"
-                    type="button"
-                    data-ai-label-document="${escapeHtml(documentId || "")}"
-                    data-tip="${escapeAttribute(aiButton.title)}"
-                    aria-label="${escapeAttribute(aiButton.title)}"
-                    aria-busy="${aiButton.loading ? "true" : "false"}"
-                    title="${escapeAttribute(aiButton.title)}"
-                    ${aiButton.enabled ? "" : "disabled"}
-                  >
-                    ${renderUiIcon(aiButton.icon || "sparkles")}
-                  </button>
-                  ${clearButton ? `
+                ${aiButton ? `
+                  <div class="reasoning-actions">
                     <button
-                      class="icon-action-btn tooltip-anchor${clearButton.title ? "" : " no-tip"}"
+                      class="icon-action-btn ai-action-btn${aiButton.loading ? " is-loading" : ""} tooltip-anchor${aiButton.title ? "" : " no-tip"}"
                       type="button"
-                      data-clear-ai-labels-document="${escapeHtml(documentId || "")}"
-                    data-tip="${escapeAttribute(clearButton.title)}"
-                    aria-label="${escapeAttribute(clearButton.title)}"
-                    title="${escapeAttribute(clearButton.title)}"
-                    ${clearButton.enabled ? "" : "disabled"}
-                  >
-                      ${renderUiIcon("undo")}
+                      data-ai-label-document="${escapeHtml(documentId || "")}"
+                      data-tip="${escapeAttribute(aiButton.title)}"
+                      aria-label="${escapeAttribute(aiButton.title)}"
+                      aria-busy="${aiButton.loading ? "true" : "false"}"
+                      title="${escapeAttribute(aiButton.title)}"
+                      ${aiButton.enabled ? "" : "disabled"}
+                    >
+                      ${renderUiIcon(aiButton.icon || "sparkles")}
                     </button>
-                  ` : ""}
-                </div>
+                    ${clearButton ? `
+                      <button
+                        class="icon-action-btn tooltip-anchor${clearButton.title ? "" : " no-tip"}"
+                        type="button"
+                        data-clear-ai-labels-document="${escapeHtml(documentId || "")}"
+                        data-tip="${escapeAttribute(clearButton.title)}"
+                        aria-label="${escapeAttribute(clearButton.title)}"
+                        title="${escapeAttribute(clearButton.title)}"
+                        ${clearButton.enabled ? "" : "disabled"}
+                      >
+                        ${renderUiIcon("undo")}
+                      </button>
+                    ` : ""}
+                  </div>
+                ` : ""}
               </div>
             </div>
-            <p class="panel-subtitle compact">Select text to label it.</p>
+            <p class="panel-subtitle compact">${readOnly ? "Read-only snapshot." : "Select text to label it."}</p>
           </div>
         </div>
       `;
@@ -7479,7 +7513,7 @@
     function renderSelectionToolbar() {
       const toolbar = el.selectionToolbar;
       if (!toolbar) return;
-      if (STATE.viewMode !== "label") {
+      if (STATE.viewMode !== "label" || isReadOnlyMode()) {
         toolbar.classList.remove("visible");
         toolbar.classList.remove("flash-mode");
         toolbar.innerHTML = "";
@@ -7553,6 +7587,10 @@
       const dataset = currentDataset();
       const store = currentStore();
       if (!dataset || !store) return;
+      if (isReadOnlyMode()) {
+        el.statusLine.textContent = `Read-only snapshot • updated ${formatDate(store.updated_at_utc)}`;
+        return;
+      }
       el.statusLine.textContent = `${STATE.bootstrap.app.store_path} • updated ${formatDate(store.updated_at_utc)}`;
     }
 
@@ -7595,6 +7633,7 @@
       const isReviewMode = STATE.viewMode === "review";
       const isLabelMode = STATE.viewMode === "label";
       const isReportMode = STATE.viewMode === "report";
+      const readOnly = isReadOnlyMode();
       if (el.filterPanel) {
         el.filterPanel.hidden = !isExplorerMode && !isReportMode;
         el.filterPanel.classList.toggle("is-active", isExplorerMode || isReportMode);
@@ -7621,6 +7660,12 @@
       if (el.toggleSidebarBtn) {
         el.toggleSidebarBtn.hidden = !isLabelMode;
         el.toggleSidebarBtn.textContent = STATE.sidebarOpen ? "Hide tools" : "Show tools";
+      }
+      if (el.exportBtn) {
+        el.exportBtn.hidden = readOnly;
+      }
+      if (el.importBtn) {
+        el.importBtn.hidden = readOnly;
       }
       if (el.openExplorerBtn) {
         el.openExplorerBtn.textContent = STATE.labelReturnContext?.mode === "report"
@@ -7660,6 +7705,7 @@
     function renderSharedFilters(rows) {
       const dataset = currentDataset();
       if (!dataset) return;
+      const readOnly = isReadOnlyMode();
       const available = availableDomains();
       const selectedDomainList = selectedDomainsForCurrentDataset();
       const allCases = dataset.cases || [];
@@ -7702,9 +7748,9 @@
       if (searchField) searchField.hidden = isReviewMode;
       if (gradeField) gradeField.hidden = isReviewMode;
       if (annotationField) annotationField.hidden = isReviewMode;
-      if (filterActions) filterActions.hidden = isReviewMode || isReportMode;
+      if (filterActions) filterActions.hidden = isReviewMode || isReportMode || readOnly;
       if (el.labelSelectedAiBtn) {
-        el.labelSelectedAiBtn.hidden = isReviewMode || isReportMode || !aiMeta.enabled;
+        el.labelSelectedAiBtn.hidden = isReviewMode || isReportMode || readOnly || !aiMeta.enabled;
         el.labelSelectedAiBtn.disabled = !selectedTargets.length;
         el.labelSelectedAiBtn.innerHTML = `
           <span class="btn-icon-label">
@@ -8162,6 +8208,7 @@
 
     function renderExplorerHeader(rows = []) {
       if (!el.questionExplorerHead) return;
+      const showSelectionColumn = !isReadOnlyMode();
       const dataset = currentDataset();
       const primarySource = currentSource();
       const compareSource = sourceForKey(alternateSourceKeyForDataset(dataset?.key || STATE.datasetKey));
@@ -8177,15 +8224,17 @@
       ];
       el.questionExplorerHead.innerHTML = `
         <tr>
-          <th scope="col" class="explorer-selection-cell">
-            <label class="explorer-head-selector" title="Select visible questions">
-              <input
-                type="checkbox"
-                data-select-visible-checkbox
-                ${rows.length && rows.every((caseRow) => selectedExplorerQuestionSetForCurrentDataset().has(String(caseRow.question_id || ""))) ? "checked" : ""}
-              >
-            </label>
-          </th>
+          ${showSelectionColumn ? `
+            <th scope="col" class="explorer-selection-cell">
+              <label class="explorer-head-selector" title="Select visible questions">
+                <input
+                  type="checkbox"
+                  data-select-visible-checkbox
+                  ${rows.length && rows.every((caseRow) => selectedExplorerQuestionSetForCurrentDataset().has(String(caseRow.question_id || ""))) ? "checked" : ""}
+                >
+              </label>
+            </th>
+          ` : ""}
           ${columns.map((column) => {
             const direction = sortDirectionForColumn(column.key);
             const indicator = direction === "ascending" ? "↑" : (direction === "descending" ? "↓" : "");
@@ -8210,6 +8259,7 @@
     function renderExplorerView(rows) {
       const dataset = currentDataset();
       if (!dataset) return;
+      const showSelectionColumn = !isReadOnlyMode();
       renderExplorerHeader(rows);
       const primarySource = currentSource();
       const compareSourceKey = alternateSourceKeyForDataset(dataset.key || STATE.datasetKey);
@@ -8242,11 +8292,13 @@
             isCurrent ? "is-current" : "",
             activeRunMeta.active ? "is-ai-run" : "",
           ].filter(Boolean).join(" ")}">
-            <td class="explorer-selection-cell">
-              <label class="explorer-row-selector" title="Select this question for AI labelling">
-                <input type="checkbox" data-select-question="${escapeHtml(caseRow.question_id)}" ${isSelectedForRun ? "checked" : ""}>
-              </label>
-            </td>
+            ${showSelectionColumn ? `
+              <td class="explorer-selection-cell">
+                <label class="explorer-row-selector" title="Select this question for AI labelling">
+                  <input type="checkbox" data-select-question="${escapeHtml(caseRow.question_id)}" ${isSelectedForRun ? "checked" : ""}>
+                </label>
+              </td>
+            ` : ""}
             <td class="explorer-question-cell">
               <div class="explorer-question-button">
                 <p class="explorer-question-line">${escapeHtml(questionExcerpt || caseRow.question || "")}</p>
@@ -8277,7 +8329,7 @@
             </td>
           </tr>
         `;
-      }).join("") : `<tr><td colspan="10"><div class="empty-state"><strong>No questions match the current filters.</strong><br>Reset filters to widen the explorer.</div></td></tr>`;
+      }).join("") : `<tr><td colspan="${showSelectionColumn ? "10" : "9"}"><div class="empty-state"><strong>No questions match the current filters.</strong><br>Reset filters to widen the explorer.</div></td></tr>`;
     }
 
     function renderReviewCaseList(rows) {
@@ -8753,6 +8805,7 @@
     function renderComposerPanel(caseRow) {
       const targetContext = composerTargetContext(caseRow);
       const traceDocument = targetContext.selected?.document || null;
+      const readOnly = isReadOnlyMode();
       if (!traceDocument || !targetContext.selected) {
         el.composerPanel.innerHTML = "";
         el.composerPanel.hidden = true;
@@ -8761,19 +8814,19 @@
       el.composerPanel.hidden = false;
       const selectedTarget = targetContext.selected;
       const documentNote = traceDocument ? documentNoteForDocument(traceDocument.document_id) : null;
-      const documentNoteDraft = traceDocument ? draftDocumentNoteFor(traceDocument.document_id) : null;
+      const documentNoteDraft = !readOnly && traceDocument ? draftDocumentNoteFor(traceDocument.document_id) : null;
       const documentNoteSummary = documentNoteDraft
         ? documentNoteDraft.summary
         : (documentNote?.summary || "");
       const documentNoteLabelId = documentNoteDraft
         ? documentNoteDraft.labelId
         : (documentNote?.label_id || "");
-      const showDocumentReviewToggle = recordIsAiLabelled(documentNote);
+      const showDocumentReviewToggle = !readOnly && recordIsAiLabelled(documentNote);
 
       el.composerPanel.innerHTML = `
         <div class="section-head composer-head">
           <h2>Overall label</h2>
-          <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
+          <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(readOnly ? "Read-only" : documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
           ${renderComposerTargetSwitch(targetContext, selectedTarget, "Overall label target", "Overall label for")}
         </div>
         <div class="control-grid">
@@ -8785,6 +8838,7 @@
                   type="button"
                   data-document-note-label="${escapeHtml(category.id)}"
                   title="${escapeAttribute(categoryTooltip(category))}"
+                  ${readOnly ? "disabled" : ""}
                 >
                   <span class="swatch" style="background:${escapeHtml(category.color || "#8aa19b")}"></span>
                   <span>${escapeHtml(category.name || category.id)}</span>
@@ -8793,7 +8847,7 @@
             </div>
             <div class="overall-note-field">
               <label for="traceSummaryInput">Overall note</label>
-              <textarea id="traceSummaryInput" placeholder="Write one note about the reasoning trace as a whole">${escapeHtml(documentNoteSummary)}</textarea>
+              <textarea id="traceSummaryInput" placeholder="Write one note about the reasoning trace as a whole" ${readOnly ? "readonly" : ""}>${escapeHtml(documentNoteSummary)}</textarea>
             </div>
             ${documentNote
               ? `
@@ -8830,6 +8884,7 @@
       const targetContext = composerTargetContext(caseRow);
       const selectedTarget = targetContext.selected;
       const traceDocument = selectedTarget?.document || null;
+      const readOnly = isReadOnlyMode();
       if (!traceDocument || !selectedTarget) {
         el.annotationPanel.innerHTML = "";
         el.annotationPanel.hidden = true;
@@ -8847,10 +8902,10 @@
       const items = annotationsForDocument(traceDocument.document_id);
       const activeAnnotation = items.find((item) => item.id === STATE.activeAnnotationId) || null;
       const activeAnnotationComment = activeAnnotation
-        ? annotationCommentDraftForContext(activeAnnotation, null)
+        ? (readOnly ? (activeAnnotation.comment || "") : annotationCommentDraftForContext(activeAnnotation, null))
         : "";
       const activeAnnotationLabelId = activeAnnotation?.label_id || STATE.selectedCategoryId;
-      const showActiveReviewToggle = recordIsAiLabelled(activeAnnotation);
+      const showActiveReviewToggle = !readOnly && recordIsAiLabelled(activeAnnotation);
       el.annotationPanel.hidden = false;
       const categoryLookup = categoryMap();
       el.annotationPanel.innerHTML = `
@@ -8879,12 +8934,14 @@
                         <span>${escapeHtml(category.name || annotation.label_id)}</span>
                       </div>
                       <div class="annotation-card-actions">
-                        <button
-                          class="annotation-card-delete"
-                          type="button"
-                          data-delete-annotation="${escapeHtml(annotation.id)}"
-                          title="Delete highlight"
-                        >Delete</button>
+                        ${readOnly ? "" : `
+                          <button
+                            class="annotation-card-delete"
+                            type="button"
+                            data-delete-annotation="${escapeHtml(annotation.id)}"
+                            title="Delete highlight"
+                          >Delete</button>
+                        `}
                       </div>
                     </div>
                     <p class="annotation-quote">${escapeHtml(annotation.quote || "")}</p>
@@ -8904,7 +8961,7 @@
                 <div class="overall-trace-card annotation-editor-card">
                   <div class="section-head composer-head">
                     <div class="composer-heading-main">
-                      <h3>Edit highlight</h3>
+                      <h3>${readOnly ? "Highlight details" : "Edit highlight"}</h3>
                     </div>
                   </div>
                   <p class="annotation-quote">${escapeHtml(activeAnnotation.quote || "")}</p>
@@ -8915,6 +8972,7 @@
                         type="button"
                         data-category-select="${escapeHtml(category.id)}"
                         title="${escapeAttribute(categoryTooltip(category))}"
+                        ${readOnly ? "disabled" : ""}
                       >
                         <span class="swatch" style="background:${escapeHtml(category.color || "#8aa19b")}"></span>
                         <span>${escapeHtml(category.name || category.id)}</span>
@@ -8923,7 +8981,7 @@
                   </div>
                   <div class="overall-note-field">
                     <label for="annotationCommentInput">Why this label</label>
-                    <textarea id="annotationCommentInput" placeholder="Write why this span has this label.">${escapeHtml(activeAnnotationComment)}</textarea>
+                    <textarea id="annotationCommentInput" placeholder="Write why this span has this label." ${readOnly ? "readonly" : ""}>${escapeHtml(activeAnnotationComment)}</textarea>
                   </div>
                   <div class="review-row">
                     <div class="pill-row">
@@ -8942,12 +9000,14 @@
                           </label>
                         `
                         : ""}
-                      <button
-                        class="annotation-card-delete"
-                        id="deleteAnnotationBtn"
-                        type="button"
-                        title="Delete highlight"
-                      >Delete</button>
+                      ${readOnly ? "" : `
+                        <button
+                          class="annotation-card-delete"
+                          id="deleteAnnotationBtn"
+                          type="button"
+                          title="Delete highlight"
+                        >Delete</button>
+                      `}
                     </div>
                   </div>
                 </div>
@@ -9244,13 +9304,15 @@
       });
     }
 
-    async function apiRequest(url, options = {}) {
+    async function requestJson(url, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      const hasBody = options.body !== undefined && options.body !== null;
+      if (hasBody && !Object.keys(headers).some((key) => key.toLowerCase() === "content-type")) {
+        headers["Content-Type"] = "application/json";
+      }
       const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {}),
-        },
         ...options,
+        headers,
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || payload.ok === false) {
@@ -9259,9 +9321,28 @@
       return payload;
     }
 
+    async function loadBootstrapPayload() {
+      if (isStaticMode()) {
+        if (!RUNTIME.staticBootstrapUrl) {
+          throw new Error("Static mode is enabled but no bootstrap snapshot URL was configured.");
+        }
+        return requestJson(RUNTIME.staticBootstrapUrl);
+      }
+      return requestJson("/api/bootstrap");
+    }
+
+    async function apiRequest(url, options = {}) {
+      if (isReadOnlyMode()) {
+        throw new Error(readOnlyMessage());
+      }
+      return requestJson(url, options);
+    }
+
     async function bootstrap() {
-      const payload = await apiRequest("/api/bootstrap");
+      const payload = await loadBootstrapPayload();
       STATE.bootstrap = payload;
+      STATE.runtimeMode = payload?.app?.mode === "static" ? "static" : RUNTIME.mode;
+      STATE.readOnly = Boolean(payload?.app?.read_only ?? RUNTIME.readOnly);
       const labData = payload.lab || {};
       const preferredSourceKey = labData?.sources?.[STATE.sourceKey]
         ? STATE.sourceKey
@@ -9276,7 +9357,7 @@
         const firstCategory = (payload.store?.categories || [])[0];
         STATE.selectedCategoryId = firstCategory?.id || "";
       }
-      if (activeAiRunIds().length) {
+      if (!isReadOnlyMode() && activeAiRunIds().length) {
         ensureAiRunPolling();
       } else {
         syncActiveAiRunExplorerState();
@@ -9285,9 +9366,10 @@
     }
 
     async function refreshStoreOnly() {
-      const payload = await apiRequest("/api/bootstrap");
+      const payload = await loadBootstrapPayload();
       if (STATE.bootstrap) {
         STATE.bootstrap.app = payload.app;
+        STATE.bootstrap.lab = payload.lab;
         STATE.bootstrap.store = payload.store;
       } else {
         STATE.bootstrap = payload;
@@ -10202,6 +10284,7 @@
         }, "Could not start AI labelling.");
       });
       el.reasoningPanel.addEventListener("mouseup", () => {
+        if (isReadOnlyMode()) return;
         if (selectionCaptureFrame) {
           window.cancelAnimationFrame(selectionCaptureFrame);
         }
@@ -10226,6 +10309,7 @@
         });
       });
       el.comparisonPanel.addEventListener("mouseup", () => {
+        if (isReadOnlyMode()) return;
         if (selectionCaptureFrame) {
           window.cancelAnimationFrame(selectionCaptureFrame);
         }
@@ -10345,6 +10429,7 @@
             syncComposerTarget(targetButton.getAttribute("data-composer-target-source") || "", { renderComposer: true });
             return;
           }
+          if (isReadOnlyMode()) return;
           const documentNoteButton = event.target.closest("[data-document-note-label]");
           if (documentNoteButton) {
             const caseRow = currentCaseForUi();
@@ -10420,6 +10505,7 @@
         }, "Could not update the label panel.");
       });
       el.composerPanel.addEventListener("input", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id === "traceSummaryInput") {
           const caseRow = currentCaseForUi();
           const traceDocument = composerTargetContext(caseRow).selected?.document || null;
@@ -10466,6 +10552,7 @@
         }
       });
       el.composerPanel.addEventListener("change", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id !== "documentNoteReviewedToggle") return;
         const caseRow = currentCaseForUi();
         const traceDocument = composerTargetContext(caseRow).selected?.document || null;
@@ -10485,6 +10572,7 @@
         );
       });
       el.composerPanel.addEventListener("focusout", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id === "traceSummaryInput") {
           const caseRow = currentCaseForUi();
           const traceDocument = composerTargetContext(caseRow).selected?.document || null;
@@ -10529,14 +10617,15 @@
             syncComposerTarget(targetButton.getAttribute("data-composer-target-source") || "", { renderComposer: true });
             return;
           }
-          const deleteButton = event.target.closest("[data-delete-annotation]");
-          if (deleteButton) {
-            await deleteAnnotation(deleteButton.getAttribute("data-delete-annotation") || "");
-            return;
-          }
           const openButton = event.target.closest("[data-annotation-open]");
           if (openButton) {
             openAnnotation(openButton.getAttribute("data-annotation-open") || "", { origin: "panel" });
+            return;
+          }
+          if (isReadOnlyMode()) return;
+          const deleteButton = event.target.closest("[data-delete-annotation]");
+          if (deleteButton) {
+            await deleteAnnotation(deleteButton.getAttribute("data-delete-annotation") || "");
             return;
           }
           const categoryButton = event.target.closest("[data-category-select]");
@@ -10557,6 +10646,7 @@
         }, "Could not update the saved highlight.");
       });
       el.annotationPanel.addEventListener("input", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id !== "annotationCommentInput") return;
         STATE.draftComment = event.target.value;
         persistAnnotationCommentDraft(currentAnnotationDraftKey(), STATE.draftComment);
@@ -10579,6 +10669,7 @@
         }, 500);
       });
       el.annotationPanel.addEventListener("change", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id !== "annotationReviewedToggle") return;
         const checked = Boolean(event.target.checked);
         void runUiAction(async () => {
@@ -10591,6 +10682,7 @@
         }, "Could not update the review state.");
       });
       el.annotationPanel.addEventListener("focusout", (event) => {
+        if (isReadOnlyMode()) return;
         if (event.target.id !== "annotationCommentInput") return;
         const activeAnnotation = annotations().find((item) => item.id === STATE.activeAnnotationId);
         clearScheduledAnnotationCommentSave();
@@ -10603,6 +10695,7 @@
         }, "Could not save why this label.");
       });
       el.selectionToolbar.addEventListener("click", (event) => {
+        if (isReadOnlyMode()) return;
         void runUiAction(async () => {
           const categoryButton = event.target.closest("[data-toolbar-category]");
           if (categoryButton) {
@@ -10787,12 +10880,17 @@
         el.statusLine.textContent = error.message || "Failed to load the annotation studio.";
         setToast(error.message || "Failed to load the annotation studio.", "error", 0);
         const openedFromDisk = window.location.protocol === "file:";
+        const openedStatic = isStaticMode();
         el.questionPanel.innerHTML = `
           <div class="empty-state">
-            <strong>${openedFromDisk ? "This page was opened from disk, so the data API is unavailable." : "Could not connect to the local annotation server."}</strong><br>
-            ${openedFromDisk
-              ? 'Open <code>http://127.0.0.1:8878/viewer/reasoning-annotation-studio.html</code> instead.'
-              : 'Start <code>reasoning-lab/scripts/reasoning_annotation_server.py</code> and reload this page.'}
+            <strong>${openedStatic
+              ? "Could not load the read-only snapshot."
+              : (openedFromDisk ? "This page was opened from disk, so the data API is unavailable." : "Could not connect to the local annotation server.")}</strong><br>
+            ${openedStatic
+              ? 'Rebuild the Pages snapshot and make sure <code>bootstrap.json</code> is published beside this viewer.'
+              : (openedFromDisk
+                ? 'Open <code>http://127.0.0.1:8878/viewer/reasoning-annotation-studio.html</code> instead.'
+                : 'Start <code>reasoning-lab/scripts/reasoning_annotation_server.py</code> and reload this page.')}
           </div>
         `;
       }

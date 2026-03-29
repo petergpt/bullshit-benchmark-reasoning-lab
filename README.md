@@ -43,6 +43,9 @@ The main app to share is:
 
 That is the one URL I would send to someone else.
 
+If you want a zero-install link, the same studio can also be published as a
+read-only GitHub Pages snapshot. The local server is still the editing mode.
+
 ## Quick Start
 
 1. Clone the repo.
@@ -160,6 +163,12 @@ Refresh just the derived label-example export:
 
 ```bash
 python3 scripts/export_reasoning_label_examples.py
+```
+
+Build the read-only GitHub Pages snapshot:
+
+```bash
+python3 scripts/build_pages_site.py
 ```
 
 Rebuild just the Sonnet 4.6 browser bundle:
