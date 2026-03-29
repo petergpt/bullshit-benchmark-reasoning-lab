@@ -10,6 +10,5 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
   set +a
 fi
 
-python3 "${ROOT_DIR}/scripts/build_gpt54_reasoning_atlas.py"
 python3 "${ROOT_DIR}/scripts/export_reasoning_label_examples.py"
 python3 "${ROOT_DIR}/scripts/sonnet46/build_reasoning_bundle.py"

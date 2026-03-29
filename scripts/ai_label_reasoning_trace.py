@@ -1481,10 +1481,10 @@ def apply_predictions(
     annotations: list[dict[str, Any]],
     label_mode: str,
 ) -> None:
-    from reasoning_annotation_server import AtlasIndex, AnnotationStore
+    from reasoning_annotation_server import ReasoningDocumentIndex, AnnotationStore
 
-    atlas_index = AtlasIndex(payload)
-    store = AnnotationStore(store_path.resolve(), atlas_index)
+    document_index = ReasoningDocumentIndex(payload)
+    store = AnnotationStore(store_path.resolve(), document_index)
     if label_mode == AI_LABEL_MODE_COMPLETE_EXISTING:
         store.complete_document_ai_labels(
             document_id=document_id,

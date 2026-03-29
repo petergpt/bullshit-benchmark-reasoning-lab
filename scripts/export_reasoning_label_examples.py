@@ -90,7 +90,7 @@ def build_case_index(payload: dict[str, Any]) -> tuple[dict[str, dict[str, Any]]
                     f"{text_or_empty(case.get('question_id'))}"
                 )
                 if case_key in cases:
-                    raise ValueError(f"Duplicate case key in atlas payload: {case_key}")
+                    raise ValueError(f"Duplicate case key in lab payload: {case_key}")
                 cases[case_key] = case
                 variant = (case.get("variants") or {}).get(primary_variant_key) or {}
                 document = variant.get("reasoning_document")
@@ -105,14 +105,14 @@ def build_case_index(payload: dict[str, Any]) -> tuple[dict[str, dict[str, Any]]
                             "variant": variant,
                         }
                         if document_id in documents and documents[document_id] != bundle:
-                            raise ValueError(f"Duplicate document_id in atlas payload: {document_id}")
+                            raise ValueError(f"Duplicate document_id in lab payload: {document_id}")
                         documents[document_id] = bundle
                         for legacy_id in document.get("legacy_document_ids") or []:
                             legacy_text = text_or_empty(legacy_id).strip()
                             if legacy_text:
                                 if legacy_text in documents and documents[legacy_text] != bundle:
                                     raise ValueError(
-                                        f"Duplicate legacy document_id in atlas payload: {legacy_text}"
+                                        f"Duplicate legacy document_id in lab payload: {legacy_text}"
                                     )
                                 documents[legacy_text] = bundle
     return cases, documents

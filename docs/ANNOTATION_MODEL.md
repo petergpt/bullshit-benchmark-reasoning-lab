@@ -3,6 +3,9 @@
 This studio is the shared annotation layer for Reasoning Lab across the GPT-5.4
 and Sonnet 4.6 trace sets.
 
+For external sharing, treat `viewer/reasoning-annotation-studio.html` as the
+canonical product surface.
+
 Its purpose is not just to read traces, but to create reusable supervision about
 how models handle nonsense prompts:
 
@@ -18,10 +21,8 @@ how models handle nonsense prompts:
 - Frontend: `viewer/reasoning-annotation-studio.html`
 - Local server: `scripts/reasoning_annotation_server.py`
 - Shared multi-model dataset builder: `scripts/reasoning_lab_data.py`
-- GPT-5.4 atlas builder: `scripts/gpt54_atlas_data.py`
 - Shared path resolver: `scripts/reasoning_lab_paths.py`
 - Annotation store: `annotations/reasoning_lab.json`
-- Generated atlas bundle: `data/gpt54-reasoning-atlas.data.js`
 - Derived model examples export: `data/reasoning_label_examples.jsonl`
 - JSONL exporter: `scripts/export_reasoning_label_examples.py`
 - Branding asset: `assets/bsbench.png`
@@ -264,8 +265,6 @@ later model-assisted labeling workflows.
 ## Files to Know
 
 - `viewer/reasoning-annotation-studio.html`
-- `viewer/gpt54-reasoning-atlas.html`
-- `data/gpt54-reasoning-atlas.data.js`
 - `data/reasoning_label_examples.jsonl`
 - `source-data/gpt54/`
 - `scripts/reasoning_annotation_server.py`
@@ -273,6 +272,5 @@ later model-assisted labeling workflows.
 - `scripts/sync_gpt54_source_data.py`
 - `scripts/reasoning_lab_paths.py`
 - `scripts/reasoning_lab_data.py`
-- `scripts/gpt54_atlas_data.py`
 - `scripts/export_reasoning_label_examples.py`
 - `annotations/reasoning_lab.json`

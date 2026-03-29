@@ -99,21 +99,24 @@
         0 1px 0 rgba(255, 255, 255, 0.82) inset,
         0 2px 6px rgba(20, 25, 23, 0.12);
       --button-secondary-border-hover: color-mix(in srgb, #7f8d9a 30%, var(--line));
-      --workflow-validated-surface: #edf5f1;
-      --workflow-validated-line: #cfe0d8;
-      --workflow-validated-text: #295f4a;
-      --workflow-validated-fill-start: #4f8e78;
-      --workflow-validated-fill-end: #6aa88b;
+      --workflow-validated-surface: #ebf7ef;
+      --workflow-validated-line: #c7e2d2;
+      --workflow-validated-text: #1f6b4d;
+      --workflow-validated-fill-start: #2f8d67;
+      --workflow-validated-fill-end: #5eb086;
       --workflow-active-surface: #faf4e8;
       --workflow-active-line: #e7d6ab;
       --workflow-active-text: #7a5a13;
       --workflow-active-fill-start: #c67b10;
       --workflow-active-fill-end: #d79a33;
-      --workflow-review-surface: #eef3f7;
-      --workflow-review-line: #d0dbe5;
-      --workflow-review-text: #41596d;
-      --workflow-review-fill-start: #5c7f9d;
-      --workflow-review-fill-end: #7d9ab3;
+      --workflow-review-surface: #edf3fa;
+      --workflow-review-line: #c6d7e6;
+      --workflow-review-text: #30597e;
+      --workflow-review-fill-start: #446f9e;
+      --workflow-review-fill-end: #7398c0;
+      --verdict-red-surface: #faeded;
+      --verdict-red-line: #e6c3c7;
+      --verdict-red-text: #8d404a;
       --workflow-unreviewed-surface: #f3f4f3;
       --workflow-unreviewed-line: #d6dbd8;
       --workflow-unreviewed-text: #576762;
@@ -190,21 +193,24 @@
         0 1px 0 rgba(255, 255, 255, 0.08) inset,
         0 4px 10px rgba(4, 5, 7, 0.28);
       --button-secondary-border-hover: color-mix(in srgb, #7f8d9a 44%, var(--line));
-      --workflow-validated-surface: #183229;
-      --workflow-validated-line: #315447;
-      --workflow-validated-text: #9fd0b8;
-      --workflow-validated-fill-start: #5aa982;
-      --workflow-validated-fill-end: #79c59b;
+      --workflow-validated-surface: #123228;
+      --workflow-validated-line: #2d5a45;
+      --workflow-validated-text: #97d7b4;
+      --workflow-validated-fill-start: #4fb27d;
+      --workflow-validated-fill-end: #7dd2a2;
       --workflow-active-surface: #352816;
       --workflow-active-line: #685029;
       --workflow-active-text: #efc577;
       --workflow-active-fill-start: #d39a45;
       --workflow-active-fill-end: #e2b15f;
-      --workflow-review-surface: #172837;
-      --workflow-review-line: #35536f;
-      --workflow-review-text: #b8d7f8;
-      --workflow-review-fill-start: #6b8eac;
-      --workflow-review-fill-end: #89a7bf;
+      --workflow-review-surface: #142739;
+      --workflow-review-line: #315876;
+      --workflow-review-text: #bbdcff;
+      --workflow-review-fill-start: #5e88b6;
+      --workflow-review-fill-end: #86add1;
+      --verdict-red-surface: #3a2026;
+      --verdict-red-line: #74414a;
+      --verdict-red-text: #efb0ba;
       --workflow-unreviewed-surface: #1f2925;
       --workflow-unreviewed-line: #3a4742;
       --workflow-unreviewed-text: #c0cbc6;
@@ -824,13 +830,13 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: 312px minmax(0, 1fr) 252px;
+      grid-template-columns: 352px minmax(0, 1fr) 272px;
       gap: 12px;
       align-items: start;
     }
 
     .workspace.sidebar-collapsed {
-      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+      grid-template-columns: minmax(340px, 404px) minmax(0, 1fr);
     }
 
     .workspace.sidebar-collapsed .right-rail {
@@ -1551,7 +1557,7 @@
       max-height: calc(100vh - 184px);
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 1px 8px 1px 1px;
+      padding: 1px 4px 1px 1px;
       scrollbar-gutter: stable;
     }
 
@@ -1577,6 +1583,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--surface-elevated);
+      width: 100%;
       padding: 10px;
       display: grid;
       gap: 8px;
@@ -1783,7 +1790,7 @@
 
     .explorer-table {
       width: 100%;
-      min-width: 1360px;
+      min-width: 1280px;
       border-collapse: collapse;
       table-layout: fixed;
     }
@@ -1795,52 +1802,52 @@
 
     .explorer-table th:nth-child(2),
     .explorer-table td:nth-child(2) {
-      width: 20%;
+      width: 24%;
     }
 
     .explorer-table th:nth-child(3),
     .explorer-table td:nth-child(3) {
-      width: 7%;
+      width: 6%;
     }
 
     .explorer-table th:nth-child(4),
     .explorer-table td:nth-child(4) {
-      width: 10%;
+      width: 8.5%;
     }
 
     .explorer-table th:nth-child(5),
     .explorer-table td:nth-child(5) {
-      width: 14%;
+      width: 8%;
     }
 
     .explorer-table th:nth-child(6),
     .explorer-table td:nth-child(6) {
-      width: 10%;
+      width: 12%;
     }
 
     .explorer-table th:nth-child(7),
     .explorer-table td:nth-child(7) {
-      width: 10%;
+      width: 8.5%;
     }
 
     .explorer-table th:nth-child(8),
     .explorer-table td:nth-child(8) {
-      width: 10%;
+      width: 8%;
     }
 
     .explorer-table th:nth-child(9),
     .explorer-table td:nth-child(9) {
-      width: 14%;
+      width: 12%;
     }
 
     .explorer-table th:nth-child(10),
     .explorer-table td:nth-child(10) {
-      width: 5%;
+      width: 74px;
     }
 
     .explorer-table th,
     .explorer-table td {
-      padding: 11px 12px;
+      padding: 11px 10px;
       border-bottom: 1px solid var(--border-soft);
       text-align: left;
       vertical-align: top;
@@ -2168,7 +2175,7 @@
     }
 
     .explorer-action-cell {
-      width: 92px;
+      width: 74px;
     }
 
     .stage-sticky-stack {
@@ -2465,6 +2472,241 @@
 
     .review-note-text.is-empty {
       color: var(--text-muted);
+    }
+
+    .report-view {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      align-items: start;
+    }
+
+    .report-panel {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .report-source-grid,
+    .report-grade-list {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .report-source-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .report-bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .report-bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--report-bar-color, var(--border-selected));
+    }
+
+    .report-bar-metric {
+      color: var(--text-subtle);
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .report-grade-row {
+      display: grid;
+      grid-template-columns: 164px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .report-grade-row .pill {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      justify-self: start;
+    }
+
+    .report-grade-stat {
+      color: var(--text-subtle);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .report-note-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      min-width: 0;
+      align-items: start;
+    }
+
+    .report-note-column,
+    .report-note-list,
+    .report-note-card {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .report-note-column {
+      align-content: start;
+      align-items: start;
+    }
+
+    .report-note-column > .section-head {
+      position: sticky;
+      top: 8px;
+      z-index: 4;
+      margin: -2px -2px 2px;
+      padding: 2px 2px 10px;
+      background: var(--surface-elevated);
+      box-shadow: 0 1px 0 var(--border-soft);
+      display: block;
+    }
+
+    .report-note-column-copy {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .report-note-column-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      color: var(--text-subtle);
+      font-size: 0.76rem;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .report-note-column-summary-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      min-height: 22px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-muted);
+      font-weight: 700;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .report-note-column-summary-item::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+      flex: 0 0 auto;
+    }
+
+    .report-note-column-summary-item.green {
+      background: var(--workflow-validated-surface);
+      border-color: var(--workflow-validated-line);
+      color: var(--workflow-validated-text);
+    }
+
+    .report-note-column-summary-item.amber {
+      background: var(--workflow-active-surface);
+      border-color: var(--workflow-active-line);
+      color: var(--workflow-active-text);
+    }
+
+    .report-note-column-summary-item.red {
+      background: var(--verdict-red-surface);
+      border-color: var(--verdict-red-line);
+      color: var(--verdict-red-text);
+    }
+
+    .report-note-column-summary-sep {
+      color: var(--text-faint);
+      flex: 0 0 auto;
+    }
+
+    .report-note-column-meter {
+      position: relative;
+      width: clamp(84px, 7vw, 116px);
+      height: 6px;
+      border-radius: 999px;
+      background: var(--coverage-track);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 46%, transparent);
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .report-note-column-meter-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 0;
+    }
+
+    .report-note-column-meter .report-note-column-meter-fill:first-child {
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+    }
+
+    .report-note-column-meter .report-note-column-meter-fill:last-child {
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+    }
+
+    .report-note-card-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .report-note-card-head,
+    .report-note-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .report-note-card-tags {
+      justify-content: flex-end;
+    }
+
+    .report-note-body {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .report-note-card-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
     }
 
     .review-annotation-list {
@@ -3021,6 +3263,16 @@
       gap: 10px 16px;
     }
 
+    .composer-head > h2,
+    .composer-head > h3 {
+      margin: 0;
+      min-width: 0;
+    }
+
+    .composer-head > .composer-target-switch {
+      grid-column: 1 / -1;
+    }
+
     .composer-heading-main {
       display: grid;
       gap: 10px;
@@ -3034,55 +3286,107 @@
     }
 
     .composer-target-switch {
-      display: inline-flex;
-      flex-wrap: nowrap;
-      gap: 8px;
-      align-items: center;
-      width: max-content;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      align-items: stretch;
+      width: 100%;
       max-width: 100%;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-muted);
     }
 
     .composer-target-button {
       display: inline-flex;
-      flex: 0 0 auto;
+      width: 100%;
+      min-width: 0;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--surface-muted);
-      min-height: 0;
-      padding: 3px 6px;
+      justify-content: flex-start;
+      gap: 6px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      min-height: 28px;
+      padding: 4px 8px;
       color: var(--text-muted);
       font-size: 0.72rem;
       font-weight: 700;
       line-height: 1;
-      white-space: nowrap;
-      transition: border-color var(--transition), background var(--transition), color var(--transition);
+      transition: border-color var(--transition), background var(--transition), color var(--transition), box-shadow var(--transition);
     }
 
-    .composer-target-button:not(.model-chip):hover,
-    .composer-target-button:not(.model-chip):focus-visible {
+    .composer-target-button:hover,
+    .composer-target-button:focus-visible {
       outline: none;
       border-color: var(--border-emphasis);
-      background: var(--surface-subtle);
+      background: color-mix(in srgb, var(--surface-elevated) 84%, var(--surface-muted));
     }
 
-    .composer-target-button.model-chip:focus-visible {
-      outline: none;
+    .composer-target-button:focus-visible {
       box-shadow: var(--focus-ring);
     }
 
-    .composer-target-button.model-chip.gpt {
+    .composer-target-button.active {
+      background: var(--surface-elevated);
+      border-color: var(--line);
+      color: var(--text-subtle);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    .composer-target-button.gpt.active {
       border-color: var(--model-gpt-line);
-      background: var(--model-gpt-soft);
+      background: color-mix(in srgb, var(--model-gpt-soft) 78%, var(--surface-elevated));
       color: var(--model-gpt-ink);
     }
 
-    .composer-target-button.model-chip.sonnet {
+    .composer-target-button.sonnet.active {
       border-color: var(--model-sonnet-line);
-      background: var(--model-sonnet-soft);
+      background: color-mix(in srgb, var(--model-sonnet-soft) 74%, var(--surface-elevated));
       color: var(--model-sonnet-ink);
+    }
+
+    .composer-target-indicator {
+      position: relative;
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      border: 1.5px solid color-mix(in srgb, var(--line) 90%, transparent);
+      background: transparent;
+      flex: 0 0 auto;
+      transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+
+    .composer-target-indicator::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: transparent;
+      transform: translate(-50%, -50%);
+      transition: background var(--transition);
+    }
+
+    .composer-target-button.active .composer-target-indicator {
+      border-color: currentColor;
+      background: color-mix(in srgb, currentColor 10%, var(--surface-elevated));
+    }
+
+    .composer-target-button.active .composer-target-indicator::after {
+      background: currentColor;
+    }
+
+    .composer-target-button-label {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .save-state-pill {
@@ -3431,6 +3735,12 @@
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-muted);
+    }
+
+    #traceSummaryInput {
+      min-height: 112px;
+      line-height: 1.45;
+      resize: vertical;
     }
 
     .category-item {
@@ -3935,7 +4245,9 @@
       .stage-body,
       .right-rail,
       .review-detail-grid,
-      .review-layout {
+      .review-layout,
+      .report-source-grid,
+      .report-note-columns {
         grid-template-columns: 1fr;
       }
 
@@ -4019,6 +4331,7 @@
       .annotation-list {
         max-height: none;
       }
+
     }
 
     @media (max-width: 720px) {
@@ -4044,6 +4357,10 @@
       }
 
       .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .report-note-columns {
         grid-template-columns: 1fr;
       }
 
@@ -4098,6 +4415,7 @@
       .save-state-pill {
         justify-self: start;
       }
+
     }
   </style>
 </head>
@@ -4261,6 +4579,8 @@
       </section>
     </section>
 
+    <section class="report-view view-pane" id="reportView" hidden></section>
+
     <main class="workspace view-pane" id="workspace">
       <aside class="rail left-rail">
         <section class="panel">
@@ -4272,8 +4592,24 @@
           </div>
           <div class="control-grid">
             <div class="rail-filter-bar" id="railFilterBar">
-              <div class="rail-filter-row" id="railStatusFilterRow">
-                <label class="field compact">
+              <div class="rail-filter-row">
+                <label class="field">
+                  <span>Search</span>
+                  <input id="railSearchInput" type="text" placeholder="Case id, note text, label...">
+                </label>
+                <label class="field">
+                  <span>Grade</span>
+                  <select id="railGradeFilterSelect">
+                    <option value="all">All grades</option>
+                    <option value="accepted">Accepted nonsense</option>
+                    <option value="partial">Partial challenge</option>
+                    <option value="clear">Clear pushback</option>
+                    <option value="missing">Missing</option>
+                  </select>
+                </label>
+              </div>
+              <div class="rail-filter-row">
+                <label class="field">
                   <span>Labels</span>
                   <select id="railAnnotationFilterSelect">
                     <option value="all">All</option>
@@ -4283,13 +4619,22 @@
                     <option value="validated">Validated</option>
                   </select>
                 </label>
+                <label id="railDomainFilterField" class="field">
+                  <span>Domains</span>
+                  <details id="railDomainFilterDetails" class="multi-select">
+                    <summary>
+                      <span id="railDomainFilterSummary" class="multi-select-summary">All domains</span>
+                    </summary>
+                    <div class="multi-select-panel">
+                      <div class="multi-select-actions">
+                        <button id="railSelectAllDomainsBtn" type="button">All domains</button>
+                        <button id="railCloseDomainFilterBtn" type="button">Done</button>
+                      </div>
+                      <div id="railDomainFilterList" class="multi-select-list"></div>
+                    </div>
+                  </details>
+                </label>
               </div>
-              <label id="railDomainFilterField" class="field compact">
-                <span>Domains</span>
-                <select id="railDomainFilterSelect">
-                  <option value="">All domains</option>
-                </select>
-              </label>
             </div>
             <p class="panel-subtitle" id="caseMeta"></p>
             <div class="case-list" id="caseList"></div>
@@ -4514,6 +4859,7 @@
       activeAiRunId: "",
       activeAiRunQuestionIdsByDataset: {},
       activeAiRunQuestionOrderByDataset: {},
+      labelReturnContext: null,
     };
 
     applyThemePreference(STATE.themePreference);
@@ -4928,12 +5274,12 @@
       await flushOpenAnnotationCommentSave();
     }
 
-    function currentAtlas() {
-      return STATE.bootstrap?.atlas || null;
+    function currentLabData() {
+      return STATE.bootstrap?.lab || null;
     }
 
     function currentSource() {
-      return currentAtlas()?.sources?.[STATE.sourceKey] || null;
+      return currentLabData()?.sources?.[STATE.sourceKey] || null;
     }
 
     function modelTone(sourceKey) {
@@ -4963,6 +5309,12 @@
       return label;
     }
 
+    function compactComposerTargetLabel(source) {
+      const label = compactSourceLabel(source);
+      if (/^gpt-5\.4/i.test(label)) return "GPT-5.4";
+      return label;
+    }
+
     function compactVerdictLabel(verdict) {
       return {
         "Clear pushback": "Pushback",
@@ -4973,11 +5325,11 @@
     }
 
     function orderedSourceKeys() {
-      const atlas = currentAtlas();
-      if (!atlas) return [];
-      return Array.isArray(atlas.source_order) && atlas.source_order.length
-        ? atlas.source_order
-        : Object.keys(atlas.sources || {});
+      const labData = currentLabData();
+      if (!labData) return [];
+      return Array.isArray(labData.source_order) && labData.source_order.length
+        ? labData.source_order
+        : Object.keys(labData.sources || {});
     }
 
     function orderedSourcesForDataset(datasetKey = STATE.datasetKey) {
@@ -5076,7 +5428,7 @@
     }
 
     function setViewMode(mode) {
-      STATE.viewMode = ["explorer", "review", "label"].includes(mode) ? mode : "explorer";
+      STATE.viewMode = ["explorer", "review", "label", "report"].includes(mode) ? mode : "explorer";
       STATE.annotationFilter = normalizeAnnotationFilterForView(STATE.annotationFilter, STATE.viewMode);
       window.localStorage.setItem("reasoningLab.viewMode", STATE.viewMode);
       window.localStorage.setItem("reasoningLab.annotationFilter", STATE.annotationFilter);
@@ -5203,9 +5555,7 @@
     }
 
     function selectedDomainsForCurrentView() {
-      const selected = selectedDomainsForCurrentDataset();
-      if (STATE.viewMode === "explorer" || STATE.viewMode === "review") return selected;
-      return Array.isArray(selected) && selected.length === 1 ? selected : null;
+      return selectedDomainsForCurrentDataset();
     }
 
     function applyOnlyDomain(domain) {
@@ -5299,7 +5649,7 @@
     }
 
     function sourceForKey(sourceKey) {
-      return currentAtlas()?.sources?.[sourceKey] || null;
+      return currentLabData()?.sources?.[sourceKey] || null;
     }
 
     function datasetForKeys(sourceKey, datasetKey) {
@@ -5314,11 +5664,11 @@
     }
 
     function alternateSourceKeyForDataset(datasetKey = STATE.datasetKey) {
-      const atlas = currentAtlas();
-      if (!atlas) return "";
-      const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
-        ? atlas.source_order
-        : Object.keys(atlas.sources || {});
+      const labData = currentLabData();
+      if (!labData) return "";
+      const orderedKeys = Array.isArray(labData.source_order) && labData.source_order.length
+        ? labData.source_order
+        : Object.keys(labData.sources || {});
       return orderedKeys.find((key) => key !== STATE.sourceKey && datasetForKeys(key, datasetKey)) || "";
     }
 
@@ -5329,11 +5679,11 @@
     }
 
     function sourceKeysForDataset(datasetKey = STATE.datasetKey) {
-      const atlas = currentAtlas();
-      if (!atlas) return [];
-      const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
-        ? atlas.source_order
-        : Object.keys(atlas.sources || {});
+      const labData = currentLabData();
+      if (!labData) return [];
+      const orderedKeys = Array.isArray(labData.source_order) && labData.source_order.length
+        ? labData.source_order
+        : Object.keys(labData.sources || {});
       return orderedKeys.filter((key) => datasetForKeys(key, datasetKey));
     }
 
@@ -5441,7 +5791,14 @@
             : caseForKeys(sourceKey, datasetKey, questionId);
           if (!source || !sourceCase) return null;
           const documentId = caseDocumentId(sourceCase, source);
-          return documentId ? documentReviewState(documentId) : null;
+          if (!documentId) return null;
+          const reviewState = documentReviewState(documentId);
+          if (!overallLabelCountsAsReviewed(reviewState.note)) return reviewState;
+          return {
+            ...reviewState,
+            pendingAiItems: [],
+            hasPendingAiReview: false,
+          };
         }).filter(Boolean);
       const hasAnyAi = reviewStates.some((state) => state.hasAnyAi);
       const hasPendingAiReview = reviewStates.some((state) => state.hasPendingAiReview);
@@ -5638,8 +5995,8 @@
     function filteredCases() {
       const dataset = currentDataset();
       if (!dataset) return [];
-      const useSearchFilter = STATE.viewMode === "explorer" || STATE.viewMode === "review";
-      const useLabellingFilters = STATE.viewMode === "explorer" || STATE.viewMode === "label" || STATE.viewMode === "review";
+      const useSearchFilter = STATE.viewMode === "explorer" || STATE.viewMode === "review" || STATE.viewMode === "label" || STATE.viewMode === "report";
+      const useLabellingFilters = STATE.viewMode === "explorer" || STATE.viewMode === "label" || STATE.viewMode === "review" || STATE.viewMode === "report";
       const query = useSearchFilter ? STATE.search.trim().toLowerCase() : "";
       const selectedDomainList = selectedDomainsForCurrentView();
       const selectedDomains = new Set(selectedDomainList || []);
@@ -5657,7 +6014,7 @@
         if (STATE.viewMode === "review" && progress.key === "unreviewed") {
           return false;
         }
-        if ((STATE.viewMode === "explorer" || STATE.viewMode === "review") && STATE.gradeFilter !== "all") {
+        if ((STATE.viewMode === "explorer" || STATE.viewMode === "review" || STATE.viewMode === "label" || STATE.viewMode === "report") && STATE.gradeFilter !== "all") {
           const caseVerdict = verdictKey(primary?.consensus_score);
           if (caseVerdict !== STATE.gradeFilter) return false;
         }
@@ -6037,6 +6394,99 @@
         .filter((item) => item.source);
     }
 
+    function reportSourceEntries(dataset = currentDataset(), scopedRows = null) {
+      const datasetKey = dataset?.key || STATE.datasetKey;
+      const scopedQuestionIds = Array.isArray(scopedRows)
+        ? new Set(scopedRows.map((caseRow) => String(caseRow?.question_id || "")).filter(Boolean))
+        : null;
+      return orderedSourcesForDataset(datasetKey)
+        .slice(0, 2)
+        .flatMap((source) => {
+          const sourceDataset = datasetForKeys(source?.key, datasetKey);
+          return (sourceDataset?.cases || [])
+            .filter((caseRow) => !scopedQuestionIds || scopedQuestionIds.has(String(caseRow?.question_id || "")))
+            .map((caseRow) => {
+            const variant = primaryVariant(caseRow, source);
+            const document = reasonDocument(caseRow, source);
+            const documentId = document?.document_id || "";
+            const note = documentId ? documentNoteForDocument(documentId) : null;
+            return {
+              source,
+              caseRow,
+              variant,
+              document,
+              documentId,
+              note,
+              summary: String(note?.summary || "").trim(),
+              labelMeta: documentNoteLabelMeta(note),
+              verdict: scoreMeta(variant?.consensus_score),
+              domain: caseDomainLabel(caseRow) || caseRow?.domain || "",
+              labelSource: documentId ? documentLabelSourceMeta(documentId) : null,
+              annotations: documentId ? annotationsForDocument(documentId) : [],
+            };
+          });
+        })
+        .filter((item) => item?.source && item?.caseRow);
+    }
+
+    function reportOverallNoteEntries(dataset = currentDataset(), scopedRows = null) {
+      return reportSourceEntries(dataset, scopedRows)
+        .filter((entry) => entry.summary || entry.labelMeta)
+        .sort((left, right) => {
+          const leftReviewed = overallLabelCountsAsReviewed(left.note) ? 1 : 0;
+          const rightReviewed = overallLabelCountsAsReviewed(right.note) ? 1 : 0;
+          if (rightReviewed !== leftReviewed) return rightReviewed - leftReviewed;
+          const leftHuman = recordIsHumanReviewed(left.note) ? 1 : 0;
+          const rightHuman = recordIsHumanReviewed(right.note) ? 1 : 0;
+          if (rightHuman !== leftHuman) return rightHuman - leftHuman;
+          const summaryDiff = right.summary.length - left.summary.length;
+          if (summaryDiff) return summaryDiff;
+          const leftTime = Date.parse(String(left.note?.updated_at_utc || "")) || 0;
+          const rightTime = Date.parse(String(right.note?.updated_at_utc || "")) || 0;
+          if (rightTime !== leftTime) return rightTime - leftTime;
+          return String(left.caseRow?.question_id || "").localeCompare(String(right.caseRow?.question_id || ""));
+        });
+    }
+
+    function scoreMetaForVerdictKey(key) {
+      return {
+        clear: SCORE_META[2],
+        partial: SCORE_META[1],
+        accepted: SCORE_META[0],
+        missing: SCORE_META.missing,
+      }[key] || SCORE_META.missing;
+    }
+
+    function reportGradeStatsForSource(sourceKey, entries = reportSourceEntries()) {
+      const source = sourceForKey(sourceKey);
+      const sourceEntries = entries.filter((entry) => entry.source?.key === sourceKey);
+      const total = sourceEntries.length;
+      const counts = {
+        clear: 0,
+        partial: 0,
+        accepted: 0,
+        missing: 0,
+      };
+      sourceEntries.forEach((entry) => {
+        counts[verdictKey(entry.variant?.consensus_score)] += 1;
+      });
+      const rows = ["clear", "partial", "accepted", "missing"].map((key) => ({
+        key,
+        count: counts[key] || 0,
+        percent: total ? Math.round(((counts[key] || 0) / total) * 100) : 0,
+        meta: scoreMetaForVerdictKey(key),
+      }));
+      return {
+        source,
+        total,
+        rows,
+      };
+    }
+
+    function reportNotesForSource(sourceKey, entries = reportOverallNoteEntries()) {
+      return entries.filter((entry) => entry.source?.key === sourceKey && entry.summary);
+    }
+
     function reviewRowHasContent(caseRow, datasetKey = STATE.datasetKey) {
       return reviewEntriesForCase(caseRow, datasetKey).some((item) => item.progress?.key !== "unreviewed");
     }
@@ -6273,6 +6723,11 @@
       return provenance.labeler_type === "human";
     }
 
+    function overallLabelCountsAsReviewed(record) {
+      if (!record || !record.label_id) return false;
+      return recordIsHumanReviewed(record) || !recordIsAiLabelled(record);
+    }
+
     function setAiLabelJob(documentId, job) {
       if (!documentId) return;
       if (job) {
@@ -6491,6 +6946,7 @@
       const reviewState = documentReviewState(documentId);
       const hasOverallLabel = Boolean(note?.label_id);
       const hasOverallNote = Boolean((note?.summary || "").trim());
+      const hasReviewedOverallLabel = overallLabelCountsAsReviewed(note);
       const hasAnyLabel = spanCount > 0 || hasOverallLabel;
       if (!hasAnyLabel) {
         return {
@@ -6502,6 +6958,18 @@
           hasReviewWork: false,
           hasOverallLabel: false,
           hasOverallNote: false,
+        };
+      }
+      if (hasReviewedOverallLabel) {
+        return {
+          key: "reviewed",
+          label: "Labelled",
+          tone: "green",
+          rank: 2,
+          hasPendingAiReview: false,
+          hasReviewWork: true,
+          hasOverallLabel,
+          hasOverallNote,
         };
       }
       if (reviewState.hasPendingAiReview) {
@@ -6739,26 +7207,28 @@
         return renderModelChip(selectedTarget.source);
       }
       return `
-        <div class="composer-target-switch" aria-label="${escapeAttribute(ariaLabel)}">
+        <div class="composer-target-switch" role="radiogroup" aria-label="${escapeAttribute(ariaLabel)}">
           ${targetContext.options.map((option) => `
             <button
-              class="composer-target-button mini-stat${option.key === selectedTarget.key ? ` model-chip ${escapeHtml(modelTone(option.source?.key))}` : ""}"
+              class="composer-target-button ${escapeHtml(modelTone(option.source?.key))}${option.key === selectedTarget.key ? " active" : ""}"
               type="button"
+              role="radio"
               data-composer-target-source="${escapeHtml(option.key)}"
-              aria-pressed="${option.key === selectedTarget.key ? "true" : "false"}"
+              aria-checked="${option.key === selectedTarget.key ? "true" : "false"}"
               title="${escapeAttribute(`${titlePrefix} ${option.source?.label || option.key}`)}"
             >
-              <span>${escapeHtml(compactSourceLabel(option.source))}</span>
+              <span class="composer-target-indicator" aria-hidden="true"></span>
+              <span class="composer-target-button-label">${escapeHtml(compactComposerTargetLabel(option.source))}</span>
             </button>
           `).join("")}
         </div>
       `;
     }
 
-    function atlasDocument(documentId) {
+    function labDocument(documentId) {
       if (!documentId) return null;
-      const atlas = currentAtlas();
-      for (const source of Object.values(atlas?.sources || {})) {
+      const labData = currentLabData();
+      for (const source of Object.values(labData?.sources || {})) {
         for (const dataset of Object.values(source?.datasets || {})) {
           for (const caseRow of dataset?.cases || []) {
             for (const variant of Object.values(caseRow?.variants || {})) {
@@ -7087,14 +7557,14 @@
     }
 
     function renderSourceSwitch() {
-      const atlas = currentAtlas();
-      if (!atlas || !el.sourceSwitch) return;
-      const orderedKeys = Array.isArray(atlas.source_order) && atlas.source_order.length
-        ? atlas.source_order
-        : Object.keys(atlas.sources || {});
+      const labData = currentLabData();
+      if (!labData || !el.sourceSwitch) return;
+      const orderedKeys = Array.isArray(labData.source_order) && labData.source_order.length
+        ? labData.source_order
+        : Object.keys(labData.sources || {});
       el.sourceSwitch.innerHTML = orderedKeys
         .map((sourceKey) => {
-          const source = atlas.sources?.[sourceKey];
+          const source = labData.sources?.[sourceKey];
           if (!source) return "";
           return `
         <button
@@ -7121,34 +7591,48 @@
     }
 
     function renderLayoutChrome() {
+      const isExplorerMode = STATE.viewMode === "explorer";
+      const isReviewMode = STATE.viewMode === "review";
+      const isLabelMode = STATE.viewMode === "label";
+      const isReportMode = STATE.viewMode === "report";
       if (el.filterPanel) {
-        el.filterPanel.hidden = STATE.viewMode !== "explorer";
-        el.filterPanel.classList.toggle("is-active", STATE.viewMode === "explorer");
+        el.filterPanel.hidden = !isExplorerMode && !isReportMode;
+        el.filterPanel.classList.toggle("is-active", isExplorerMode || isReportMode);
       }
       if (el.workspace) {
-        el.workspace.hidden = STATE.viewMode !== "label";
-        el.workspace.classList.toggle("sidebar-collapsed", !STATE.sidebarOpen && STATE.viewMode === "label");
-        el.workspace.classList.toggle("is-active", STATE.viewMode === "label");
+        el.workspace.hidden = !isLabelMode;
+        el.workspace.classList.toggle("sidebar-collapsed", !STATE.sidebarOpen && isLabelMode);
+        el.workspace.classList.toggle("is-active", isLabelMode);
       }
       if (el.explorerView) {
-        el.explorerView.hidden = STATE.viewMode === "label";
-        el.explorerView.classList.toggle("is-active", STATE.viewMode !== "label");
+        el.explorerView.hidden = !isExplorerMode && !isReviewMode;
+        el.explorerView.classList.toggle("is-active", isExplorerMode || isReviewMode);
       }
       if (el.explorerPanel) {
-        el.explorerPanel.hidden = STATE.viewMode === "review";
+        el.explorerPanel.hidden = !isExplorerMode;
       }
       if (el.reviewStage) {
-        el.reviewStage.hidden = STATE.viewMode !== "review";
+        el.reviewStage.hidden = !isReviewMode;
+      }
+      if (el.reportView) {
+        el.reportView.hidden = !isReportMode;
+        el.reportView.classList.toggle("is-active", isReportMode);
       }
       if (el.toggleSidebarBtn) {
-        el.toggleSidebarBtn.hidden = STATE.viewMode !== "label";
+        el.toggleSidebarBtn.hidden = !isLabelMode;
         el.toggleSidebarBtn.textContent = STATE.sidebarOpen ? "Hide tools" : "Show tools";
+      }
+      if (el.openExplorerBtn) {
+        el.openExplorerBtn.textContent = STATE.labelReturnContext?.mode === "report"
+          ? "Back to report"
+          : "Back to browse";
       }
     }
 
     function renderViewSwitch() {
       if (!el.viewSwitch) return;
       el.viewSwitch.innerHTML = `
+        <button class="view-chip${STATE.viewMode === "report" ? " active" : ""}" type="button" data-view-mode="report">Report</button>
         <button class="view-chip${STATE.viewMode === "explorer" ? " active" : ""}" type="button" data-view-mode="explorer">Explore</button>
         <button class="view-chip${STATE.viewMode === "review" ? " active" : ""}" type="button" data-view-mode="review">Review</button>
         <button class="view-chip${STATE.viewMode === "label" ? " active" : ""}" type="button" data-view-mode="label">Labelling</button>
@@ -7207,6 +7691,7 @@
       ].filter(([count]) => count > 0 || benchmarkCaseCount === 0)
         .map(([count, label]) => `${count} ${label}`);
       const isReviewMode = STATE.viewMode === "review";
+      const isReportMode = STATE.viewMode === "report";
       const searchField = el.searchInput?.closest("label.field");
       const gradeField = el.gradeFilterSelect?.closest("label.field");
       const annotationField = el.annotationFilterSelect?.closest("label.field");
@@ -7217,9 +7702,9 @@
       if (searchField) searchField.hidden = isReviewMode;
       if (gradeField) gradeField.hidden = isReviewMode;
       if (annotationField) annotationField.hidden = isReviewMode;
-      if (filterActions) filterActions.hidden = isReviewMode;
+      if (filterActions) filterActions.hidden = isReviewMode || isReportMode;
       if (el.labelSelectedAiBtn) {
-        el.labelSelectedAiBtn.hidden = isReviewMode || !aiMeta.enabled;
+        el.labelSelectedAiBtn.hidden = isReviewMode || isReportMode || !aiMeta.enabled;
         el.labelSelectedAiBtn.disabled = !selectedTargets.length;
         el.labelSelectedAiBtn.innerHTML = `
           <span class="btn-icon-label">
@@ -7246,7 +7731,7 @@
         el.labelSelectedAiBtn.title = hoverParts.join(" ");
       }
       if (el.aiInlineStatus) {
-        if (isReviewMode || !aiMeta.enabled || !activeRun) {
+        if (isReviewMode || isReportMode || !aiMeta.enabled || !activeRun) {
           el.aiInlineStatus.hidden = true;
           el.aiInlineStatus.innerHTML = "";
         } else {
@@ -7360,6 +7845,10 @@
       if (el.reviewSearchInput) {
         el.reviewSearchInput.value = STATE.search;
       }
+      if (el.railSearchInput) {
+        el.railSearchInput.value = STATE.search;
+        el.railSearchInput.placeholder = "Case id, note text, label...";
+      }
       el.searchInput.placeholder = isReviewMode
         ? "Case id, note text, label..."
         : "Question id, wording, note text, label...";
@@ -7369,6 +7858,9 @@
       el.gradeFilterSelect.value = STATE.gradeFilter;
       if (el.reviewGradeFilterSelect) {
         el.reviewGradeFilterSelect.value = STATE.gradeFilter;
+      }
+      if (el.railGradeFilterSelect) {
+        el.railGradeFilterSelect.value = STATE.gradeFilter;
       }
       syncAnnotationFilterSelect(el.annotationFilterSelect, "explorer");
       syncAnnotationFilterSelect(el.railAnnotationFilterSelect, "label");
@@ -7383,17 +7875,8 @@
         el.reviewDomainFilterField.hidden = dataset.key !== "v2";
       }
       populateDomainMultiSelect(el.domainFilterSummary, el.domainFilterList);
+      populateDomainMultiSelect(el.railDomainFilterSummary, el.railDomainFilterList);
       populateDomainMultiSelect(el.reviewDomainFilterSummary, el.reviewDomainFilterList);
-      if (el.railDomainFilterSelect) {
-        const railDomainValue = Array.isArray(selectedDomainList) && selectedDomainList.length === 1
-          ? selectedDomainList[0]
-          : "";
-        el.railDomainFilterSelect.innerHTML = [
-          `<option value="">All domains</option>`,
-          ...available.map((domain) => `<option value="${escapeAttribute(domain)}">${escapeHtml(domain)}</option>`),
-        ].join("");
-        el.railDomainFilterSelect.value = railDomainValue;
-      }
     }
 
     function renderCaseRail(rows) {
@@ -7414,8 +7897,8 @@
               </div>
               ${renderCaseRailVerdictPills(caseRow, dataset.key)}
             </div>
-            <p class="case-question">${escapeHtml(clampText(caseRow.question, 145))}</p>
-            <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 120))}</p>
+            <p class="case-question">${escapeHtml(clampText(caseRow.question, 170))}</p>
+            <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 150))}</p>
           </button>
         `;
       }).join("") : `<div class="empty-state"><strong>No cases match the current filters.</strong><br>Reset filters or switch to Explorer.</div>`;
@@ -7837,8 +8320,8 @@
               </div>
               ${renderCaseRailVerdictPills(caseRow, dataset.key)}
             </div>
-            <p class="case-question">${escapeHtml(clampText(caseRow.question, 145))}</p>
-            <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 120))}</p>
+            <p class="case-question">${escapeHtml(clampText(caseRow.question, 170))}</p>
+            <p class="case-meta">${escapeHtml(clampText(caseRow.nonsensical_element, 150))}</p>
             ${aiReview.hasAnyAi ? `
               <div class="review-case-stats">
                 ${aiReview.aiCount ? renderStatusPill(`AI ${aiReview.aiCount}`, "ai") : ""}
@@ -7970,6 +8453,144 @@
       const items = caseRow ? reviewEntriesForCase(caseRow) : [];
       el.reviewPrimaryPanel.innerHTML = renderReviewModelPanel(items[0] || null);
       el.reviewComparePanel.innerHTML = renderReviewModelPanel(items[1] || null);
+    }
+
+    function reportBarColorForTone(tone) {
+      return {
+        green: "var(--workflow-validated-fill-start)",
+        amber: "var(--workflow-active-fill-start)",
+        red: "#bb5664",
+        slate: "var(--workflow-unreviewed-fill-start)",
+      }[tone] || "var(--border-selected)";
+    }
+
+    function reportVerdictLabel(verdict) {
+      if (!verdict) return "";
+      if (verdict.label === "Partial challenge") return "Partial challenge";
+      if (verdict.label === "Clear pushback") return "Clear pushback";
+      if (verdict.label === "Accepted nonsense") return "Accepted nonsense";
+      return verdict.label || "";
+    }
+
+    function renderReportGradeCard(sourceStats) {
+      if (!sourceStats?.source) return "";
+      return `
+        <div class="review-overview-card">
+          <div class="section-head">
+            <div>${renderModelChip(sourceStats.source)}</div>
+            <span class="panel-subtitle">${escapeHtml(`${formatNumber(sourceStats.total)} traces`)}</span>
+          </div>
+          <div class="report-grade-list">
+            ${sourceStats.rows.filter((row) => row.key !== "missing").map((row) => `
+              <div class="report-grade-row">
+                <span class="pill ${escapeHtml(row.meta.tone)}">${escapeHtml(reportVerdictLabel(row.meta))}</span>
+                <div class="report-bar-track" aria-hidden="true">
+                  <span class="report-bar-fill" style="width:${escapeAttribute(String(row.percent))}%;--report-bar-color:${escapeAttribute(reportBarColorForTone(row.meta.tone))}"></span>
+                </div>
+                <strong class="report-grade-stat">${escapeHtml(`${row.percent}% · ${row.count}`)}</strong>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReportNoteCard(entry) {
+      const verdictLabel = entry.verdict?.label === "Missing" ? "" : reportVerdictLabel(entry.verdict);
+      return `
+        <article class="card report-note-card">
+          <div class="report-note-card-top">
+            <div class="report-note-card-head">
+              <span class="question-id-chip">${escapeHtml(entry.caseRow?.question_id || "")}</span>
+              ${entry.domain ? `<span class="tag">${escapeHtml(entry.domain)}</span>` : ""}
+            </div>
+            <div class="report-note-card-tags">
+              ${verdictLabel ? `<span class="pill ${escapeHtml(entry.verdict?.tone || "slate")}">${escapeHtml(verdictLabel)}</span>` : ""}
+              ${renderOverallLabelTag(entry.labelMeta)}
+            </div>
+          </div>
+          <p class="report-note-body">${escapeHtml(entry.summary || "No overall note saved.")}</p>
+          <div class="report-note-card-footer">
+            <button class="btn ghost small" type="button" data-open-report-case="${escapeHtml(entry.caseRow?.question_id || "")}">Open full</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderReportNotesColumn(source, entries, sourceStats = null) {
+      const summaryRows = (sourceStats?.rows || [])
+        .filter((row) => row.key !== "missing" && row.count > 0)
+        .map((row) => ({
+          ...row,
+          label: `${compactVerdictLabel(row.meta)} ${row.percent}%`,
+        }));
+      const summaryMarkup = summaryRows.map((row, index) => `
+        ${index ? `<span class="report-note-column-summary-sep" aria-hidden="true">·</span>` : ""}
+        <span class="report-note-column-summary-item ${escapeHtml(row.meta.tone)}">${escapeHtml(row.label)}</span>
+      `).join("");
+      let segmentOffset = 0;
+      const meterSegments = summaryRows.map((row) => {
+        const left = segmentOffset;
+        segmentOffset += row.percent;
+        return `<span class="report-note-column-meter-fill" style="left:${escapeAttribute(left.toFixed(1))}%;width:${escapeAttribute(row.percent.toFixed(1))}%;background:${escapeAttribute(reportBarColorForTone(row.meta.tone))}"></span>`;
+      }).join("");
+      return `
+        <div class="review-overview-card report-note-column">
+          <div class="section-head">
+            <div class="report-note-column-copy">
+              <div>${renderModelChip(source)}</div>
+              ${summaryRows.length ? `<span class="report-note-column-meter" aria-hidden="true">${meterSegments}</span>` : ""}
+              ${summaryRows.length ? `<span class="report-note-column-summary">${summaryMarkup}</span>` : ""}
+            </div>
+          </div>
+          ${entries.length
+            ? `<div class="report-note-list">${entries.map((entry) => renderReportNoteCard(entry)).join("")}</div>`
+            : `<div class="empty-state"><strong>No overall notes saved yet.</strong><br>This column will fill as notes are added.</div>`}
+        </div>
+      `;
+    }
+
+    function renderReportView(filteredRows = null) {
+      if (!el.reportView) return;
+      const dataset = currentDataset();
+      const store = currentStore();
+      if (!dataset || !store) {
+        el.reportView.innerHTML = "";
+        return;
+      }
+      const sourceEntries = reportSourceEntries(dataset, filteredRows);
+      const noteEntries = reportOverallNoteEntries(dataset, filteredRows);
+      const topSources = orderedSourcesForDataset(dataset.key || STATE.datasetKey).slice(0, 2);
+
+      el.reportView.innerHTML = `
+        <section class="panel report-panel">
+          <div class="section-head">
+            <div>
+              <h2>Model grade split</h2>
+              <p class="panel-subtitle">How each model tends to handle the benchmark prompts.</p>
+            </div>
+          </div>
+          <div class="report-source-grid">
+            ${topSources.map((source) => renderReportGradeCard(reportGradeStatsForSource(source.key, sourceEntries))).join("")}
+          </div>
+        </section>
+
+        <section class="panel report-panel">
+          <div class="section-head">
+            <div>
+              <h2>Overall notes</h2>
+              <p class="panel-subtitle">GPT on the left, Sonnet on the right, with note text plus verdict and domain.</p>
+            </div>
+          </div>
+          <div class="report-note-columns">
+            ${topSources.map((source) => {
+              const sourceNoteEntries = reportNotesForSource(source.key, noteEntries);
+              const sourceStats = reportGradeStatsForSource(source.key, sourceEntries);
+              return renderReportNotesColumn(source, sourceNoteEntries, sourceStats);
+            }).join("")}
+          </div>
+        </section>
+      `;
     }
 
     function renderQuestionPanel(caseRow) {
@@ -8151,11 +8772,9 @@
 
       el.composerPanel.innerHTML = `
         <div class="section-head composer-head">
-          <div class="composer-heading-main">
-            <h2>Overall label</h2>
-            ${renderComposerTargetSwitch(targetContext, selectedTarget, "Overall label target", "Overall label for")}
-          </div>
+          <h2>Overall label</h2>
           <span class="mini-stat save-state-pill" id="documentNoteSaveState" data-document-id="${escapeHtml(traceDocument.document_id)}">${escapeHtml(documentNoteStatusText(traceDocument.document_id, documentNote, documentNoteDraft))}</span>
+          ${renderComposerTargetSwitch(targetContext, selectedTarget, "Overall label target", "Overall label for")}
         </div>
         <div class="control-grid">
           <div class="overall-trace-card">
@@ -8235,11 +8854,9 @@
       el.annotationPanel.hidden = false;
       const categoryLookup = categoryMap();
       el.annotationPanel.innerHTML = `
-        <div class="section-head">
-          <div class="composer-heading-main">
-            <h2>Saved Highlights</h2>
-            ${renderComposerTargetSwitch(targetContext, selectedTarget, "Saved highlights target", "Saved highlights for")}
-          </div>
+        <div class="section-head composer-head">
+          <h2>Saved Highlights</h2>
+          ${renderComposerTargetSwitch(targetContext, selectedTarget, "Saved highlights target", "Saved highlights for")}
         </div>
         ${items.length
           ? `
@@ -8427,6 +9044,7 @@
       const caseRow = selectedCase(railRows);
       renderHeroSummary(rows);
       renderSharedFilters(rows);
+      renderReportView(rows);
       renderCaseRail(railRows);
       if (STATE.viewMode === "review") {
         renderReviewCaseList(rows);
@@ -8567,7 +9185,7 @@
       const endParagraph =
         paragraphBoundaryNode(root, range.endContainer, range.endOffset, "end");
       const documentId = root.dataset.documentId || startSentence?.dataset?.documentId || "";
-      const document = atlasDocument(documentId);
+      const document = labDocument(documentId);
       if (!document?.text) return null;
       let start = Number.NaN;
       let end = Number.NaN;
@@ -8644,12 +9262,12 @@
     async function bootstrap() {
       const payload = await apiRequest("/api/bootstrap");
       STATE.bootstrap = payload;
-      const atlas = payload.atlas || {};
-      const preferredSourceKey = atlas?.sources?.[STATE.sourceKey]
+      const labData = payload.lab || {};
+      const preferredSourceKey = labData?.sources?.[STATE.sourceKey]
         ? STATE.sourceKey
-        : (atlas.default_source_key || atlas.source_order?.[0] || Object.keys(atlas.sources || {})[0] || "gpt54_high");
+        : (labData.default_source_key || labData.source_order?.[0] || Object.keys(labData.sources || {})[0] || "gpt54_high");
       setSourceKey(preferredSourceKey);
-      const source = atlas?.sources?.[preferredSourceKey] || {};
+      const source = labData?.sources?.[preferredSourceKey] || {};
       const preferredDatasetKey = source?.datasets?.[STATE.datasetKey]
         ? STATE.datasetKey
         : (source?.datasets?.v2 ? "v2" : Object.keys(source?.datasets || {})[0] || "v1");
@@ -9060,7 +9678,7 @@
         human_reviewed: humanReviewed,
         reviewed_by: reviewedBy,
         reviewed_at_utc: reviewedAtUtc,
-        source_text_hash: originalAnnotation?.source_text_hash || atlasDocument(selection.document_id || selection.documentId)?.text_hash || "",
+        source_text_hash: originalAnnotation?.source_text_hash || labDocument(selection.document_id || selection.documentId)?.text_hash || "",
       };
       let payload;
       if (!activeAnnotation && !matchedAnnotation && overlappingAnnotations.length) {
@@ -9110,7 +9728,7 @@
 
     function annotationPayloadForRange(annotation, start, end) {
       const documentId = annotation.document_id || annotation.documentId;
-      const document = atlasDocument(documentId);
+      const document = labDocument(documentId);
       const quote = String(document?.text || "").slice(start, end);
       return {
         document_id: documentId,
@@ -9146,7 +9764,7 @@
       STATE.activeAnnotationId = "";
       STATE.activeAnnotationOrigin = "";
       STATE.draftComment = "";
-      const document = atlasDocument(selection.document_id || selection.documentId);
+      const document = labDocument(selection.document_id || selection.documentId);
       const payload = await apiRequest("/api/annotations/clear-selection", {
         method: "POST",
         body: JSON.stringify({
@@ -9270,9 +9888,67 @@
       clearNativeSelection();
     }
 
+    function cloneSelectedDomainsState() {
+      try {
+        return JSON.parse(JSON.stringify(STATE.selectedDomainsByDataset || {}));
+      } catch (_error) {
+        return {};
+      }
+    }
+
+    function snapshotReportReturnContext() {
+      return {
+        mode: "report",
+        sourceKey: STATE.sourceKey,
+        datasetKey: STATE.datasetKey,
+        search: STATE.search,
+        gradeFilter: STATE.gradeFilter,
+        annotationFilter: normalizeAnnotationFilterForView(STATE.annotationFilter, "report"),
+        caseSort: STATE.caseSort,
+        selectedDomainsByDataset: cloneSelectedDomainsState(),
+        scrollY: window.scrollY || 0,
+      };
+    }
+
+    function clearLabelReturnContext() {
+      STATE.labelReturnContext = null;
+    }
+
+    function restoreLabelReturnContext() {
+      const context = STATE.labelReturnContext;
+      if (!context?.mode) return false;
+      if (context.sourceKey && currentLabData()?.sources?.[context.sourceKey]) {
+        setSourceKey(context.sourceKey);
+      }
+      if (context.datasetKey && currentSource()?.datasets?.[context.datasetKey]) {
+        setDatasetKey(context.datasetKey);
+      }
+      STATE.search = String(context.search || "");
+      setGradeFilter(context.gradeFilter || "all");
+      setViewMode(context.mode);
+      setAnnotationFilter(context.annotationFilter || "all");
+      setCaseSort(context.caseSort || "recommended");
+      STATE.selectedDomainsByDataset = context.selectedDomainsByDataset && typeof context.selectedDomainsByDataset === "object"
+        ? context.selectedDomainsByDataset
+        : {};
+      window.localStorage.setItem(
+        "reasoningLab.selectedDomainsByDataset",
+        JSON.stringify(STATE.selectedDomainsByDataset),
+      );
+      clearLabelReturnContext();
+      clearTransientSelection();
+      clearEditorState();
+      render();
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: Number(context.scrollY) || 0, left: 0, behavior: "auto" });
+      });
+      return true;
+    }
+
     function openCaseForLabeling(questionId, options = {}) {
       if (!questionId) return;
-      const { compare = STATE.compareOpen } = options;
+      const { compare = STATE.compareOpen, returnTo = "" } = options;
+      STATE.labelReturnContext = returnTo === "report" ? snapshotReportReturnContext() : null;
       setSelectedCaseId(questionId);
       setViewMode("label");
       setCompareOpen(compare && Boolean(alternateSourceKey(questionId, STATE.datasetKey)));
@@ -9290,6 +9966,10 @@
         const button = event.target.closest("[data-view-mode]");
         if (!button) return;
         const nextMode = button.getAttribute("data-view-mode") || "explorer";
+        if (nextMode === "report" && STATE.viewMode === "label" && STATE.labelReturnContext?.mode === "report") {
+          restoreLabelReturnContext();
+          return;
+        }
         setViewMode(nextMode);
         if (nextMode !== "label") {
           clearTransientSelection();
@@ -9307,6 +9987,10 @@
         STATE.search = event.target.value;
         render();
       });
+      el.railSearchInput?.addEventListener("input", (event) => {
+        STATE.search = event.target.value;
+        render();
+      });
       el.reviewSearchInput?.addEventListener("input", (event) => {
         STATE.search = event.target.value;
         render();
@@ -9316,6 +10000,10 @@
         render();
       });
       el.gradeFilterSelect.addEventListener("change", (event) => {
+        setGradeFilter(event.target.value || "all");
+        render();
+      });
+      el.railGradeFilterSelect?.addEventListener("change", (event) => {
         setGradeFilter(event.target.value || "all");
         render();
       });
@@ -9344,9 +10032,17 @@
         setSelectedDomainsForCurrentDataset([...selected]);
         render();
       });
-      el.railDomainFilterSelect?.addEventListener("change", (event) => {
-        const domain = event.target.value || "";
-        setSelectedDomainsForCurrentDataset(domain ? [domain] : null);
+      el.railDomainFilterList?.addEventListener("change", (event) => {
+        const input = event.target.closest("[data-domain-filter]");
+        if (!input) return;
+        const selected = new Set(selectedDomainsForCurrentDataset() || availableDomains());
+        const domain = input.getAttribute("data-domain-filter") || "";
+        if (input.checked) {
+          selected.add(domain);
+        } else {
+          selected.delete(domain);
+        }
+        setSelectedDomainsForCurrentDataset([...selected]);
         render();
       });
       el.reviewDomainFilterList?.addEventListener("change", (event) => {
@@ -9369,6 +10065,15 @@
       el.closeDomainFilterBtn.addEventListener("click", () => {
         el.domainFilterDetails.open = false;
       });
+      el.railSelectAllDomainsBtn?.addEventListener("click", () => {
+        setSelectedDomainsForCurrentDataset(null);
+        render();
+      });
+      el.railCloseDomainFilterBtn?.addEventListener("click", () => {
+        if (el.railDomainFilterDetails) {
+          el.railDomainFilterDetails.open = false;
+        }
+      });
       el.reviewSelectAllDomainsBtn?.addEventListener("click", () => {
         setSelectedDomainsForCurrentDataset(null);
         render();
@@ -9382,8 +10087,8 @@
         const button = event.target.closest("[data-source-key]");
         if (!button) return;
         const key = button.getAttribute("data-source-key");
-        if (!currentAtlas()?.sources?.[key]) return;
-        const nextSource = currentAtlas().sources[key];
+        if (!currentLabData()?.sources?.[key]) return;
+        const nextSource = currentLabData().sources[key];
         setSourceKey(key);
         const nextDatasetKey = nextSource?.datasets?.[STATE.datasetKey]
           ? STATE.datasetKey
@@ -9402,6 +10107,10 @@
         render();
       });
       el.openExplorerBtn.addEventListener("click", () => {
+        if (STATE.labelReturnContext?.mode === "report") {
+          restoreLabelReturnContext();
+          return;
+        }
         clearTransientSelection();
         clearEditorState();
         setViewMode("explorer");
@@ -9419,6 +10128,11 @@
         if (!button) return;
         setSelectedCaseId(button.getAttribute("data-review-question-id") || "");
         render();
+      });
+      el.reportView?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-open-report-case]");
+        if (!button) return;
+        openCaseForLabeling(button.getAttribute("data-open-report-case") || "", { compare: true, returnTo: "report" });
       });
       [el.reviewPrimaryPanel, el.reviewComparePanel].forEach((panel) => {
         panel?.addEventListener("click", (event) => {
@@ -9990,6 +10704,7 @@
         themeSwitch: document.getElementById("themeSwitch"),
         explorerView: document.getElementById("explorerView"),
         explorerPanel: document.getElementById("explorerPanel"),
+        reportView: document.getElementById("reportView"),
         workspace: document.getElementById("workspace"),
         sourceSwitch: document.getElementById("sourceSwitch"),
         datasetSwitch: document.getElementById("datasetSwitch"),
@@ -9997,7 +10712,9 @@
         toggleSidebarBtn: document.getElementById("toggleSidebarBtn"),
         statusLine: document.getElementById("statusLine"),
         searchInput: document.getElementById("searchInput"),
+        railSearchInput: document.getElementById("railSearchInput"),
         reviewSearchInput: document.getElementById("reviewSearchInput"),
+        railGradeFilterSelect: document.getElementById("railGradeFilterSelect"),
         reviewGradeFilterSelect: document.getElementById("reviewGradeFilterSelect"),
         reviewAnnotationFilterSelect: document.getElementById("reviewAnnotationFilterSelect"),
         gradeFilterSelect: document.getElementById("gradeFilterSelect"),
@@ -10009,14 +10726,17 @@
         domainFilterSummary: document.getElementById("domainFilterSummary"),
         domainFilterList: document.getElementById("domainFilterList"),
         railDomainFilterField: document.getElementById("railDomainFilterField"),
-        railDomainFilterSelect: document.getElementById("railDomainFilterSelect"),
+        railDomainFilterDetails: document.getElementById("railDomainFilterDetails"),
+        railDomainFilterSummary: document.getElementById("railDomainFilterSummary"),
+        railDomainFilterList: document.getElementById("railDomainFilterList"),
         reviewDomainFilterField: document.getElementById("reviewDomainFilterField"),
         reviewDomainFilterDetails: document.getElementById("reviewDomainFilterDetails"),
         reviewDomainFilterSummary: document.getElementById("reviewDomainFilterSummary"),
         reviewDomainFilterList: document.getElementById("reviewDomainFilterList"),
-        railDomainFilterDetails: document.getElementById("railDomainFilterDetails"),
         selectAllDomainsBtn: document.getElementById("selectAllDomainsBtn"),
         closeDomainFilterBtn: document.getElementById("closeDomainFilterBtn"),
+        railSelectAllDomainsBtn: document.getElementById("railSelectAllDomainsBtn"),
+        railCloseDomainFilterBtn: document.getElementById("railCloseDomainFilterBtn"),
         reviewSelectAllDomainsBtn: document.getElementById("reviewSelectAllDomainsBtn"),
         reviewCloseDomainFilterBtn: document.getElementById("reviewCloseDomainFilterBtn"),
         labelSelectedAiBtn: document.getElementById("labelSelectedAiBtn"),

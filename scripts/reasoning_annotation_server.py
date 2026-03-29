@@ -319,7 +319,7 @@ def make_store_skeleton() -> dict[str, Any]:
     }
 
 
-class AtlasIndex:
+class ReasoningDocumentIndex:
     def __init__(self, payload: dict[str, Any]) -> None:
         self.payload = payload
         self.documents: dict[str, dict[str, Any]] = {}
@@ -364,10 +364,10 @@ class AtlasIndex:
 
 
 class AnnotationStore:
-    def __init__(self, path: Path, atlas_index: AtlasIndex) -> None:
+    def __init__(self, path: Path, document_index: ReasoningDocumentIndex) -> None:
         self.path = path
         self.lock_path = path.with_suffix(path.suffix + ".lock")
-        self.atlas_index = atlas_index
+        self.document_index = document_index
         self.lock = threading.Lock()
         self._ensure_store()
 
@@ -414,7 +414,7 @@ class AnnotationStore:
             return json_copy(self._read())
 
     def _document_metadata(self, document_id: str) -> dict[str, Any]:
-        document = self.atlas_index.get_document(document_id)
+        document = self.document_index.get_document(document_id)
         if not document:
             raise ValueError(f"Unknown document_id: {document_id}")
         return {
@@ -1786,7 +1786,7 @@ class AnnotationStore:
             store = self._read()
             notes = store.get("document_notes") or []
             document_id = text_or_empty(payload.get("document_id")).strip()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             document_id = text_or_empty(document.get("document_id")).strip()
@@ -1912,7 +1912,7 @@ class AnnotationStore:
         payload: dict[str, Any],
     ) -> tuple[dict[str, Any], str, int, int, str]:
         document_id = text_or_empty(payload.get("document_id")).strip()
-        document = self.atlas_index.get_document(document_id)
+        document = self.document_index.get_document(document_id)
         if not document:
             raise ValueError(f"Unknown document_id: {document_id}")
         canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -1978,7 +1978,7 @@ class AnnotationStore:
         review_actor: str = "",
         preserve_existing_lineage: bool,
     ) -> dict[str, Any]:
-        document = self.atlas_index.get_document(text_or_empty(annotation.get("document_id")).strip())
+        document = self.document_index.get_document(text_or_empty(annotation.get("document_id")).strip())
         if not document:
             raise ValueError(
                 f"Unknown document_id: {text_or_empty(annotation.get('document_id')).strip()}"
@@ -2472,7 +2472,7 @@ class AnnotationStore:
     ) -> dict[str, Any]:
         with self._locked_store():
             store = self._read()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -2517,7 +2517,7 @@ class AnnotationStore:
     ) -> dict[str, Any]:
         with self._locked_store():
             store = self._read()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -2573,7 +2573,7 @@ class AnnotationStore:
     def clear_document_ai_labels(self, document_id: str, *, feedback: str = "") -> dict[str, Any]:
         with self._locked_store():
             store = self._read()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -2685,7 +2685,7 @@ class AnnotationStore:
     def assert_document_ai_label_writeable(self, document_id: str) -> str:
         with self._locked_store():
             store = self._read()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -2695,7 +2695,7 @@ class AnnotationStore:
     def suggest_ai_label_mode(self, document_id: str) -> str:
         with self._locked_store():
             store = self._read()
-            document = self.atlas_index.get_document(document_id)
+            document = self.document_index.get_document(document_id)
             if not document:
                 raise ValueError(f"Unknown document_id: {document_id}")
             canonical_document_id = text_or_empty(document.get("document_id")).strip()
@@ -3414,7 +3414,7 @@ class AnnotationStore:
         valid_category_ids: set[str] | None = None,
     ) -> dict[str, Any] | None:
         document_id = text_or_empty(payload.get("document_id")).strip()
-        document = self.atlas_index.get_document(document_id)
+        document = self.document_index.get_document(document_id)
         if not document:
             raise ValueError(f"Unknown document_id: {document_id}")
         document_id = text_or_empty(document.get("document_id")).strip()
@@ -3513,7 +3513,7 @@ class AnnotationStore:
         valid_category_ids: set[str] | None = None,
     ) -> dict[str, Any]:
         document_id = text_or_empty(payload.get("document_id")).strip()
-        document = self.atlas_index.get_document(document_id)
+        document = self.document_index.get_document(document_id)
         if not document:
             raise ValueError(f"Unknown document_id: {document_id}")
         document_id = text_or_empty(document.get("document_id")).strip()
@@ -3913,7 +3913,7 @@ class AnnotationRequestHandler(SimpleHTTPRequestHandler):
                                 "max_concurrency": self.app.ai_labeling_max_concurrency,
                             },
                         },
-                        "atlas": self.app.payload,
+                        "lab": self.app.payload,
                         "store": self.app.store.snapshot(),
                     }
                 )
@@ -4160,8 +4160,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     payload = build_payload()
-    atlas_index = AtlasIndex(payload)
-    store = AnnotationStore(Path(args.annotation_store).resolve(), atlas_index)
+    document_index = ReasoningDocumentIndex(payload)
+    store = AnnotationStore(Path(args.annotation_store).resolve(), document_index)
     try:
         server = AnnotationHTTPServer(
             (args.host, args.port),
