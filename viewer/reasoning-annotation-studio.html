@@ -1795,53 +1795,98 @@
       table-layout: fixed;
     }
 
-    .explorer-table th:nth-child(1),
-    .explorer-table td:nth-child(1) {
+    .explorer-table.is-editable th:nth-child(1),
+    .explorer-table.is-editable td:nth-child(1) {
       width: 48px;
     }
 
-    .explorer-table th:nth-child(2),
-    .explorer-table td:nth-child(2) {
-      width: 24%;
+    .explorer-table.is-editable th:nth-child(2),
+    .explorer-table.is-editable td:nth-child(2) {
+      width: 31%;
     }
 
-    .explorer-table th:nth-child(3),
-    .explorer-table td:nth-child(3) {
-      width: 6%;
+    .explorer-table.is-editable th:nth-child(3),
+    .explorer-table.is-editable td:nth-child(3) {
+      width: 5.5%;
     }
 
-    .explorer-table th:nth-child(4),
-    .explorer-table td:nth-child(4) {
-      width: 8.5%;
+    .explorer-table.is-editable th:nth-child(4),
+    .explorer-table.is-editable td:nth-child(4) {
+      width: 7.5%;
     }
 
-    .explorer-table th:nth-child(5),
-    .explorer-table td:nth-child(5) {
+    .explorer-table.is-editable th:nth-child(5),
+    .explorer-table.is-editable td:nth-child(5) {
+      width: 7%;
+    }
+
+    .explorer-table.is-editable th:nth-child(6),
+    .explorer-table.is-editable td:nth-child(6) {
+      width: 11.5%;
+    }
+
+    .explorer-table.is-editable th:nth-child(7),
+    .explorer-table.is-editable td:nth-child(7) {
+      width: 7.5%;
+    }
+
+    .explorer-table.is-editable th:nth-child(8),
+    .explorer-table.is-editable td:nth-child(8) {
+      width: 7%;
+    }
+
+    .explorer-table.is-editable th:nth-child(9),
+    .explorer-table.is-editable td:nth-child(9) {
+      width: 11.5%;
+    }
+
+    .explorer-table.is-editable th:nth-child(10),
+    .explorer-table.is-editable td:nth-child(10) {
+      width: 74px;
+    }
+
+    .explorer-table.is-read-only th:nth-child(1),
+    .explorer-table.is-read-only td:nth-child(1) {
+      width: 33%;
+    }
+
+    .explorer-table.is-read-only th:nth-child(2),
+    .explorer-table.is-read-only td:nth-child(2) {
+      width: 5.5%;
+    }
+
+    .explorer-table.is-read-only th:nth-child(3),
+    .explorer-table.is-read-only td:nth-child(3) {
       width: 8%;
     }
 
-    .explorer-table th:nth-child(6),
-    .explorer-table td:nth-child(6) {
-      width: 12%;
+    .explorer-table.is-read-only th:nth-child(4),
+    .explorer-table.is-read-only td:nth-child(4) {
+      width: 7.5%;
     }
 
-    .explorer-table th:nth-child(7),
-    .explorer-table td:nth-child(7) {
-      width: 8.5%;
+    .explorer-table.is-read-only th:nth-child(5),
+    .explorer-table.is-read-only td:nth-child(5) {
+      width: 13%;
     }
 
-    .explorer-table th:nth-child(8),
-    .explorer-table td:nth-child(8) {
+    .explorer-table.is-read-only th:nth-child(6),
+    .explorer-table.is-read-only td:nth-child(6) {
       width: 8%;
     }
 
-    .explorer-table th:nth-child(9),
-    .explorer-table td:nth-child(9) {
-      width: 12%;
+    .explorer-table.is-read-only th:nth-child(7),
+    .explorer-table.is-read-only td:nth-child(7) {
+      width: 7.5%;
     }
 
-    .explorer-table th:nth-child(10),
-    .explorer-table td:nth-child(10) {
+    .explorer-table.is-read-only th:nth-child(8),
+    .explorer-table.is-read-only td:nth-child(8) {
+      width: 13%;
+    }
+
+    .explorer-table.is-read-only th:nth-child(9),
+    .explorer-table.is-read-only td:nth-child(9) {
       width: 74px;
     }
 
@@ -2543,6 +2588,149 @@
       font-weight: 700;
       white-space: nowrap;
       text-align: right;
+    }
+
+    .report-trace-matrix {
+      display: grid;
+      grid-template-columns: minmax(160px, 1.14fr) repeat(3, minmax(68px, 0.82fr)) minmax(58px, 0.68fr);
+      gap: 7px 9px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .report-trace-matrix-total-label {
+      width: 100%;
+      justify-content: flex-start;
+      padding-left: 2px;
+    }
+
+    .report-trace-matrix-label {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .report-trace-matrix-label-button,
+    .report-trace-matrix-cell-button {
+      appearance: none;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    }
+
+    .report-trace-matrix-label-button {
+      width: fit-content;
+      max-width: 100%;
+      justify-self: start;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .report-trace-matrix-label-button:hover,
+    .report-trace-matrix-label-button:focus-visible,
+    .report-trace-matrix-cell-button:hover,
+    .report-trace-matrix-cell-button:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    }
+
+    .report-trace-matrix-label-button:focus-visible,
+    .report-trace-matrix-cell-button:focus-visible {
+      outline: 2px solid var(--border-selected);
+      outline-offset: 1px;
+    }
+
+    .report-trace-matrix-label-button .explorer-overall-tag {
+      max-width: 100%;
+    }
+
+    .report-trace-matrix-label-button.is-selected .explorer-overall-tag {
+      border-color: var(--border-selected);
+      background: color-mix(in srgb, var(--surface-selected) 48%, var(--mix-base));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--border-selected) 24%, transparent);
+    }
+
+    .report-trace-matrix-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface-muted);
+      color: var(--text-strong);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .report-trace-matrix-cell-button {
+      width: 100%;
+    }
+
+    .report-trace-matrix-cell.is-total {
+      color: var(--text-subtle);
+      border-style: dashed;
+      background: var(--surface-muted);
+    }
+
+    .report-trace-matrix-cell.is-column-total {
+      border-style: solid;
+      font-size: 0.78rem;
+      color: var(--text-subtle);
+    }
+
+    .report-trace-matrix-cell.is-column-total.green {
+      background: var(--workflow-validated-surface);
+      border-color: var(--workflow-validated-line);
+      color: var(--workflow-validated-text);
+    }
+
+    .report-trace-matrix-cell.is-column-total.amber {
+      background: var(--workflow-active-surface);
+      border-color: var(--workflow-active-line);
+      color: var(--workflow-active-text);
+    }
+
+    .report-trace-matrix-cell.is-column-total.red {
+      background: var(--verdict-red-surface);
+      border-color: var(--verdict-red-line);
+      color: var(--verdict-red-text);
+    }
+
+    .report-trace-matrix-cell-button.is-selected {
+      border-color: var(--border-selected) !important;
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--border-selected) 44%, transparent);
+    }
+
+    .report-trace-matrix-cell.is-empty {
+      color: var(--text-faint);
+      font-weight: 600;
+    }
+
+    .report-trace-matrix-empty {
+      grid-column: 1 / -1;
+      margin-top: 4px;
+    }
+
+    .report-notes-filter {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .report-notes-filter-copy {
+      color: var(--text-subtle);
+      font-size: 0.84rem;
+      font-weight: 600;
     }
 
     .report-note-columns {
@@ -4251,6 +4439,11 @@
         grid-template-columns: 1fr;
       }
 
+      .report-trace-matrix {
+        grid-template-columns: minmax(144px, 1.08fr) repeat(3, minmax(60px, 1fr)) minmax(50px, 0.68fr);
+        gap: 6px 8px;
+      }
+
       .filter-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -4849,6 +5042,7 @@
       })(),
       selectedCaseId: window.localStorage.getItem("reasoningLab.selectedCaseId") || "",
       selectedCasePinnedIndex: null,
+      reportTraceFocus: null,
       selection: null,
       activeAnnotationId: "",
       activeAnnotationOrigin: "",
@@ -5455,6 +5649,7 @@
 
     function setDatasetKey(key) {
       STATE.datasetKey = key;
+      STATE.reportTraceFocus = null;
       window.localStorage.setItem("reasoningLab.datasetKey", STATE.datasetKey);
     }
 
@@ -5488,6 +5683,24 @@
     function setCaseSort(value) {
       STATE.caseSort = normalizeCaseSortValue(value || "recommended");
       window.localStorage.setItem("reasoningLab.caseSort", STATE.caseSort);
+    }
+
+    function sameReportTraceFocus(left, right) {
+      return String(left?.labelId || "") === String(right?.labelId || "")
+        && String(left?.verdictKey || "") === String(right?.verdictKey || "");
+    }
+
+    function setReportTraceFocus(focus) {
+      if (!focus || (!focus.labelId && !focus.verdictKey)) {
+        STATE.reportTraceFocus = null;
+        return;
+      }
+      STATE.reportTraceFocus = {
+        labelId: focus.labelId ? String(focus.labelId) : "",
+        labelName: focus.labelId ? String(focus.labelName || focus.labelId) : "",
+        labelColor: String(focus.labelColor || "#8aa19b"),
+        verdictKey: String(focus.verdictKey || ""),
+      };
     }
 
     function setSelectedCaseId(questionId) {
@@ -6512,6 +6725,150 @@
         total,
         rows,
       };
+    }
+
+    function annotationSpanWeight(annotation) {
+      const spanLength = Number(annotation?.span_length);
+      if (Number.isFinite(spanLength) && spanLength > 0) return spanLength;
+      const start = Number(annotation?.start);
+      const end = Number(annotation?.end);
+      if (Number.isFinite(start) && Number.isFinite(end) && end > start) return end - start;
+      return 1;
+    }
+
+    function reportAnnotationLabelMeta(annotation) {
+      if (!annotation) return null;
+      const category = annotation?.label_id ? categoryMap().get(annotation.label_id) : null;
+      const snapshot = annotation?.label_snapshot || null;
+      const name = String(category?.name || snapshot?.name || annotation?.label_id || "").trim();
+      if (!name) return null;
+      return {
+        id: String(category?.id || annotation?.label_id || name),
+        name,
+        color: String(category?.color || snapshot?.color || "#8aa19b"),
+        order: Number(category?.order ?? 999),
+      };
+    }
+
+    function reportTraceLabelMixForSource(sourceKey, entries = reportSourceEntries()) {
+      const source = sourceForKey(sourceKey);
+      const sourceEntries = entries.filter((entry) => entry.source?.key === sourceKey);
+      const knownCategoryOrder = new Map(
+        categories().map((category, index) => [String(category.id || ""), index]),
+      );
+      const columns = ["clear", "partial", "accepted"].map((key) => {
+        const verdictEntries = sourceEntries.filter((entry) => verdictKey(entry.variant?.consensus_score) === key);
+        return {
+          key,
+          meta: scoreMetaForVerdictKey(key),
+          traceCount: verdictEntries.length,
+          labelledTraceCount: verdictEntries.filter((entry) => Array.isArray(entry.annotations) && entry.annotations.length > 0).length,
+          totalWeight: 0,
+        };
+      });
+      const columnMap = new Map(columns.map((column) => [column.key, column]));
+      const labelBuckets = new Map();
+      sourceEntries.forEach((entry) => {
+        const key = verdictKey(entry.variant?.consensus_score);
+        const column = columnMap.get(key);
+        if (!column) return;
+        (entry.annotations || []).forEach((annotation) => {
+          const meta = reportAnnotationLabelMeta(annotation);
+          if (!meta) return;
+          const bucketKey = String(meta.id || meta.name);
+          const weight = annotationSpanWeight(annotation);
+          column.totalWeight += weight;
+          const existing = labelBuckets.get(bucketKey) || {
+            ...meta,
+            totalWeight: 0,
+            weights: {
+              clear: 0,
+              partial: 0,
+              accepted: 0,
+            },
+          };
+          existing.totalWeight += weight;
+          existing.weights[key] += weight;
+          labelBuckets.set(bucketKey, existing);
+        });
+      });
+      const rows = [...labelBuckets.values()].sort((left, right) => {
+        const leftKnown = knownCategoryOrder.has(String(left.id || "")) ? knownCategoryOrder.get(String(left.id || "")) : 9999 + Number(left.order ?? 999);
+        const rightKnown = knownCategoryOrder.has(String(right.id || "")) ? knownCategoryOrder.get(String(right.id || "")) : 9999 + Number(right.order ?? 999);
+        if (leftKnown !== rightKnown) return leftKnown - rightKnown;
+        return String(left.name || "").localeCompare(String(right.name || ""));
+      });
+      const totalLabelWeight = columns.reduce((sum, column) => sum + Number(column.totalWeight || 0), 0);
+      const rowsWithCells = rows
+        .map((label) => ({
+          ...label,
+          totalPercent: totalLabelWeight ? Math.round((Number(label.totalWeight || 0) / totalLabelWeight) * 100) : 0,
+          cells: Object.fromEntries(columns.map((column) => {
+            const weight = Number(label.weights?.[column.key] || 0);
+            const percent = column.totalWeight ? Math.round((weight / column.totalWeight) * 100) : 0;
+            return [column.key, {
+              weight,
+              percent,
+              exactPercent: column.totalWeight ? (weight / column.totalWeight) * 100 : 0,
+            }];
+          })),
+        }))
+        .filter((label) => columns.some((column) => Number(label.cells?.[column.key]?.weight || 0) > 0));
+      return {
+        source,
+        total: sourceEntries.length,
+        columns,
+        hasAnyLabels: rowsWithCells.length > 0,
+        rows: rowsWithCells,
+      };
+    }
+
+    function reportTraceMatrixRowDefs(sourceMixes = []) {
+      const rowMap = new Map();
+      sourceMixes.forEach((sourceMix) => {
+        (sourceMix?.rows || []).forEach((row) => {
+          const key = String(row.id || row.name || "");
+          if (!key || rowMap.has(key)) return;
+          rowMap.set(key, {
+            id: key,
+            name: row.name || key,
+            color: row.color || "#8aa19b",
+            order: Number(row.order ?? 999),
+          });
+        });
+      });
+      return [...rowMap.values()].sort((left, right) => {
+        const leftOrder = Number(left.order ?? 999);
+        const rightOrder = Number(right.order ?? 999);
+        if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+        return String(left.name || "").localeCompare(String(right.name || ""));
+      });
+    }
+
+    function reportEntryMatchesTraceFocus(entry, focus = STATE.reportTraceFocus) {
+      if (!focus?.labelId && !focus?.verdictKey) return true;
+      if (focus.labelId) {
+        const hasLabel = (entry?.annotations || []).some((annotation) => {
+          const meta = reportAnnotationLabelMeta(annotation);
+          return String(meta?.id || "") === String(focus.labelId || "");
+        });
+        if (!hasLabel) return false;
+      }
+      if (!focus.verdictKey) return true;
+      return verdictKey(entry?.variant?.consensus_score) === focus.verdictKey;
+    }
+
+    function renderReportTraceFocusSummary(focus = STATE.reportTraceFocus) {
+      if (!focus?.labelId && !focus?.verdictKey) return "";
+      const verdictMeta = focus.verdictKey ? scoreMetaForVerdictKey(focus.verdictKey) : null;
+      return `
+        <div class="report-notes-filter">
+          <span class="report-notes-filter-copy">Showing notes for</span>
+          ${focus.labelId ? `<span class="tag"><span class="swatch" style="background:${escapeAttribute(focus.labelColor || "#8aa19b")}"></span><span>${escapeHtml(focus.labelName || focus.labelId)}</span></span>` : ""}
+          ${verdictMeta ? `<span class="pill ${escapeHtml(verdictMeta.tone)}">${escapeHtml(reportVerdictLabel(verdictMeta))}</span>` : ""}
+          <button class="btn ghost small" type="button" data-clear-report-trace-focus="1">Clear</button>
+        </div>
+      `;
     }
 
     function reportNotesForSource(sourceKey, entries = reportOverallNoteEntries()) {
@@ -8209,6 +8566,11 @@
     function renderExplorerHeader(rows = []) {
       if (!el.questionExplorerHead) return;
       const showSelectionColumn = !isReadOnlyMode();
+      const explorerTable = el.questionExplorerHead.closest(".explorer-table");
+      if (explorerTable) {
+        explorerTable.classList.toggle("is-editable", showSelectionColumn);
+        explorerTable.classList.toggle("is-read-only", !showSelectionColumn);
+      }
       const dataset = currentDataset();
       const primarySource = currentSource();
       const compareSource = sourceForKey(alternateSourceKeyForDataset(dataset?.key || STATE.datasetKey));
@@ -8524,24 +8886,108 @@
       return verdict.label || "";
     }
 
-    function renderReportGradeCard(sourceStats) {
-      if (!sourceStats?.source) return "";
+    function renderReportTraceMixCard(sourceMix, rowDefs = [], sourceStats = null) {
+      if (!sourceMix?.source) return "";
+      const rowMap = new Map((sourceMix.rows || []).map((row) => [String(row.id || row.name || ""), row]));
+      const displayRows = rowDefs.length ? rowDefs : (sourceMix.rows || []);
+      const gradeRows = ((sourceStats?.rows || sourceMix.columns || []).filter((row) => row.key !== "missing"));
       return `
         <div class="review-overview-card">
           <div class="section-head">
-            <div>${renderModelChip(sourceStats.source)}</div>
-            <span class="panel-subtitle">${escapeHtml(`${formatNumber(sourceStats.total)} traces`)}</span>
+            <div>${renderModelChip(sourceMix.source)}</div>
+            <span class="panel-subtitle">${escapeHtml(`${formatNumber(sourceMix.total)} traces`)}</span>
           </div>
-          <div class="report-grade-list">
-            ${sourceStats.rows.filter((row) => row.key !== "missing").map((row) => `
-              <div class="report-grade-row">
-                <span class="pill ${escapeHtml(row.meta.tone)}">${escapeHtml(reportVerdictLabel(row.meta))}</span>
-                <div class="report-bar-track" aria-hidden="true">
-                  <span class="report-bar-fill" style="width:${escapeAttribute(String(row.percent))}%;--report-bar-color:${escapeAttribute(reportBarColorForTone(row.meta.tone))}"></span>
-                </div>
-                <strong class="report-grade-stat">${escapeHtml(`${row.percent}% · ${row.count}`)}</strong>
-              </div>
+          <div class="report-trace-matrix">
+            ${displayRows.map((rowDef) => `
+              <button
+                class="report-trace-matrix-label report-trace-matrix-label-button ${sameReportTraceFocus(STATE.reportTraceFocus, { labelId: rowDef.id }) ? "is-selected" : ""}"
+                type="button"
+                data-report-trace-focus="${escapeAttribute(JSON.stringify({ labelId: rowDef.id, labelName: rowDef.name, labelColor: rowDef.color }))}"
+                title="${escapeAttribute(`Show notes for ${rowDef.name}`)}"
+              >
+                <span class="explorer-overall-tag" style="--label-color:${escapeAttribute(rowDef.color)}">
+                  <span class="swatch" style="background:${escapeAttribute(rowDef.color)}"></span>
+                  <span class="label-text">${escapeHtml(rowDef.name)}</span>
+                </span>
+              </button>
+              ${gradeRows.map((column) => {
+                const row = rowMap.get(String(rowDef.id || rowDef.name || ""));
+                const cell = row?.cells?.[column.key] || { percent: 0 };
+                const intensity = Math.max(0, Math.min(72, Math.round(cell.percent)));
+                const background = cell.percent
+                  ? `color-mix(in srgb, ${rowDef.color} ${intensity}%, var(--surface-muted))`
+                  : "var(--surface-muted)";
+                const border = cell.percent
+                  ? `color-mix(in srgb, ${rowDef.color} 20%, var(--line))`
+                  : "var(--line)";
+                const title = `${rowDef.name}: ${cell.percent}% of saved highlight coverage in ${reportVerdictLabel(column.meta)}`;
+                if (!cell.percent) {
+                  return `
+                    <div
+                      class="report-trace-matrix-cell is-empty"
+                      style="background:${escapeAttribute(background)};border-color:${escapeAttribute(border)}"
+                      title="${escapeAttribute(title)}"
+                    >—</div>
+                  `;
+                }
+                return `
+                  <button
+                    class="report-trace-matrix-cell report-trace-matrix-cell-button ${sameReportTraceFocus(STATE.reportTraceFocus, { labelId: rowDef.id, verdictKey: column.key }) ? "is-selected" : ""}"
+                    type="button"
+                    data-report-trace-focus="${escapeAttribute(JSON.stringify({ labelId: rowDef.id, labelName: rowDef.name, labelColor: rowDef.color, verdictKey: column.key }))}"
+                    style="background:${escapeAttribute(background)};border-color:${escapeAttribute(border)}"
+                    title="${escapeAttribute(title)}"
+                  >${escapeHtml(`${cell.percent}%`)}</button>
+                `;
+              }).join("")}
+              ${(() => {
+                const row = rowMap.get(String(rowDef.id || rowDef.name || ""));
+                const totalPercent = Number(row?.totalPercent || 0);
+                const background = totalPercent
+                  ? `color-mix(in srgb, ${rowDef.color} 14%, var(--surface-muted))`
+                  : "var(--surface-muted)";
+                const border = totalPercent
+                  ? `color-mix(in srgb, ${rowDef.color} 10%, var(--line))`
+                  : "var(--line)";
+                const title = `${rowDef.name}: ${totalPercent}% of saved highlight coverage overall`;
+                if (!totalPercent) {
+                  return `
+                    <div
+                      class="report-trace-matrix-cell is-empty is-total"
+                      style="background:${escapeAttribute(background)};border-color:${escapeAttribute(border)}"
+                      title="${escapeAttribute(title)}"
+                    >—</div>
+                  `;
+                }
+                return `
+                  <button
+                    class="report-trace-matrix-cell report-trace-matrix-cell-button is-total ${sameReportTraceFocus(STATE.reportTraceFocus, { labelId: rowDef.id }) ? "is-selected" : ""}"
+                    type="button"
+                    data-report-trace-focus="${escapeAttribute(JSON.stringify({ labelId: rowDef.id, labelName: rowDef.name, labelColor: rowDef.color }))}"
+                    style="background:${escapeAttribute(background)};border-color:${escapeAttribute(border)}"
+                    title="${escapeAttribute(title)}"
+                  >${escapeHtml(`${totalPercent}%`)}</button>
+                `;
+              })()}
             `).join("")}
+            <div class="report-trace-matrix-label report-trace-matrix-total-label">
+              <span class="tag">Total</span>
+            </div>
+            ${gradeRows.map((column) => `
+              <button
+                class="report-trace-matrix-cell report-trace-matrix-cell-button is-total is-column-total ${escapeHtml(column.meta.tone)} ${sameReportTraceFocus(STATE.reportTraceFocus, { verdictKey: column.key }) ? "is-selected" : ""}"
+                type="button"
+                data-report-trace-focus="${escapeAttribute(JSON.stringify({ verdictKey: column.key }))}"
+                title="${escapeAttribute(`${reportVerdictLabel(column.meta)}: ${column.percent || 0}% of traces`) }"
+              >${escapeHtml(`${column.percent || 0}%`)}</button>
+            `).join("")}
+            <button
+              class="report-trace-matrix-cell report-trace-matrix-cell-button is-total ${!STATE.reportTraceFocus ? "is-selected" : ""}"
+              type="button"
+              data-clear-report-trace-focus="1"
+              title="Show all notes"
+            >100%</button>
+            ${!sourceMix.hasAnyLabels ? `<div class="empty-state report-trace-matrix-empty"><strong>No saved highlights yet.</strong><br>This model column will fill once span labels are added.</div>` : ""}
           </div>
         </div>
       `;
@@ -8569,7 +9015,7 @@
       `;
     }
 
-    function renderReportNotesColumn(source, entries, sourceStats = null) {
+    function renderReportNotesColumn(source, entries, sourceStats = null, hasTraceFocus = false) {
       const summaryRows = (sourceStats?.rows || [])
         .filter((row) => row.key !== "missing" && row.count > 0)
         .map((row) => ({
@@ -8597,7 +9043,7 @@
           </div>
           ${entries.length
             ? `<div class="report-note-list">${entries.map((entry) => renderReportNoteCard(entry)).join("")}</div>`
-            : `<div class="empty-state"><strong>No overall notes saved yet.</strong><br>This column will fill as notes are added.</div>`}
+            : `<div class="empty-state"><strong>${escapeHtml(hasTraceFocus ? "No notes match this highlight yet." : "No overall notes saved yet.")}</strong><br>${escapeHtml(hasTraceFocus ? "Try another cell or clear the filter." : "This column will fill as notes are added.")}</div>`}
         </div>
       `;
     }
@@ -8613,17 +9059,28 @@
       const sourceEntries = reportSourceEntries(dataset, filteredRows);
       const noteEntries = reportOverallNoteEntries(dataset, filteredRows);
       const topSources = orderedSourcesForDataset(dataset.key || STATE.datasetKey).slice(0, 2);
+      const traceMixes = topSources.map((source) => reportTraceLabelMixForSource(source.key, sourceEntries));
+      const traceMixMap = new Map(traceMixes.map((mix) => [mix.source?.key, mix]));
+      const traceStatsMap = new Map(topSources.map((source) => [source.key, reportGradeStatsForSource(source.key, sourceEntries)]));
+      const traceRowDefs = reportTraceMatrixRowDefs(traceMixes);
+      const focusedNoteEntries = STATE.reportTraceFocus
+        ? noteEntries.filter((entry) => reportEntryMatchesTraceFocus(entry, STATE.reportTraceFocus))
+        : noteEntries;
 
       el.reportView.innerHTML = `
         <section class="panel report-panel">
           <div class="section-head">
             <div>
-              <h2>Model grade split</h2>
-              <p class="panel-subtitle">How each model tends to handle the benchmark prompts.</p>
+              <h2>Trace breakdown</h2>
+              <p class="panel-subtitle">Verdict share on top, saved highlight breakdown below. Row order stays aligned across models.</p>
             </div>
           </div>
           <div class="report-source-grid">
-            ${topSources.map((source) => renderReportGradeCard(reportGradeStatsForSource(source.key, sourceEntries))).join("")}
+            ${topSources.map((source) => renderReportTraceMixCard(
+              traceMixMap.get(source.key),
+              traceRowDefs,
+              traceStatsMap.get(source.key),
+            )).join("")}
           </div>
         </section>
 
@@ -8634,11 +9091,12 @@
               <p class="panel-subtitle">GPT on the left, Sonnet on the right, with note text plus verdict and domain.</p>
             </div>
           </div>
+          ${renderReportTraceFocusSummary()}
           <div class="report-note-columns">
             ${topSources.map((source) => {
-              const sourceNoteEntries = reportNotesForSource(source.key, noteEntries);
+              const sourceNoteEntries = reportNotesForSource(source.key, focusedNoteEntries);
               const sourceStats = reportGradeStatsForSource(source.key, sourceEntries);
-              return renderReportNotesColumn(source, sourceNoteEntries, sourceStats);
+              return renderReportNotesColumn(source, sourceNoteEntries, sourceStats, Boolean(STATE.reportTraceFocus));
             }).join("")}
           </div>
         </section>
@@ -9104,23 +9562,49 @@
       const caseRow = selectedCase(railRows);
       renderHeroSummary(rows);
       renderSharedFilters(rows);
-      renderReportView(rows);
-      renderCaseRail(railRows);
+      if (STATE.viewMode === "report") {
+        renderReportView(rows);
+      } else if (el.reportView) {
+        el.reportView.innerHTML = "";
+      }
+      if (STATE.viewMode === "label") {
+        renderCaseRail(railRows);
+      } else {
+        renderCaseRail([]);
+      }
       if (STATE.viewMode === "review") {
         renderReviewCaseList(rows);
         renderReviewStage(caseRow);
       } else {
-        renderExplorerView(rows);
+        renderReviewStage(null);
+        if (STATE.viewMode === "explorer") {
+          renderExplorerView(rows);
+        } else {
+          renderExplorerView([]);
+        }
+      }
+      if (STATE.viewMode === "label") {
+        renderQuestionPanel(caseRow);
+        renderStageModelStrip(caseRow);
+        renderResponsePanel(caseRow);
+        renderReasoningPanel(caseRow);
+        renderComposerPanel(caseRow);
+        renderAnnotationPanel(caseRow);
+        renderComparisonPanel(caseRow);
+        renderSelectionToolbar();
+      } else {
+        renderQuestionPanel(null);
+        renderStageModelStrip(null);
+        renderResponsePanel(null);
+        renderReasoningPanel(null);
+        renderComposerPanel(null);
+        renderAnnotationPanel(null);
+        renderComparisonPanel(null);
+        renderSelectionToolbar();
+      }
+      if (STATE.viewMode !== "review") {
         renderReviewStage(null);
       }
-      renderQuestionPanel(caseRow);
-      renderStageModelStrip(caseRow);
-      renderResponsePanel(caseRow);
-      renderReasoningPanel(caseRow);
-      renderComposerPanel(caseRow);
-      renderAnnotationPanel(caseRow);
-      renderComparisonPanel(caseRow);
-      renderSelectionToolbar();
       renderToast();
     }
 
@@ -9988,6 +10472,7 @@
         annotationFilter: normalizeAnnotationFilterForView(STATE.annotationFilter, "report"),
         caseSort: STATE.caseSort,
         selectedDomainsByDataset: cloneSelectedDomainsState(),
+        reportTraceFocus: STATE.reportTraceFocus ? { ...STATE.reportTraceFocus } : null,
         scrollY: window.scrollY || 0,
       };
     }
@@ -10013,6 +10498,7 @@
       STATE.selectedDomainsByDataset = context.selectedDomainsByDataset && typeof context.selectedDomainsByDataset === "object"
         ? context.selectedDomainsByDataset
         : {};
+      setReportTraceFocus(context.reportTraceFocus || null);
       window.localStorage.setItem(
         "reasoningLab.selectedDomainsByDataset",
         JSON.stringify(STATE.selectedDomainsByDataset),
@@ -10212,6 +10698,24 @@
         render();
       });
       el.reportView?.addEventListener("click", (event) => {
+        const clearFilterButton = event.target.closest("[data-clear-report-trace-focus]");
+        if (clearFilterButton) {
+          setReportTraceFocus(null);
+          render();
+          return;
+        }
+        const traceFocusButton = event.target.closest("[data-report-trace-focus]");
+        if (traceFocusButton) {
+          try {
+            const nextFocus = JSON.parse(traceFocusButton.getAttribute("data-report-trace-focus") || "{}");
+            setReportTraceFocus(sameReportTraceFocus(STATE.reportTraceFocus, nextFocus) ? null : nextFocus);
+            render();
+          } catch (_error) {
+            setReportTraceFocus(null);
+            render();
+          }
+          return;
+        }
         const button = event.target.closest("[data-open-report-case]");
         if (!button) return;
         openCaseForLabeling(button.getAttribute("data-open-report-case") || "", { compare: true, returnTo: "report" });
